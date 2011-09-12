@@ -178,7 +178,7 @@ void MainWindow::slotPlay(int row, int column) {
 	//QList<QTableWidgetItem*> items = tableWidget.selectedItems();
 	//player.slotPlay(buttons1[BTN1_RANDOM].isChecked(), items.isEmpty()?NULL:items.front());
 	player.slotPlay(buttons1[BTN1_RANDOM].isChecked(), (row==-1)?NULL:tableWidget.item(row,13));
-	player.slotChangeVolume(volumeSlider.sliderPosition()); // set volume again - only to be sure
+//	player.slotChangeVolume(volumeSlider.sliderPosition()); // set volume again - only to be sure
 }
 
 void MainWindow::slotPause() {
@@ -790,7 +790,7 @@ MainWindow::MainWindow (QWidget* parent)
 	retranslateUi();
 
 	// TODO: load this value from file:
-	volumeSlider.setSliderPosition(100);
+	volumeSlider.setSliderPosition(0);
 	onSetStatus(PlayerEngine::STATUS_STOPPED);
 	progressBar.setValue(100);
 

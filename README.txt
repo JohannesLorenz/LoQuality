@@ -29,6 +29,6 @@ Compile LoQuality in 3 steps!
 ::::::::::::
 
 * You must wait at least 60 seconds after your flash video was downloaded in
-  firefox. Than, you can start the flash downloader. If you start earlier,
+  firefox. Then, you can start the flash downloader. If you start earlier,
   crashes occur...
 
