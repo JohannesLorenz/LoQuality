@@ -134,7 +134,7 @@ private:
 
 		void slotFileQuitAction();
 
-		void slotFileUpdateAction() {
+		inline void slotFileUpdateAction() {
 			UpdateDlg udlg;
 			udlg.show();
 			udlg.exec();
