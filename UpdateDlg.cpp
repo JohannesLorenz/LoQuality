@@ -30,7 +30,6 @@ void UpdateDlg::fetchItems()
 	else if(gits_pid == 0) {
 
 		::close(pipefd[0]); /* Close unused read end */
-
 		dup2(pipefd[1], STDOUT_FILENO);
 
 		execlp("git", "git", "--no-pager", "log", "--pretty=oneline", "FETCH_HEAD...HEAD", NULL);
