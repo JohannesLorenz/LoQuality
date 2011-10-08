@@ -28,7 +28,8 @@ HEADERS += AddEntries.h \
     dbus/RootHandler.h \
     dbus/Mpris1RootAdaptor.h \
     dbus/TrackListHandler.h \
-    dbus/Mpris1TrackListAdaptor.h
+    dbus/Mpris1TrackListAdaptor.h \
+    UpdateDlg.h
 SOURCES += AddEntries.cpp \
     FileManager.cpp \
     FlashDlg.cpp \
@@ -45,5 +46,6 @@ SOURCES += AddEntries.cpp \
     dbus/RootHandler.cpp \
     dbus/Mpris1RootAdaptor.cpp \
     dbus/TrackListHandler.cpp \
-    dbus/Mpris1TrackListAdaptor.cpp
+    dbus/Mpris1TrackListAdaptor.cpp \
+    UpdateDlg.cpp
 OTHER_FILES += TODO.txt

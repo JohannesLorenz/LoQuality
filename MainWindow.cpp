@@ -45,12 +45,13 @@
 #define _MPLAYER_REMOTE_PIPE "/tmp/lq_remote_pipe"
 
 void MainWindow::retranslateUi() {
-		
+
 	topMenus[MENU_FILE].setTitle(tr("Datei"));
 	topMenus[MENU_EDIT].setTitle(tr("Bearbeiten"));
 	topMenus[MENU_VIEW].setTitle(tr("Ansicht"));
 	topMenus[MENU_HELP].setTitle(tr("Hilfe"));
-		
+
+	Actions[ACTION_FILE_UPDATE]->setText(tr("Update"));
 	Actions[ACTION_FILE_QUIT]->setText(tr("Beenden"));
 	Actions[ACTION_VIEW_FULLSCREEN]->setText(tr("Vollbild"));
 	Actions[ACTION_VIEW_SWITCH_ALIGN]->setText(tr("Ausrichtung ändern"));
@@ -567,7 +568,8 @@ MainWindow::MainWindow (QWidget* parent)
 	setMenuBar(&menubar);
 	
 	Actions.resize(ACTION_SIZE);
-	
+
+	initAction(MENU_FILE, ACTION_FILE_UPDATE, SLOT(slotFileUpdateAction()), QKeySequence(Qt::CTRL + Qt::Key_U));
 	initAction(MENU_FILE, ACTION_FILE_QUIT, SLOT(slotFileQuitAction()), QKeySequence(Qt::CTRL + Qt::Key_Q), application_exit_xpm);
 	initAction(MENU_EDIT, ACTION_EDIT_EDITTITLE, SLOT(slotItemEdit()), QKeySequence(Qt::CTRL + Qt::Key_E));
 	initAction(MENU_EDIT, ACTION_EDIT_OPTIONS, SLOT(slotOpenOptionsDlg()), QKeySequence(Qt::CTRL + Qt::Key_B)); // note: is B good?

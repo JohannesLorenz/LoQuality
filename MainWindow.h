@@ -53,6 +53,7 @@
 #include "PlayerEngine.h"
 #include "SqlHelper.h"
 #include "dbus/DBusConnector.h"
+#include "UpdateDlg.h"
 
 /**
  * @class MainWindow
@@ -73,7 +74,7 @@ class MainWindow : public QMainWindow
 	};
 	
 	enum ACTION {
-		ACTION_FILE_QUIT,
+		ACTION_FILE_QUIT, ACTION_FILE_UPDATE,
 		ACTION_EDIT_EDITTITLE, ACTION_EDIT_OPTIONS,
 		ACTION_VIEW_FULLSCREEN, ACTION_VIEW_SWITCH_ALIGN,
 		ACTION_HELP_ABOUT, ACTION_HELP_ABOUTQT,
@@ -132,6 +133,12 @@ private:
 
 
 		void slotFileQuitAction();
+
+		void slotFileUpdateAction() {
+			UpdateDlg udlg;
+			udlg.show();
+			udlg.exec();
+		}
 
 		inline void slotViewFullscreenAction() {
 			if( isFullScreen() ) showNormal(); else showFullScreen();
@@ -222,7 +229,7 @@ private:
 					globals::settings->setValue("mplayer_name", "mplayer2");
 					globals::settings->setValue("music_root", "insert_your_path");
 					globals::settings->setValue("number_of_cores", 2);
-					QMessageBox::information(NULL, "Please edit options per text editor and restart LoQuality!", globals::settings->fileName().toAscii().data());
+					QMessageBox::information(NULL, "Please edit close LQ and then edit:", globals::settings->fileName().toAscii().data());
 				}
 				printf("Writing options to %s\n",
 					globals::settings->fileName().toAscii().data());
