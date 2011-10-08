@@ -6,11 +6,11 @@
 
 #include "UpdateDlg.h"
 
-UpdateDlg::UpdateDlg()
+void UpdateDlg::fetchItems()
 {
 	// TODO: do not allow if options file does not say it's from git!
 	system("git fetch origin");
-//	system("git --no-pager log --pretty=oneline FETCH_HEAD...HEAD > updates.txt");
+	//	system("git --no-pager log --pretty=oneline FETCH_HEAD...HEAD > updates.txt");
 
 
 	int pipefd[2];
@@ -51,5 +51,46 @@ UpdateDlg::UpdateDlg()
 	}
 
 	::close(output);
+}
 
+void UpdateDlg::buttonYesPressed() {
+	QMessageBox::information(this, "Further instructions",
+	 "Please close LQ now, then type \"./configure\", then \"make\". Good luck :)");
+}
+
+void UpdateDlg::retranslateUi()
+{
+	yesButton.setText("Go ahead!");
+	noButton.setText("No updates, please!");
+}
+
+void UpdateDlg::setupUi() {
+
+//	resize(600, 425);
+
+	/*
+		Setup UI...
+	*/
+
+//	fileList.setSelectionMode(QAbstractItemView::MultiSelection);
+	topLayout.addWidget(&commitOverview);
+
+	buttonLayout.addWidget(&yesButton);
+	buttonLayout.addWidget(&noButton);
+	topLayout.addLayout(&buttonLayout);
+
+	connect(&yesButton,SIGNAL(clicked ()),
+		this, SLOT(buttonYesPressed()));
+	connect(&noButton,SIGNAL(clicked ()),
+		this, SLOT(close()));
+
+	retranslateUi();
+}
+
+UpdateDlg::UpdateDlg() : topLayout(this)//, progressDlg(NULL)
+{
+	setupUi();
+
+
+//	fetchItems();
 }
