@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QProgressDialog>
 
 class UpdateDlg : public QDialog
 {
@@ -17,6 +18,9 @@ class UpdateDlg : public QDialog
 
 	QVBoxLayout topLayout;
 	QHBoxLayout buttonLayout;
+
+//	QProgressDialog* progressDlg;
+//	QTimer timer;
 
 	void setupUi();
 	void retranslateUi();

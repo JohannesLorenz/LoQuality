@@ -97,7 +97,5 @@ void UpdateDlg::setupUi() {
 UpdateDlg::UpdateDlg() : topLayout(this)//, progressDlg(NULL)
 {
 	setupUi();
-
-
-//	fetchItems();
+	fetchItems();
 }
