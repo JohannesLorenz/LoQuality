@@ -54,6 +54,13 @@ void UpdateDlg::fetchItems()
 }
 
 void UpdateDlg::buttonYesPressed() {
+	QMessageBox::warning(this, "Starting update",
+		"I will start download the updates now. Please "
+		"do not do anything meanwhile - wait until I'll come up with "
+		"further instructions...");
+
+	system("git pull");
+
 	QMessageBox::information(this, "Further instructions",
 	 "Please close LQ now, then type \"./configure\", then \"make\". Good luck :)");
 }
