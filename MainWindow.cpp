@@ -663,6 +663,8 @@ MainWindow::MainWindow (QWidget* parent)
 	newWidget->setLayout(&informationBox);
 	toolBox->addItem(newWidget, "Information");
 
+	toolBox->setCurrentIndex(1);
+
 	verticalLayout.addWidget(&mainSplitter);
 	mainSplitter.addWidget(toolBox);
 	mainSplitter.addWidget(&tableWidget);
