@@ -54,6 +54,7 @@
 #include "SqlHelper.h"
 #include "dbus/DBusConnector.h"
 #include "UpdateDlg.h"
+#include "src/UpdateInfoDlg.h"
 
 /**
  * @class MainWindow
@@ -244,6 +245,10 @@ private:
 				if(globals::settings->value("first_start", true).toBool())
 				 QMessageBox::information(NULL, "Please edit close LQ and then edit:", globals::settings->fileName().toAscii().data());
 
+				if(globals::settings->value("update_applied").toBool()) {
+					UpdateInfoDlg u;
+					globals::settings->setValue("update_applied", false);
+				}
 				printf("Writing options to %s\n",
 					globals::settings->fileName().toAscii().data());
 				checkIntegrity();
