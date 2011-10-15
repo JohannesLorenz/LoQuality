@@ -29,5 +29,4 @@ namespace globals
 	QString MUSIC_ROOT;
 	QString MPLAYER_EXE;
 	const char* LQ_VERSION = "0.10";
-	bool update_soon = false;
 }
