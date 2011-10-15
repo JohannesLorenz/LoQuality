@@ -29,14 +29,18 @@ bool UpdateDlg::readOutputToItems(int output)
 	QString cur_line;
 	char data[2];
 	data[1] = 0;
-
+	bool space_read = false;
 	while(read(output, data, 1)>0) {
 		if(data[0] == '\n') {
 			commitOverview.addItem(cur_line);
 			cur_line.clear();
+			space_read = false;
 		}
 		else {
-			cur_line.append(data[0]);
+			if(space_read)
+			 cur_line.append(data[0]);
+			if(data[0] == ' ')
+			 space_read = true;
 		}
 	}
 	if(!cur_line.isEmpty()) // trailing \n was missing...
@@ -114,7 +118,7 @@ void UpdateDlg::buttonYesPressed() {
 	}
 	else if(sh_pid == 0) {
 		waitpid(getppid(), NULL, WCONTINUED);
-		execlp("sh", "sh", "./run.sh", NULL);
+		execlp("xterm", "xterm", "-e", "./run.sh", NULL);
 		exit(0);
 	}
 
@@ -126,7 +130,7 @@ void UpdateDlg::buttonYesPressed() {
 void UpdateDlg::retranslateUi()
 {
 	yesButton.setText("Go ahead!");
-	noButton.setText("No updates, please!");
+	noButton.setText("Close this window");
 }
 
 void UpdateDlg::setupUi() {
