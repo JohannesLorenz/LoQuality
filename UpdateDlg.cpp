@@ -104,7 +104,23 @@ void UpdateDlg::buttonYesPressed() {
 	system("git pull");
 
 	QMessageBox::information(this, "Further instructions",
-	 "Please close LQ now, then type \"./configure\", then \"make\". Good luck :)");
+		"Please close LQ as soon as possible."
+		"I will compile LQ afterwards and then restart it. This may take a minute. Good luck :)");
+
+	pid_t sh_pid=fork();
+	if(sh_pid < 0) {
+		QMessageBox::information(NULL, "Sorry...", "... fork() ging nicht, kein update!");
+		return;
+	}
+	else if(sh_pid == 0) {
+		waitpid(getppid(), NULL, WCONTINUED);
+		execlp("sh", "sh", "./run.sh", NULL);
+		exit(0);
+	}
+
+
+//	QMessageBox::information(this, "Further instructions",
+//	 "Please close LQ now, then type \"./configure\", then \"make\". Good luck :)");
 }
 
 void UpdateDlg::retranslateUi()
