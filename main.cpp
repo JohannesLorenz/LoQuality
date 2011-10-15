@@ -35,18 +35,19 @@ int main(int argc, char** argv)
 		// start program
 		MainWindow mainwindow;
 		mainwindow.show();
+
+		if(globals::update_soon) {
+			QMessageBox::information(NULL, "Update", "I am finalising the update now."
+				"This may take a minute...");
+			execlp("xterm", "xterm", "-e", "./run.sh", NULL);
+		}
+
 		return app.exec();
 
 	} catch (std::exception e) {
 		QMessageBox::warning(NULL, "Error", e.what());
 	} catch(...) {
 		QMessageBox::warning(NULL, "Error", "*** TODO: unknown exception");
-	}
-
-	if(globals::update_soon) {
-		QMessageBox::information(NULL, "Update", "I am finalising the update now."
-			"This may take a minute...");
-		execlp("xterm", "xterm", "-e", "./run.sh", NULL);
 	}
 
 	return 0;
