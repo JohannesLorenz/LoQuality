@@ -66,7 +66,7 @@ void UpdateDlg::fetchHeader() {
 	else
 	{
 		status = FINISHED_GIT_FETCH;
-		progressDlg = new QProgressDialog("Konvertiere Daten mit ffmpeg...", "Abbrechen", 0, 0, this);
+		progressDlg = new QProgressDialog("Downloading new revisions", "Abort", 0, 0, this);
 		progressDlg->setWindowModality(Qt::WindowModal);
 		progressDlg->setValue(0);
 		progressDlg->show();
@@ -106,6 +106,11 @@ int UpdateDlg::getDiffLogs() {
 		output = pipefd[0];
 
 		status = FINISHED_GIT_DIFFLOG;
+		progressDlg = new QProgressDialog("Comparing revisions...", "Abort", 0, 0, this);
+		progressDlg->setWindowModality(Qt::WindowModal);
+		progressDlg->setValue(0);
+		progressDlg->show();
+		timer.start();
 	}
 
 	return output;
