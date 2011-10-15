@@ -207,9 +207,10 @@ void UpdateDlg::slotTimerTimeout()
 					yesButton.setDisabled(true);
 					close();
 				}
+				status = FINISHED_NOTHING;
 			}
+
 		}
-		status = FINISHED_NOTHING;
 	}
 }
 

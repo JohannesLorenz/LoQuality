@@ -275,7 +275,7 @@ void MainWindow::slotFileQuitAction () {
 void MainWindow::slotHelpAboutAction () {
 	QMessageBox::about ( NULL, "About - LoQuality",
 				"<h1>LoQuality</h1>"
-				"<i>(c) 2010</i><br/>"
+				"<i>(c) 2010-2011</i><br/>"
 				"by Philipp Lorenz, Johannes Lorenz<br/>");
 				
 }
