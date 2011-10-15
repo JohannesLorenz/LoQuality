@@ -6,6 +6,29 @@
 
 #include "UpdateDlg.h"
 
+bool UpdateDlg::readOutputToItems(int output)
+{
+	QString cur_line;
+	char data[2];
+	data[1] = 0;
+
+	while(read(output, data, 1)>0) {
+		if(data[0] == '\n') {
+			commitOverview.addItem(cur_line);
+			cur_line.clear();
+		}
+		else {
+			cur_line.append(data[0]);
+		}
+	}
+	if(!cur_line.isEmpty()) // trailing \n was missing...
+	{
+		commitOverview.addItem(cur_line);
+		cur_line.clear();
+	}
+	return (commitOverview.count() != 0);
+}
+
 void UpdateDlg::fetchItems()
 {
 	// TODO: do not allow if options file does not say it's from git!
@@ -43,13 +66,15 @@ void UpdateDlg::fetchItems()
 
 	waitpid(gits_pid, NULL, WCONTINUED);
 
-	static char line[1024];
-	*line = 0;
-	while(read(output, line, 1024)>0) {
-		commitOverview.addItem(line);
-	}
+	const bool updatesFound = readOutputToItems(output);
 
 	::close(output);
+
+	if(!updatesFound) {
+		QMessageBox::information(NULL, "No updates found", "LoQuality is up to date :) "
+			"Thank you for keeping an eye on it, still!");
+		close();
+	}
 }
 
 void UpdateDlg::buttonYesPressed() {

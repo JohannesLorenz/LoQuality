@@ -22,6 +22,13 @@ class UpdateDlg : public QDialog
 //	QProgressDialog* progressDlg;
 //	QTimer timer;
 
+	/**
+		Reads (short) revision output from git.
+		@param output fd the text comes from
+		@return true iff there are new revisions.
+	*/
+	bool readOutputToItems(int output);
+
 	void setupUi();
 	void retranslateUi();
 	void fetchItems();
