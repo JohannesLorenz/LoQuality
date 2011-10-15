@@ -231,7 +231,7 @@ private:
 			}
 
 			void checkIntegrity() {
-				shouldBe("ffmpeg_fullpath", "insert_your_path");
+				shouldBe("ffmpeg_fullpath", "/usr/bin/ffmpeg");
 				shouldBe("mplayer_name", "mplayer2");
 				shouldBe("music_root", "insert_your_path");
 				shouldBe("number_of_cores", 2);

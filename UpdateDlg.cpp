@@ -122,8 +122,9 @@ void UpdateDlg::buttonYesPressed() {
 	else if(sh_pid == 0) {
 		char ppid_str[16];
 		snprintf(ppid_str, 16, "%d", getppid());
-		execlp("xterm", "xterm", "-title", "LoQuality updater",
-			"-e", "./run.sh", ppid_str, NULL);
+		execlp("xterm", "xterm", "-title", "LoQuality updater","-e",
+			"./run.sh", globals::settings->value("number_of_cores",2).toString().toAscii().data(),
+			ppid_str, NULL);
 		exit(0);
 	}
 }
