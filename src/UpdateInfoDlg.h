@@ -1,13 +1,14 @@
 #ifndef UPDATEINFODLG_H
 #define UPDATEINFODLG_H
 
+#include <QDialog>
 #include <QLabel>
 #include <QListWidget>
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
-class UpdateInfoDlg : public QObject
+class UpdateInfoDlg : public QDialog
 {
 	Q_OBJECT
 

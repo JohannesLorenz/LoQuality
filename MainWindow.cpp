@@ -798,7 +798,7 @@ MainWindow::MainWindow (QWidget* parent)
 
 	dbus_connector.start();
 
-	UpdateDlg::autoCheckForUpdates();
+	UpdateDlg::autoCheckForUpdates(); // do NOT update settings->last_start before this line!
 	globals::settings->setValue("last_start", QDateTime::currentDateTime());
 }
 
