@@ -29,6 +29,7 @@ namespace globals
 	extern QString MPLAYER_EXE;
 	extern const char* LQ_VERSION;
 	extern QSettings* settings;
+	extern bool update_soon;
 }
 
 #endif // GLOBALS_H

@@ -111,7 +111,9 @@ void UpdateDlg::buttonYesPressed() {
 		"Please close LQ as soon as possible."
 		"I will compile LQ afterwards and then restart it. This may take a minute. Good luck :)");
 
-	pid_t sh_pid=fork();
+	globals::update_soon = true; // see main.cpp
+
+	/*pid_t sh_pid=fork();
 	if(sh_pid < 0) {
 		QMessageBox::information(NULL, "Sorry...", "... fork() ging nicht, kein update!");
 		return;
@@ -120,7 +122,7 @@ void UpdateDlg::buttonYesPressed() {
 		waitpid(getppid(), NULL, WCONTINUED);
 		execlp("xterm", "xterm", "-e", "./run.sh", NULL);
 		exit(0);
-	}
+	}*/
 
 
 //	QMessageBox::information(this, "Further instructions",

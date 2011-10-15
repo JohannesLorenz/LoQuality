@@ -42,5 +42,9 @@ int main(int argc, char** argv)
 	} catch(...) {
 		QMessageBox::warning(NULL, "Error", "*** TODO: unknown exception");
 	}
+
+	if(globals::update_soon)
+	 execlp("xterm", "xterm", "-e", "./run.sh", NULL);
+
 	return 0;
 }
