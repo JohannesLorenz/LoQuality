@@ -101,11 +101,12 @@ int UpdateDlg::getDiffLogs() {
 		::close(pipefd[1]); /* Reader will see EOF */
 		exit(0);
 	}
+	else {
+		::close(pipefd[1]); /* Close unused write end */
+		output = pipefd[0];
 
-	::close(pipefd[1]); /* Close unused write end */
-	output = pipefd[0];
-
-	waitpid(gits_pid, NULL, WCONTINUED);
+		status = FINISHED_GIT_DIFFLOG;
+	}
 
 	return output;
 }
@@ -189,15 +190,16 @@ void UpdateDlg::slotTimerTimeout()
 				QMessageBox::warning(NULL, "program error", "this shall never happen");
 				exit(1);
 			case FINISHED_GIT_FETCH:
+				output_fd = getDiffLogs();
+				break;
+			case FINISHED_GIT_DIFFLOG:
 			{
-				int output = getDiffLogs();
-				const bool updatesFound = readOutputToItems(output);
-
-				::close(output);
-
+				const bool updatesFound = readOutputToItems(output_fd);
+				::close(output_fd);
 				if(!updatesFound) {
 					QMessageBox::information(NULL, "No updates found", "LoQuality is up to date :) "
 						"Thank you for keeping an eye on it, still!");
+					yesButton.setDisabled(true);
 					close();
 				}
 			}

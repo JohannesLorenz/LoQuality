@@ -17,7 +17,7 @@ class UpdateDlg : public QDialog
 	enum FINISHED_T {
 		FINISHED_NOTHING,
 		FINISHED_GIT_FETCH,
-
+		FINISHED_GIT_DIFFLOG
 	};
 	FINISHED_T status;
 
@@ -31,6 +31,7 @@ class UpdateDlg : public QDialog
 	QTimer timer;
 
 	pid_t gits_pid;
+	int output_fd;
 
 	/**
 		Reads (short) revision output from git.
