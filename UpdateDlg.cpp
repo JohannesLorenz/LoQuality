@@ -190,6 +190,8 @@ void UpdateDlg::autoCheckForUpdates() {
 
 	if(do_updates && last_start.daysTo(time_now) >= update_interval) {
 		UpdateDlg u;
+		u.show();
+		u.exec();
 	}
 
 }

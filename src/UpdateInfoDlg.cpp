@@ -24,7 +24,7 @@ void UpdateInfoDlg::setupUi()
 	retranslateUi();
 }
 
-UpdateInfoDlg::UpdateInfoDlg()
+UpdateInfoDlg::UpdateInfoDlg() : topLayout(this)
 {
 	setupUi();
 

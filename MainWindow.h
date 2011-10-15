@@ -247,6 +247,8 @@ private:
 
 				if(globals::settings->value("update_applied").toBool()) {
 					UpdateInfoDlg u;
+					u.show();
+					u.exec();
 					globals::settings->setValue("update_applied", false);
 				}
 				printf("Writing options to %s\n",
