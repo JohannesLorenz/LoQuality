@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/wait.h>
@@ -120,7 +121,7 @@ void UpdateDlg::buttonYesPressed() {
 	}
 	else if(sh_pid == 0) {
 		char ppid_str[16];
-		sprintf(ppid_str, getppid());
+		snprintf(ppid_str, 16, "%d", getppid());
 		execlp("xterm", "xterm", "-e", "./run.sh", ppid_str, NULL);
 		exit(0);
 	}
