@@ -219,20 +219,35 @@ private:
 
 		class SettingsReader
 		{
+			inline void shouldBe(const char* option_name, QVariant initial_value) {
+				if(globals::settings->value(option_name) == QVariant())
+				{
+					QMessageBox::information(NULL, "Updated value",
+						QString("Inserted option \"%1\" due to update. "
+							"Default value \"%2\" will be used.").arg(option_name, initial_value.toString()));
+					globals::settings->setValue(option_name, initial_value);
+				}
+			}
+
+			void checkIntegrity() {
+				shouldBe("ffmpeg_fullpath", "insert_your_path");
+				shouldBe("mplayer_name", "mplayer2");
+				shouldBe("music_root", "insert_your_path");
+				shouldBe("number_of_cores", 2);
+				shouldBe("update_interval_days", 1);
+				shouldBe("do_updates", true);
+			}
+
 		public:
 			SettingsReader() {
 				globals::settings = new QSettings();
 				if(globals::settings->value("first_start", true).toBool())
-				{
-					globals::settings->setValue("first_start", false);
-					globals::settings->setValue("ffmpeg_fullpath", "insert_your_path");
-					globals::settings->setValue("mplayer_name", "mplayer2");
-					globals::settings->setValue("music_root", "insert_your_path");
-					globals::settings->setValue("number_of_cores", 2);
-					QMessageBox::information(NULL, "Please edit close LQ and then edit:", globals::settings->fileName().toAscii().data());
-				}
+				 QMessageBox::information(NULL, "Please edit close LQ and then edit:", globals::settings->fileName().toAscii().data());
+
 				printf("Writing options to %s\n",
 					globals::settings->fileName().toAscii().data());
+				checkIntegrity();
+
 				globals::MUSIC_ROOT = globals::settings->value("music_root").toString();
 				globals::MPLAYER_EXE = globals::settings->value("mplayer_name").toString();
 			}

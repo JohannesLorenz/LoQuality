@@ -3,6 +3,7 @@
 #include <sys/wait.h>
 
 #include <QMessageBox>
+#include <QDateTime>
 
 #include "UpdateDlg.h"
 #include "globals.h"
@@ -96,7 +97,7 @@ void UpdateDlg::fetchItems()
 
 void UpdateDlg::buttonYesPressed() {
 	QMessageBox::warning(this, "Starting update",
-		"I will start download the updates now. Please "
+		"I will start downloading the updates now. Please "
 		"do not do anything meanwhile - wait until I'll come up with "
 		"further instructions...");
 
@@ -154,6 +155,21 @@ UpdateDlg::UpdateDlg() : topLayout(this)//, progressDlg(NULL)
 		fetchItems();
 	else
 		QMessageBox::information(this, "Sorry...",
-			"... this on works for git!");
+			"... this only works for git!");
 
 }
+
+void UpdateDlg::autoCheckForUpdates() {
+	QDateTime time_now = QDateTime::currentDateTime();
+	QDateTime last_start =
+	globals::settings->value("last_start", QDateTime(QDate(0,0,0))).toDateTime();
+	bool do_updates = globals::settings->value("do_updates", true).toBool();
+	int update_interval =
+		globals::settings->value("update_interval_days", 1).toInt();
+
+	if(do_updates && last_start.daysTo(time_now) >= update_interval) {
+		UpdateDlg u;
+	}
+
+}
+

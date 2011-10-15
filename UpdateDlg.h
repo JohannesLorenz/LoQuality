@@ -38,6 +38,7 @@ private slots:
 
 public:
 	UpdateDlg();
+	static void autoCheckForUpdates();
 };
 
 #endif // UPDATEDLG_H

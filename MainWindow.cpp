@@ -797,6 +797,9 @@ MainWindow::MainWindow (QWidget* parent)
 	progressBar.setValue(100);
 
 	dbus_connector.start();
+
+	UpdateDlg::autoCheckForUpdates();
+	globals::settings->setValue("last_start", QDateTime::currentDateTime());
 }
 
 MainWindow::~MainWindow()
