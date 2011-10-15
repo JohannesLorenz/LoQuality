@@ -7,7 +7,7 @@ fi
 if [ "$2" ]; then
 	echo "This is the updater. Please do not close this window."
 	echo "Waiting for LQ to close..."
-	while kill -0 $1 > /dev/null 2>/dev/null; do sleep 1; done
+	while kill -0 $2 > /dev/null 2>/dev/null; do sleep 1; done
 fi
 
 echo "Configuring installation..."
