@@ -2,6 +2,7 @@
 #define UPDATEDLG_H
 
 #include <QObject>
+#include <QTimer>
 #include <QDialog>
 #include <QListWidget>
 #include <QPushButton>
@@ -13,14 +14,23 @@ class UpdateDlg : public QDialog
 {
 	Q_OBJECT
 
+	enum FINISHED_T {
+		FINISHED_NOTHING,
+		FINISHED_GIT_FETCH,
+
+	};
+	FINISHED_T status;
+
 	QListWidget commitOverview;
 	QPushButton yesButton, noButton;
 
 	QVBoxLayout topLayout;
 	QHBoxLayout buttonLayout;
 
-//	QProgressDialog* progressDlg;
-//	QTimer timer;
+	QProgressDialog* progressDlg;
+	QTimer timer;
+
+	pid_t gits_pid;
 
 	/**
 		Reads (short) revision output from git.
@@ -32,9 +42,12 @@ class UpdateDlg : public QDialog
 	void setupUi();
 	void retranslateUi();
 	void fetchItems();
+	void fetchHeader();
+	int getDiffLogs();
 
 private slots:
 	void buttonYesPressed();
+	void slotTimerTimeout();
 
 public:
 	UpdateDlg();

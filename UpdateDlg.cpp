@@ -52,26 +52,44 @@ bool UpdateDlg::readOutputToItems(int output)
 	return (commitOverview.count() != 0);
 }
 
-void UpdateDlg::fetchItems()
-{
+void UpdateDlg::fetchHeader() {
+
+	gits_pid=fork();
+	if(gits_pid < 0) {
+		QMessageBox::information(NULL, "Sorry...", "... fork() ging nicht, kein git!");
+		return;
+	}
+	else if(gits_pid == 0) {
+		execlp("git", "git", "fetch", "origin", NULL);
+		exit(0);
+	}
+	else
+	{
+		status = FINISHED_GIT_FETCH;
+		progressDlg = new QProgressDialog("Konvertiere Daten mit ffmpeg...", "Abbrechen", 0, 0, this);
+		progressDlg->setWindowModality(Qt::WindowModal);
+		progressDlg->setValue(0);
+		progressDlg->show();
+		timer.start();
+	}
+
 	// TODO: do not allow if options file does not say it's from git!
-	system("git fetch origin");
-	//	system("git --no-pager log --pretty=oneline FETCH_HEAD...HEAD > updates.txt");
+//	system("git fetch origin");
+}
 
-
+int UpdateDlg::getDiffLogs() {
 	int pipefd[2];
 	int output;
 	if (pipe(pipefd) == -1) {
 		QMessageBox::information(NULL, "Sorry...", "... pipe() ging nicht, kein git!");
-		return;
+		return -1;
 	}
 	fcntl(pipefd[0], F_SETFL, O_NONBLOCK);
 
-	// fork MPlayer
 	pid_t gits_pid=fork();
 	if(gits_pid < 0) {
 		QMessageBox::information(NULL, "Sorry...", "... fork() ging nicht, kein git!");
-		return;
+		return -1;
 	}
 	else if(gits_pid == 0) {
 
@@ -89,15 +107,13 @@ void UpdateDlg::fetchItems()
 
 	waitpid(gits_pid, NULL, WCONTINUED);
 
-	const bool updatesFound = readOutputToItems(output);
+	return output;
+}
 
-	::close(output);
 
-	if(!updatesFound) {
-		QMessageBox::information(NULL, "No updates found", "LoQuality is up to date :) "
-			"Thank you for keeping an eye on it, still!");
-		close();
-	}
+void UpdateDlg::fetchItems()
+{
+	fetchHeader();
 }
 
 void UpdateDlg::buttonYesPressed() {
@@ -155,10 +171,45 @@ void UpdateDlg::setupUi() {
 	connect(&noButton,SIGNAL(clicked ()),
 		this, SLOT(close()));
 
+	timer.setInterval(1000);
+	QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(slotTimerTimeout()));
+
 	retranslateUi();
 }
 
-UpdateDlg::UpdateDlg() : topLayout(this)//, progressDlg(NULL)
+void UpdateDlg::slotTimerTimeout()
+{
+	if( 0 != waitpid(gits_pid, NULL, WNOHANG) ) { // wait for ffmpeg to finish
+		timer.stop();
+		progressDlg->cancel();
+		progressDlg=NULL;
+		switch(status)
+		{
+			case FINISHED_NOTHING:
+				QMessageBox::warning(NULL, "program error", "this shall never happen");
+				exit(1);
+			case FINISHED_GIT_FETCH:
+			{
+				int output = getDiffLogs();
+				const bool updatesFound = readOutputToItems(output);
+
+				::close(output);
+
+				if(!updatesFound) {
+					QMessageBox::information(NULL, "No updates found", "LoQuality is up to date :) "
+						"Thank you for keeping an eye on it, still!");
+					close();
+				}
+			}
+		}
+		status = FINISHED_NOTHING;
+	}
+}
+
+UpdateDlg::UpdateDlg() :
+	status(FINISHED_NOTHING),
+	topLayout(this),
+	progressDlg(NULL)
 {
 	setupUi();
 
@@ -174,7 +225,7 @@ UpdateDlg::UpdateDlg() : topLayout(this)//, progressDlg(NULL)
 	}
 
 	if( usedGit )
-		fetchItems();
+		fetchHeader();
 	else
 		QMessageBox::information(this, "Sorry...",
 			"... this only works for git!");

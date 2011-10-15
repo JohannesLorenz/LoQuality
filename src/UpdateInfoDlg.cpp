@@ -31,9 +31,14 @@ UpdateInfoDlg::UpdateInfoDlg() : topLayout(this)
 	QFile file("compile_errors.txt");
 	if (file.open(QFile::ReadOnly)) {
 		char buf[1024];
-		qint64 lineLength = file.readLine(buf, sizeof(buf));
-		if (lineLength != -1) {
-			errorList.addItem(buf);
-		}
+		qint64 lineLength ;
+		do {
+			lineLength = file.readLine(buf, sizeof(buf));
+			if (lineLength > 0) {
+				if(buf[strlen(buf)-1]=='\n')
+				 buf[strlen(buf)-1] = 0;
+				errorList.addItem(buf);
+			}
+		} while(lineLength > 0);
 	}
 }

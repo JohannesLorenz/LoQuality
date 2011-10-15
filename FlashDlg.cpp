@@ -181,8 +181,14 @@ void FlashDlg::setupUi()
 
 	retranslateUi();
 
-	QMessageBox::warning(this, "Warning!!!", "The auther does not encourage you to:\n\n"
-		"<b>use LoQuality for <u>illegal</u> downloads!!!</b>", "Yes", "Yes");
+	QMessageBox msgBox;
+	msgBox.setText("The auther does not encourage you to<br/>"
+		"<b>use LoQuality for <u>illegal</u> downloads!!!</b>");
+	msgBox.setTextFormat(Qt::RichText);
+	msgBox.exec();
+
+//	QMessageBox::warning(this, "Warning!!!", "The auther does not encourage you to:\n\n"
+//		"<b>use LoQuality for <u>illegal</u> downloads!!!</b>", "Yes", "Yes");
 }
 
 void FlashDlg::buttonStorePressed()
