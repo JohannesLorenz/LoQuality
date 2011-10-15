@@ -5,6 +5,23 @@
 #include <QMessageBox>
 
 #include "UpdateDlg.h"
+#include "globals.h"
+
+bool question(const char* title, const char* text)
+{
+	QMessageBox dlg;
+
+	dlg.setIcon(QMessageBox::Question);
+
+	dlg.setWindowTitle(title);
+	dlg.setText(QString::fromLocal8Bit(text));
+	dlg.addButton("Yes", QMessageBox::YesRole); // returns 0
+	dlg.addButton("No", QMessageBox::AcceptRole); //returns 1
+
+	int ret_value=dlg.exec();
+
+	return (ret_value==0)?true:false;
+}
 
 bool UpdateDlg::readOutputToItems(int output)
 {
@@ -121,5 +138,22 @@ void UpdateDlg::setupUi() {
 UpdateDlg::UpdateDlg() : topLayout(this)//, progressDlg(NULL)
 {
 	setupUi();
-	fetchItems();
+
+	bool usedGit;
+	if(globals::settings->value("update_type", "").toString() == "git")
+	 usedGit = true;
+	else
+	{
+		usedGit = question("Are you using git?",
+			"Did you start LQ right from the git repository?");
+		globals::settings->setValue("update_type",
+			(usedGit)?"git":"unknown");
+	}
+
+	if( usedGit )
+		fetchItems();
+	else
+		QMessageBox::information(this, "Sorry...",
+			"... this on works for git!");
+
 }
