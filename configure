@@ -2,9 +2,9 @@
 
 printf "\n"
 printf "Configuring DBUS control... "
-qdbusxml2cpp -a dbus/Mpris1PlayerAdaptor -c Mpris1PlayerAdaptor -i dbus/PlayerHandler.h -l Mpris1::PlayerHandler dbus/Player.xml
-qdbusxml2cpp -a dbus/Mpris1RootAdaptor -c Mpris1RootAdaptor -i dbus/RootHandler.h -l Mpris1::RootHandler dbus/Root.xml
-qdbusxml2cpp -a dbus/Mpris1TrackListAdaptor -c Mpris1TrackListAdaptor -i dbus/TrackListHandler.h -l Mpris1::TrackListHandler dbus/TrackList.xml
+qdbusxml2cpp -a src/dbus/Mpris1PlayerAdaptor -c Mpris1PlayerAdaptor -i src/dbus/PlayerHandler.h -l Mpris1::PlayerHandler src/dbus/Player.xml
+qdbusxml2cpp -a src/dbus/Mpris1RootAdaptor -c Mpris1RootAdaptor -i src/dbus/RootHandler.h -l Mpris1::RootHandler src/dbus/Root.xml
+qdbusxml2cpp -a src/dbus/Mpris1TrackListAdaptor -c Mpris1TrackListAdaptor -i src/dbus/TrackListHandler.h -l Mpris1::TrackListHandler src/dbus/TrackList.xml
 printf "DONE!\n"
 printf "Building Makefile from project file... "
 qmake

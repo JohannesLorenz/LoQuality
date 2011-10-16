@@ -11,43 +11,44 @@ INCLUDEPATH += . \
     QSQL
 
 # Input
-HEADERS += AddEntries.h \
-    FileManager.h \
-    FlashDlg.h \
-    MainWindow.h \
-    MainWindowIcons.h \
-    PlayerEngine.h \
-    PlayListQueue.h \
-    SqlHelper.h \
-    FileManagerAddDlg.h \
-    MPlayerConnection.h \
-    globals.h \
-    dbus/DBusConnector.h \
-    dbus/PlayerHandler.h \
-    dbus/Mpris1PlayerAdaptor.h \
-    dbus/RootHandler.h \
-    dbus/Mpris1RootAdaptor.h \
-    dbus/TrackListHandler.h \
-    dbus/Mpris1TrackListAdaptor.h \
-    UpdateDlg.h \
+HEADERS += src/AddEntries.h \
+    src/FileManager.h \
+    src/FlashDlg.h \
+    src/MainWindow.h \
+    src/MainWindowIcons.h \
+    src/PlayerEngine.h \
+    src/PlayListQueue.h \
+    src/SqlHelper.h \
+    src/FileManagerAddDlg.h \
+    src/MPlayerConnection.h \
+    src/globals.h \
+    src/dbus/DBusConnector.h \
+    src/dbus/PlayerHandler.h \
+    src/dbus/Mpris1PlayerAdaptor.h \
+    src/dbus/RootHandler.h \
+    src/dbus/Mpris1RootAdaptor.h \
+    src/dbus/TrackListHandler.h \
+    src/dbus/Mpris1TrackListAdaptor.h \
+    src/UpdateDlg.h \
     src/UpdateInfoDlg.h
-SOURCES += AddEntries.cpp \
-    FileManager.cpp \
-    FlashDlg.cpp \
-    main.cpp \
-    MainWindow.cpp \
-    PlayerEngine.cpp \
-    PlayListQueue.cpp \
-    SqlHelper.cpp \
-    FileManagerAddDlg.cpp \
-    MPlayerConnection.cpp \
-    globals.cpp \
-    dbus/PlayerHandler.cpp \
-    dbus/Mpris1PlayerAdaptor.cpp \
-    dbus/RootHandler.cpp \
-    dbus/Mpris1RootAdaptor.cpp \
-    dbus/TrackListHandler.cpp \
-    dbus/Mpris1TrackListAdaptor.cpp \
-    UpdateDlg.cpp \
+SOURCES += src/AddEntries.cpp \
+    src/FileManager.cpp \
+    src/FlashDlg.cpp \
+    src/main.cpp \
+    src/MainWindow.cpp \
+    src/PlayerEngine.cpp \
+    src/PlayListQueue.cpp \
+    src/SqlHelper.cpp \
+    src/FileManagerAddDlg.cpp \
+    src/MPlayerConnection.cpp \
+    src/globals.cpp \
+    src/dbus/PlayerHandler.cpp \
+    src/dbus/Mpris1PlayerAdaptor.cpp \
+    src/dbus/RootHandler.cpp \
+    src/dbus/Mpris1RootAdaptor.cpp \
+    src/dbus/TrackListHandler.cpp \
+    src/dbus/Mpris1TrackListAdaptor.cpp \
+    src/UpdateDlg.cpp \
     src/UpdateInfoDlg.cpp
-OTHER_FILES += TODO.txt
+OTHER_FILES += TODO.txt \
+    TODO_LIST.txt

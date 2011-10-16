@@ -21,10 +21,10 @@
 #include <QDBusMetaType>
 #include <QDBusConnection>
 
-#include "PlayerEngine.h"
+#include "../PlayerEngine.h"
 #include "PlayerHandler.h"
 #include "Mpris1PlayerAdaptor.h"
-#include "MainWindow.h"
+#include "../MainWindow.h"
 
 //#include <Phonon/Global>
 

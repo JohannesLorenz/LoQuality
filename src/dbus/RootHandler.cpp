@@ -21,7 +21,7 @@
 #include "RootHandler.h"
 
 #include "Mpris1RootAdaptor.h"
-#include "globals.h"
+#include "../globals.h"
 
 // Marshall the DBusVersion data into a D-BUS argument
 QDBusArgument &operator<<(QDBusArgument &argument, const Mpris1::Version &version)

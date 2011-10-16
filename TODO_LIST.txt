@@ -1,0 +1,9 @@
+This list contains tasks that need to be done in the future.
+If you want one of them, contact me!
+
+* Writing parameter code, especially --help and --version
+* Multi-Threading the code which fills in the main window table
+* Closing LQ should keep it running in the background - via tray icon
+* Tray Icons needs things like forward, backward, play, pause
+* something like ~/.LoQuality would be great...
+

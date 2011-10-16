@@ -317,7 +317,7 @@ void MainWindow::slotToolBoxChanged(int newIndex)
 			printf("dir: %s, imgs: %d\n",player.getCurSongItem()->text().toAscii().data(), imgs.size() );
 			if(imgs.empty())
 			{
-				tmpImage.load("lq.png");
+				tmpImage.load("media/graphics/lq.png");
 				imageLabel.setPixmap(QPixmap::fromImage(tmpImage.scaledToHeight(300)));
 
 				//imageLabel.clear();
@@ -765,7 +765,7 @@ MainWindow::MainWindow (QWidget* parent)
 	/*
 		OTHER
 		*/
-	QIcon* tray_icon_icon = new QIcon("lq.png");
+	QIcon* tray_icon_icon = new QIcon("media/graphics/lq.png");
 	tray_icon.setIcon(*tray_icon_icon);
 	tray_icon.setVisible(true);
 
