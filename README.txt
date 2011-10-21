@@ -8,7 +8,7 @@ In this document, you can find:
 
 1 Status
 2 Getting LoQuality
-2 Requirements
+3 Requirements
 3 Installation
 4 Known Bugs
 

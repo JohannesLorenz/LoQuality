@@ -83,7 +83,7 @@ void PlayerEngine::slotForward(bool random, const QTableWidgetItem* item)
 	songTimer.stop();
 	emit signalUpdatePlaytime(0);
 
-	int numOfSongs = table->rowCount();
+//	int numOfSongs = table->rowCount();
 	if(curSong)
 	 lastSongs.enqueue(curSong);
 
@@ -100,18 +100,48 @@ void PlayerEngine::slotForward(bool random, const QTableWidgetItem* item)
 			// disallow playing a song that was lately played...
 			do {
 				// do some random...
-				nextSongNumber = (int) (numOfSongs*1.0*rand()/(RAND_MAX+1.0));
-				nextSongNumber += (time(NULL) % numOfSongs);
-				nextSongNumber %= numOfSongs;
+				nextSongNumber = (int) (filterCount*1.0*rand()/(RAND_MAX+1.0));
+				nextSongNumber += (time(NULL) % filterCount);
+				nextSongNumber %= filterCount;
 			} while (lastSongs.contains(table->item(nextSongNumber, 13)));
+
+			if(table->rowCount() != filterCount) // translate value
+			{
+				int searchRow = -1;
+				for(int i = -1; i < nextSongNumber; i++)
+				{
+					while(table->isRowHidden(++searchRow)) ;
+					printf("i : %d of %d\n",i,nextSongNumber);
+				}
+				if(searchRow == -1)
+				 ++searchRow;
+
+				nextSongNumber = searchRow;
+			}
+
+		}
+		else {
+			nextSongNumber = (curSong==NULL) ? 0 : ((curSong->row()) + 1);
+
+			const int rowCount = table->rowCount();
+			while(table->isRowHidden(nextSongNumber))
+			 nextSongNumber = (nextSongNumber + 1) % rowCount;
+		}
+
+		printf("songNumber: %d, filterCount: %d\n",nextSongNumber, filterCount);
+
+		if(table->rowCount() == filterCount) // no filter -> easy handling
+		{
+			curSong = table->item(nextSongNumber, 13);
+			table->selectRow(nextSongNumber);
 		}
 		else
-		 nextSongNumber = (curSong==NULL) ? 0 : ((curSong->row()) + 1) % (table->rowCount());
+		{
+			curSong = table->item(nextSongNumber, 13);
+			table->selectRow(nextSongNumber);
 
-		printf("songNumber: %d\n",nextSongNumber);
+		}
 
-		curSong = table->item(nextSongNumber, 13);
-		table->selectRow(nextSongNumber);
 	}
 	else
 	{

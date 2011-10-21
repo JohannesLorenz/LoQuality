@@ -287,10 +287,18 @@ void MainWindow::slotHelpAboutQtAction () {
 void MainWindow::slotFilterChanged ( const QString & text ) {
 	QList<QTableWidgetItem*> visItems = tableWidget.findItems(text, Qt::MatchContains);
 	QBitArray hiddenArray(tableWidget.rowCount(), true);
-	for(QList<QTableWidgetItem*>::const_iterator listitr = visItems.begin(); listitr != visItems.end(); listitr++)
-	 hiddenArray[(*listitr)->row()] = false;
-	for(int i = 0; i < tableWidget.rowCount(); i++)
-	 tableWidget.setRowHidden(i, hiddenArray[i]);
+	int filterCount = 0;
+	for(QList<QTableWidgetItem*>::const_iterator listitr = visItems.begin(); listitr != visItems.end(); listitr++) {
+		hiddenArray[(*listitr)->row()] = false;
+		printf("visible: %d\n",(*listitr)->row());
+	}
+
+	for(int i = 0; i < tableWidget.rowCount(); i++) {
+		tableWidget.setRowHidden(i, hiddenArray[i]);
+		filterCount += (int) !(hiddenArray[i]);
+	}
+	printf("filter count now: %d\n", filterCount);
+	player.setFilterCount(filterCount);
 }
 
 void MainWindow::slotChangeVolume (int newValue) {
@@ -390,7 +398,7 @@ void MainWindow::reloadTable()
 
 	unsigned int rowcount=0;
 
-	while (query.next()) { // WARNING: DO !!!NEVER!!! relay on query.size() here!!!
+	while (query.next()) { // WARNING: DO !!!NEVER!!! rely on query.size() here!!! (see qt docs...)
 
 		progressDlg.setValue(rowcount);
 		progressDlg.show();
@@ -756,6 +764,7 @@ MainWindow::MainWindow (QWidget* parent)
 #endif
 
 	reloadTable();
+	player.setFilterCount(tableWidget.rowCount());
 	
 	/*
 		STATUS BAR

@@ -77,6 +77,7 @@ class PlayerEngine : public QObject
 		const QTableWidgetItem* curSong;
 		PlayListQueue lastSongs, nextSongs;
 		MPlayerConnection mPlayerConnection;
+		int filterCount; //! number of visible items in table
 
 		void playNextSong();
 
@@ -104,6 +105,7 @@ class PlayerEngine : public QObject
 			return curSong;
 		}
 		int getNextSongIndex(int totalSongNumber);
+		inline void setFilterCount(int newValue) { filterCount = newValue; }
 };
 
 #endif // _PLAYER_ENGINE_H_
