@@ -77,7 +77,7 @@ class MainWindow : public QMainWindow
 	enum ACTION {
 		ACTION_FILE_QUIT, ACTION_FILE_UPDATE,
 		ACTION_EDIT_EDITTITLE, ACTION_EDIT_OPTIONS,
-		ACTION_VIEW_FULLSCREEN, ACTION_VIEW_SWITCH_ALIGN,
+		ACTION_VIEW_SCROLL_TO_SONG, ACTION_VIEW_FULLSCREEN, ACTION_VIEW_SWITCH_ALIGN,
 		ACTION_HELP_ABOUT, ACTION_HELP_ABOUTQT,
 		ACTION_SIZE
 	};
@@ -150,6 +150,11 @@ private:
 					(mainSplitter.orientation() == Qt::Horizontal)
 					? Qt::Vertical : Qt::Horizontal
 					);
+		}
+
+		inline void slotScrollToSong() {
+			if(! tableWidget.selectedItems().empty())
+			 tableWidget.scrollToItem(*tableWidget.selectedItems().begin());
 		}
 
 		void slotHelpAboutAction();

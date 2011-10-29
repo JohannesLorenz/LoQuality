@@ -87,10 +87,11 @@ void PlayerEngine::slotForward(bool random, const QTableWidgetItem* item)
 	if(curSong)
 	 lastSongs.enqueue(curSong);
 
+	const QTableWidgetItem* _curSong;
+
 	if(item) { // user wishes a specified next song by double clicking
 		// TODO: could not we simply push it to the nextSongs list?
 		curSong = item;
-		table->selectRow(curSong->row());
 	}
 	else if( nextSongs.isEmpty() )
 	{
@@ -108,13 +109,9 @@ void PlayerEngine::slotForward(bool random, const QTableWidgetItem* item)
 			if(table->rowCount() != filterCount) // translate value
 			{
 				int searchRow = -1;
-				for(int i = -1; i < nextSongNumber; i++)
-				{
+				for(int i = -1; i < nextSongNumber; i++) {
 					while(table->isRowHidden(++searchRow)) ;
-					printf("i : %d of %d\n",i,nextSongNumber);
 				}
-				if(searchRow == -1)
-				 ++searchRow;
 
 				nextSongNumber = searchRow;
 			}
@@ -130,24 +127,13 @@ void PlayerEngine::slotForward(bool random, const QTableWidgetItem* item)
 
 		printf("songNumber: %d, filterCount: %d\n",nextSongNumber, filterCount);
 
-		if(table->rowCount() == filterCount) // no filter -> easy handling
-		{
-			curSong = table->item(nextSongNumber, 13);
-			table->selectRow(nextSongNumber);
-		}
-		else
-		{
-			curSong = table->item(nextSongNumber, 13);
-			table->selectRow(nextSongNumber);
 
-		}
-
+		curSong = table->item(nextSongNumber, 13);
 	}
 	else
-	{
-		curSong = nextSongs.dequeue();
-		table->selectRow(curSong->row());
-	}
+	 curSong = nextSongs.dequeue();
+
+	table->selectRow(curSong->row());
 
 	startSong();
 

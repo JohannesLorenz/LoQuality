@@ -53,6 +53,7 @@ void MainWindow::retranslateUi() {
 
 	Actions[ACTION_FILE_UPDATE]->setText(tr("Update"));
 	Actions[ACTION_FILE_QUIT]->setText(tr("Beenden"));
+	Actions[ACTION_VIEW_SCROLL_TO_SONG]->setText(tr("Scroll zum aktuellen Song"));
 	Actions[ACTION_VIEW_FULLSCREEN]->setText(tr("Vollbild"));
 	Actions[ACTION_VIEW_SWITCH_ALIGN]->setText(tr("Ausrichtung ändern"));
 	Actions[ACTION_EDIT_EDITTITLE]->setText(tr("Titel-Info bearbeiten..."));
@@ -579,10 +580,15 @@ MainWindow::MainWindow (QWidget* parent)
 
 	initAction(MENU_FILE, ACTION_FILE_UPDATE, SLOT(slotFileUpdateAction()), QKeySequence(Qt::CTRL + Qt::Key_U));
 	initAction(MENU_FILE, ACTION_FILE_QUIT, SLOT(slotFileQuitAction()), QKeySequence(Qt::CTRL + Qt::Key_Q), application_exit_xpm);
+
 	initAction(MENU_EDIT, ACTION_EDIT_EDITTITLE, SLOT(slotItemEdit()), QKeySequence(Qt::CTRL + Qt::Key_E));
 	initAction(MENU_EDIT, ACTION_EDIT_OPTIONS, SLOT(slotOpenOptionsDlg()), QKeySequence(Qt::CTRL + Qt::Key_B)); // note: is B good?
+
+	initAction(MENU_VIEW, ACTION_VIEW_SCROLL_TO_SONG, SLOT(slotScrollToSong()), QKeySequence("^"));
+	topMenus[MENU_VIEW].addSeparator();
 	initAction(MENU_VIEW, ACTION_VIEW_FULLSCREEN, SLOT(slotViewFullscreenAction()), QKeySequence(Qt::CTRL + Qt::Key_F), view_fullscreen_xpm);
 	initAction(MENU_VIEW, ACTION_VIEW_SWITCH_ALIGN, SLOT(slotViewSwitchAlignment()), QKeySequence(Qt::CTRL + Qt::Key_Tab));
+
 	initAction(MENU_HELP, ACTION_HELP_ABOUT, SLOT(slotHelpAboutAction()));
 	initAction(MENU_HELP, ACTION_HELP_ABOUTQT, SLOT(slotHelpAboutQtAction()));
 
