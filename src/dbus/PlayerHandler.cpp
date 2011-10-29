@@ -181,6 +181,7 @@ namespace Mpris1
 
 	void PlayerHandler::Repeat( bool on )
 	{
+		Q_UNUSED(on);
 		puts("TODO: implement me!");
 /*
 	    debug() << (on ? "Turning repeat on" : "Turning repeat off");
@@ -213,6 +214,7 @@ namespace Mpris1
 
 	void PlayerHandler::PositionSet( int time )
 	{
+		Q_UNUSED(time);
 		puts("TODO: implement me!");
 //	if( time > 0 && !The::engineController()->isStopped() )
 //	    The::engineController()->seek( time );
@@ -239,18 +241,21 @@ namespace Mpris1
 
 	void PlayerHandler::VolumeSet( int vol )
 	{
+		Q_UNUSED(vol);
 		puts("TODO!");
 	//	The::engineController()->setVolume(vol);
 	}
 
 	void PlayerHandler::VolumeUp( int step ) const
 	{
+		Q_UNUSED(step);
 		puts("TODO!");
 	//	The::engineController()->increaseVolume( step );
 	}
 
 	void PlayerHandler::VolumeDown( int step ) const
 	{
+		Q_UNUSED(step);
 		puts("TODO");
 //	The::engineController()->decreaseVolume( step );
 	}
@@ -269,12 +274,14 @@ namespace Mpris1
 
 	void PlayerHandler::LoadThemeFile( const QString &path ) const
 	{
+		Q_UNUSED(path);
 		puts("REMOVE TIS?");
 //	The::svgHandler()->setThemeFile( path );
 	}
 
 	void PlayerHandler::Forward( int time )
 	{
+		Q_UNUSED(time);
 		puts("TODO");
 //	if( time > 0 && !The::engineController()->isStopped() )
 //	    The::engineController()->seek( The::engineController()->trackPosition() * 1000 + time );
@@ -282,6 +289,7 @@ namespace Mpris1
 
 	void PlayerHandler::Backward( int time )
 	{
+		Q_UNUSED(time);
 		puts("TODO");
 //	if( time > 0 && The::engineController()->isStopped() )
 //	    The::engineController()->seek( The::engineController()->trackPosition() * 1000 - time );
@@ -359,6 +367,7 @@ namespace Mpris1
 
     QVariantMap PlayerHandler::GetTrackMetadata( /*Meta::TrackPtr track*/ void* track )
     {
+	Q_UNUSED(track);
 	//return Meta::Field::mprisMapFromTrack( track );
 	    puts("TODO!!!");
 	return QVariantMap();
@@ -366,6 +375,7 @@ namespace Mpris1
 
     void PlayerHandler::slotTrackChanged( /*Meta::TrackPtr track*/ void* track )
     {
+	Q_UNUSED(track);
 	//emit TrackChange( GetTrackMetadata( track ) );
 	updateStatus();
 	    puts("TODO!!!");

@@ -84,7 +84,8 @@ namespace Mpris1
 
     void RootHandler::LoadThemeFile( const QString &path ) const
     {
-	     puts("REMOVE ME!");
+	Q_UNUSED(path);
+	puts("REMOVE ME!");
 	//The::svgHandler()->setThemeFile( path );
     }
 

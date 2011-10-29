@@ -44,11 +44,11 @@ void AddEntryDlg::setupUi()
 	lbl_year.setGeometry(5, 180, 290, 30);
 	lbl_year.setText("Jahr:");
 	
-	lbl_interest_philipp.setGeometry(5, 215, 290, 30);
-	lbl_interest_philipp.setText("Interessiert Philipp?");
+	lbl_interest_others.setGeometry(5, 215, 290, 30);
+	lbl_interest_others.setText("Interessiert Andere?");
 	
-	lbl_interest_johannes.setGeometry(5, 250, 290, 30);
-	lbl_interest_johannes.setText("Interessiert Johannes?");
+	lbl_interest_yours.setGeometry(5, 250, 290, 30);
+	lbl_interest_yours.setText("Interessiert Dich?");
 	
 	lbl_filetype.setGeometry(5, 285, 290, 30);
 	lbl_filetype.setText("Dateityp:");
@@ -56,11 +56,11 @@ void AddEntryDlg::setupUi()
 	lbl_quality.setGeometry(5, 320, 290, 30);
 	lbl_quality.setText("Qualität:");
 	
-	lbl_vote_johannes.setGeometry(5, 355, 320, 30);
-	lbl_vote_johannes.setText("Bewertung Johannes:");
+	lbl_vote_yours.setGeometry(5, 355, 320, 30);
+	lbl_vote_yours.setText("Deine Bewertung:");
 	
-	lbl_vote_philipp.setGeometry(5, 390, 320, 30);
-	lbl_vote_philipp.setText("Bewertung Philipp:");
+//	lbl_vote_others.setGeometry(5, 390, 320, 30);
+//	lbl_vote_others.setText("Bewertung Philipp:");
 	
 	lbl_path.setGeometry(5, 425, 355, 30);
 	lbl_path.setText("Pfad:");
@@ -77,20 +77,20 @@ void AddEntryDlg::setupUi()
 	
 	le_year.setGeometry(305, 180, 290, 30);
 	
-	cb_interest_philipp.setGeometry(305, 215, 290, 30);
-	cb_interest_johannes.setGeometry(305, 250, 290, 30);
+	cb_interest_others.setGeometry(305, 215, 290, 30);
+	cb_interest_yours.setGeometry(305, 250, 290, 30);
 	
 	le_filetype.setGeometry(305, 285, 290, 30);
 	
 	le_quality.setGeometry(305, 320, 290, 30);
 	
-	sb_vote_johannes.setGeometry(305, 355, 290, 30);
-	sb_vote_johannes.setMinimum(0);
-	sb_vote_johannes.setMaximum(10);
+	sb_vote_yours.setGeometry(305, 355, 290, 30);
+	sb_vote_yours.setMinimum(0);
+	sb_vote_yours.setMaximum(10);
 	
-	sb_vote_philipp.setGeometry(305, 390, 290, 30);
-	sb_vote_philipp.setMinimum(0);
-	sb_vote_philipp.setMaximum(10);
+	sb_vote_others.setGeometry(305, 390, 290, 30);
+	sb_vote_others.setMinimum(0);
+	sb_vote_others.setMaximum(10);
 	
 	le_path.setGeometry(305, 425, 140, 30);
 	
@@ -126,12 +126,12 @@ void AddEntryDlg::setupUi()
 		QString tags = query.value(4).toString();
 		QString genre = query.value(5).toString();
 		QString year = query.value(6).toString();
-		QString int_philipp = query.value(7).toString(); // int = interest
-		QString int_johannes = query.value(8).toString();
+		QString int_others = query.value(7).toString(); // int = interest
+		QString int_yours = query.value(8).toString();
 		QString type = query.value(9).toString();
 		QString quality = query.value(10).toString();
-		QString vote_johannes = query.value(11).toString();
-		QString vote_philipp = query.value(12).toString();
+		QString vote_yours = query.value(11).toString();
+		QString vote_others = query.value(12).toString();
 		QString path = query.value(13).toString();
 		
 		le_title.setText(title);
@@ -141,20 +141,20 @@ void AddEntryDlg::setupUi()
 		le_genre.setText(genre);
 		le_year.setText(year);
 		
-		if(!strncmp(int_philipp.toAscii().data(), "1", 1))
-		 cb_interest_philipp.setChecked(true);
+		if(!strncmp(int_others.toAscii().data(), "1", 1))
+		 cb_interest_others.setChecked(true);
 		
-		if(!strncmp(int_johannes.toAscii().data(), "1", 1))
-		 cb_interest_johannes.setChecked(true);
+		if(!strncmp(int_yours.toAscii().data(), "1", 1))
+		 cb_interest_yours.setChecked(true);
 		
 		le_filetype.setText(type);
 		le_quality.setText(quality);
 		
-		int vote_joh = atoi(vote_johannes.toAscii().data());
-		sb_vote_johannes.setValue(vote_joh);
+		int vote_yours_value = atoi(vote_yours.toAscii().data());
+		sb_vote_yours.setValue(vote_yours_value);
 		
-		int vote_phil = atoi(vote_philipp.toAscii().data());
-		sb_vote_philipp.setValue(vote_phil);
+		int vote_others_value = atoi(vote_others.toAscii().data());
+		sb_vote_others.setValue(vote_others_value);
 		
 		le_path.setText(path);
 	}
@@ -213,7 +213,7 @@ void AddEntryDlg::onButtonChoosePressed()
 void AddEntryDlg::OnButtonInsertPressed() // depricated ?
 {
 #if 0
-	//QString insert_cmd("INSERT INTO 'musicdb'.'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'philipp' ,'johannes' ,'dateityp' ,'qualitaet' ,'bew_joh' ,'bew_phil' ,'pfad') VALUES (NULL , '");
+	//QString insert_cmd("INSERT INTO 'musicdb'.'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad') VALUES (NULL , '");
 	QString insert_cmd("NULL , '");
 	insert_cmd.append(le_title.text());
 	insert_cmd.append("', '");
@@ -228,14 +228,14 @@ void AddEntryDlg::OnButtonInsertPressed() // depricated ?
 	insert_cmd.append(le_year.text());
 	insert_cmd.append("', '");
 	
-	if(cb_interest_philipp.isChecked())
+	if(cb_interest_others.isChecked())
 	 insert_cmd.append("1");
 	else
 	 insert_cmd.append("0");
 	
 	insert_cmd.append("', '");
 	
-	if(cb_interest_johannes.isChecked())
+	if(cb_interest_yours.isChecked())
 	 insert_cmd.append("1");
 	else
 	 insert_cmd.append("0");
@@ -245,9 +245,9 @@ void AddEntryDlg::OnButtonInsertPressed() // depricated ?
 	insert_cmd.append("', '");
 	insert_cmd.append(le_quality.text());
 	insert_cmd.append("', '");
-	insert_cmd.append(QString::number(sb_vote_johannes.value()));
+	insert_cmd.append(QString::number(sb_vote_yours.value()));
 	insert_cmd.append("', '");
-	insert_cmd.append(QString::number(sb_vote_philipp.value()));
+	insert_cmd.append(QString::number(sb_vote_others.value()));
 	insert_cmd.append("', '");
 	insert_cmd.append(le_path.text());
 	insert_cmd.append("'");
@@ -275,16 +275,16 @@ void AddEntryDlg::OnButtonEditInsertPressed()
 	insert_cmd.append(le_genre.text());
 	insert_cmd.append("', 'jahr' = '");
 	insert_cmd.append(le_year.text());
-	insert_cmd.append("', 'philipp' = '");
+	insert_cmd.append("', 'others' = '");
 	
-	if(cb_interest_philipp.isChecked())
+	if(cb_interest_others.isChecked())
 	 insert_cmd.append("1");
 	else
 	 insert_cmd.append("0");
 	
-	insert_cmd.append("', 'johannes' = '");
+	insert_cmd.append("', 'yours' = '");
 	
-	if(cb_interest_johannes.isChecked())
+	if(cb_interest_yours.isChecked())
 	 insert_cmd.append("1");
 	else
 	 insert_cmd.append("0");
@@ -293,10 +293,10 @@ void AddEntryDlg::OnButtonEditInsertPressed()
 	insert_cmd.append(le_filetype.text());
 	insert_cmd.append("', 'qualitaet' = '");
 	insert_cmd.append(le_quality.text());
-	insert_cmd.append("', 'bew_joh' = '");
-	insert_cmd.append(QString::number(sb_vote_johannes.value()));
-	insert_cmd.append("', 'bew_phil' = '");
-	insert_cmd.append(QString::number(sb_vote_philipp.value()));
+	insert_cmd.append("', 'bew_yours' = '");
+	insert_cmd.append(QString::number(sb_vote_yours.value()));
+	insert_cmd.append("', 'bew_others' = '");
+	insert_cmd.append(QString::number(sb_vote_others.value()));
 	insert_cmd.append("', 'pfad' = '");
 	insert_cmd.append(le_path.text());
 	insert_cmd.append("' WHERE 'main'.'id' =");

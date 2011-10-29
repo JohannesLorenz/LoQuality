@@ -51,12 +51,12 @@ class AddEntryDlg : public QDialog
 		QLabel lbl_tag;
 		QLabel lbl_genre;
 		QLabel lbl_year;
-		QLabel lbl_interest_philipp;
-		QLabel lbl_interest_johannes;
+		QLabel lbl_interest_others;
+		QLabel lbl_interest_yours;
 		QLabel lbl_filetype;
 		QLabel lbl_quality;
-		QLabel lbl_vote_johannes;
-		QLabel lbl_vote_philipp;
+		QLabel lbl_vote_yours;
+		QLabel lbl_vote_others;
 		QLabel lbl_path;
 		
 		QLineEdit le_title;
@@ -66,14 +66,14 @@ class AddEntryDlg : public QDialog
 		QLineEdit le_genre;
 		QLineEdit le_year;
 
-		QCheckBox cb_interest_philipp;
-		QCheckBox cb_interest_johannes;
+		QCheckBox cb_interest_others;
+		QCheckBox cb_interest_yours;
 
 		QLineEdit le_filetype;
 		QLineEdit le_quality;
 		
-		QSpinBox sb_vote_johannes;
-		QSpinBox sb_vote_philipp;
+		QSpinBox sb_vote_yours;
+		QSpinBox sb_vote_others;
 		
 		QLineEdit le_path;
 		QPushButton pb_choose_path;
@@ -84,7 +84,7 @@ class AddEntryDlg : public QDialog
 	public:
 		void setupUi();
 	
-		AddEntryDlg(const SqlHelper& _sqlhelper, bool _edit=false, int _editnum=0) : sqlhelper(_sqlhelper), lbl_title(this), lbl_artist(this), lbl_album(this), lbl_tag(this), lbl_genre(this), lbl_year(this), lbl_interest_philipp(this), lbl_interest_johannes(this), lbl_filetype(this), lbl_quality(this), lbl_vote_johannes(this), lbl_vote_philipp(this), lbl_path(this), le_title(this), le_artist(this), le_album(this), le_tag(this), le_genre(this), le_year(this), cb_interest_philipp(this), cb_interest_johannes(this), le_filetype(this), le_quality(this), sb_vote_johannes(this), sb_vote_philipp(this), le_path(this), pb_choose_path(this), pb_cancel(this), pb_insert(this)
+		AddEntryDlg(const SqlHelper& _sqlhelper, bool _edit=false, int _editnum=0) : sqlhelper(_sqlhelper), lbl_title(this), lbl_artist(this), lbl_album(this), lbl_tag(this), lbl_genre(this), lbl_year(this), lbl_interest_others(this), lbl_interest_yours(this), lbl_filetype(this), lbl_quality(this), lbl_vote_yours(this), lbl_vote_others(this), lbl_path(this), le_title(this), le_artist(this), le_album(this), le_tag(this), le_genre(this), le_year(this), cb_interest_others(this), cb_interest_yours(this), le_filetype(this), le_quality(this), sb_vote_yours(this), sb_vote_others(this), le_path(this), pb_choose_path(this), pb_cancel(this), pb_insert(this)
 		{
 			if(_edit)
 			{

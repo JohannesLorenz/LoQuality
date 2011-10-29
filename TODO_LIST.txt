@@ -1,14 +1,15 @@
 This list contains tasks that need to be done in the future.
 If you want one of them, contact me!
 
-* Writing parameter code, especially --help and --version
-* Multi-Threading the code which fills in the main window table
-* Closing LQ should keep it running in the background - via tray icon
-* Tray Icons needs things like forward, backward, play, pause
+* writing parameter code, especially --help and --version
+* multi-threading the code which fills in the main window table
+* closing LQ should keep it running in the background - via tray icon
+* tray Icons needs things like forward, backward, play, pause
 * something like ~/.LoQuality would be great...
 * we need a directory ./doc which lets doxygen be built via a Makefile
 * a graphical options dialog (automatic or pre-coded??)
 * set up wiki on github (mostly to give help about LQs features)
 * spaces or apostrophes in filenames do not seem to be recognized sometimes
 * a button next to the artist's pixmap which let's you download pngs
+* extend the dbus code (write all functions)
 

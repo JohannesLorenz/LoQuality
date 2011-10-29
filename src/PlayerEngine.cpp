@@ -87,8 +87,6 @@ void PlayerEngine::slotForward(bool random, const QTableWidgetItem* item)
 	if(curSong)
 	 lastSongs.enqueue(curSong);
 
-	const QTableWidgetItem* _curSong;
-
 	if(item) { // user wishes a specified next song by double clicking
 		// TODO: could not we simply push it to the nextSongs list?
 		curSong = item;

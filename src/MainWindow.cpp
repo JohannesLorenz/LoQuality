@@ -291,14 +291,12 @@ void MainWindow::slotFilterChanged ( const QString & text ) {
 	int filterCount = 0;
 	for(QList<QTableWidgetItem*>::const_iterator listitr = visItems.begin(); listitr != visItems.end(); listitr++) {
 		hiddenArray[(*listitr)->row()] = false;
-		printf("visible: %d\n",(*listitr)->row());
 	}
 
 	for(int i = 0; i < tableWidget.rowCount(); i++) {
 		tableWidget.setRowHidden(i, hiddenArray[i]);
 		filterCount += (int) !(hiddenArray[i]);
 	}
-	printf("filter count now: %d\n", filterCount);
 	player.setFilterCount(filterCount);
 }
 
