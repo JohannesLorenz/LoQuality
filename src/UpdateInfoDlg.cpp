@@ -41,4 +41,6 @@ UpdateInfoDlg::UpdateInfoDlg() : topLayout(this)
 			}
 		} while(lineLength > 0);
 	}
+	if(! errorList.count())
+	 errorList.addItem("(no errors, no warnings, everything's good!)");
 }

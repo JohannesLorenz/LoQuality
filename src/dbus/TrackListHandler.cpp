@@ -36,6 +36,8 @@ namespace Mpris1
 
     int TrackListHandler::AddTrack( const QString& url, bool playImmediately )
     {
+	Q_UNUSED(url);
+	Q_UNUSED(playImmediately);
 	    puts("TODO");
 	    return -1;
      /*   Meta::TrackPtr track = CollectionManager::instance()->trackForUrl( url );
@@ -53,6 +55,7 @@ namespace Mpris1
 
     void TrackListHandler::DelTrack( int index )
     {
+	    Q_UNUSED(index);
 	    puts("TODO");
 	/*if( index < GetLength() )
 	    The::playlistController()->removeRow( index );*/
@@ -74,6 +77,7 @@ namespace Mpris1
 
     QVariantMap TrackListHandler::GetMetadata( int position )
     {
+	    Q_UNUSED(position);
 	    puts("TODO");
 	//return Meta::Field::mprisMapFromTrack( The::playlist()->trackAt( position ) );
 	return QVariantMap();
@@ -81,6 +85,7 @@ namespace Mpris1
 
     void TrackListHandler::SetLoop( bool enable )
     {
+	    Q_UNUSED(enable);
 	    puts("TODO");
        /* if( enable )
         {
@@ -96,6 +101,7 @@ namespace Mpris1
 
     void TrackListHandler::SetRandom( bool enable )
     {
+	    Q_UNUSED(enable);
 	    puts("TODO");
        /* if( enable )
         {
@@ -111,6 +117,7 @@ namespace Mpris1
 
     void TrackListHandler::PlayTrack( int index )
     {
+	    Q_UNUSED(index);
 	    puts("TODO");
        // The::playlistActions()->play( index );
     }
