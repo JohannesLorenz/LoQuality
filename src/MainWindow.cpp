@@ -262,8 +262,8 @@ void MainWindow::slotStoreFlash()
 {
 	FlashDlg fdlg(sqlhelper);
 	fdlg.show();
-	fdlg.exec();
-	reloadTable();
+	if( fdlg.exec() == QDialog::Accepted )
+	 reloadTable();
 }
 
 /*

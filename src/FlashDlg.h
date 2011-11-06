@@ -45,7 +45,7 @@ class FlashDlg : public QDialog
 	Q_OBJECT
 
 	private slots:
-		void selectionChanged ();
+		void selectionChanged();
 		void buttonStorePressed();
 
 		//! clears the listview and reloads all the files
@@ -72,13 +72,23 @@ class FlashDlg : public QDialog
 		// QLabel lbl_title; ....
 
 		const SqlHelper& sqlhelper;
+		bool downloadsMade;
+
+		inline void closeEvent(QCloseEvent *event) {
+			Q_UNUSED(event);
+			if (downloadsMade && cbAddAfterwards.isChecked()) accept();
+			else reject();
+		}
+
 
 	public:
 
 		void setupUi();
 		void retranslateUi();
 
-		FlashDlg(const SqlHelper& _sqlhelper) : topLayout(this), progressDlg(NULL), sqlhelper(_sqlhelper)
+		FlashDlg(const SqlHelper& _sqlhelper)
+		 : topLayout(this), progressDlg(NULL), sqlhelper(_sqlhelper),
+			downloadsMade(false)
 		{
 			setupUi();
 		}

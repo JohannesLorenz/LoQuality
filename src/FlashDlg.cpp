@@ -257,8 +257,8 @@ void FlashDlg::buttonStorePressed()
 
 		(*itr)->setSelected(false);
 		(*itr)->setFlags((*itr)->flags() ^ Qt::ItemIsEnabled );
+		downloadsMade = true;
 	}
-
 }
 
 void FlashDlg::selectionChanged (  )

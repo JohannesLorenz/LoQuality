@@ -20,7 +20,6 @@
 
 #include "globals.h"
 
-#define LO_RULEZ
 #define USE_MPLAYER2
 
 namespace globals
