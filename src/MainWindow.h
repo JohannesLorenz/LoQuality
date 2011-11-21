@@ -55,6 +55,7 @@
 #include "dbus/DBusConnector.h"
 #include "UpdateDlg.h"
 #include "src/UpdateInfoDlg.h"
+#include "src/DownloadImageDlg.h"
 
 /**
  * @class MainWindow
@@ -155,6 +156,14 @@ private:
 		inline void slotScrollToSong() {
 			if(! tableWidget.selectedItems().empty())
 			 tableWidget.scrollToItem(*tableWidget.selectedItems().begin());
+		}
+
+		inline void slotInfoDownload() {
+			//QString currentDir = player.getCurSongItem()->text();
+			//currentDir.resize();
+			DownloadImageDlg idlg(player.getCurSongItem()->text());
+			idlg.show();
+			idlg.exec();
 		}
 
 		void slotHelpAboutAction();
@@ -307,6 +316,9 @@ private:
 		QHBoxLayout informationBox;
 		QLabel imageLabel;
 		QImage tmpImage;
+		QPushButton optionsButton;
+		QMenu infoOptionsMenu;
+		QAction infoActionDownload;
 
 		// special filters toolbox item
 		QWidget specialFiltersContainer;

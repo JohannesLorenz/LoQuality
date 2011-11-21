@@ -80,6 +80,8 @@ void MainWindow::retranslateUi() {
 	labelYearFilter.setText("Jahr");
 	labelRatingFilter.setText("Rating");
 	playUnratedFilter.setText("spiele unbewertete");
+
+	infoActionDownload.setText("Falls ein Song laeuft kann man hier ein Cover laden...");
 	//x1Filter.setText("Person 1");
 	//x2Filter.setText("Person 2");
 }
@@ -553,6 +555,7 @@ MainWindow::MainWindow (QWidget* parent)
 	centralWidget(this),
 	verticalLayout(&centralWidget),
 	mainSplitter(Qt::Vertical, &centralWidget),
+	infoActionDownload(this),
 
 	//table widget
 	tableWidget(&mainSplitter),
@@ -670,6 +673,12 @@ MainWindow::MainWindow (QWidget* parent)
 	toolBox->addItem(newWidget, "SpecialFilters"); // TODO: Icons :)
 
 	informationBox.addWidget(&imageLabel);
+	//infoOptionsMenu.append();
+
+	optionsButton.setText("...");
+	optionsButton.setMenu(&infoOptionsMenu);
+	infoOptionsMenu.addAction(&infoActionDownload);
+	informationBox.addWidget(&optionsButton);
 
 	newWidget = new QWidget(toolBox);
 	newWidget->setLayout(&informationBox);
@@ -795,11 +804,15 @@ MainWindow::MainWindow (QWidget* parent)
 	connect(&filter, SIGNAL(textChanged(const QString &)), this, SLOT(slotFilterChanged(const QString &)));
 	connect(&volumeSlider, SIGNAL(valueChanged(int)), &player, SLOT(slotChangeVolume(int)));
 
+	connect(&infoActionDownload, SIGNAL(triggered()), this, SLOT(slotInfoDownload()));
+
 	connect(&player, SIGNAL(signalStatusChanged(STATUS_FLAGS)), this, SLOT(onSetStatus(STATUS_FLAGS)));
 	connect(&player, SIGNAL(signalUpdatePlaytime(int)), &progressBar, SLOT(setValue(int)));
 	connect(toolBox, SIGNAL(currentChanged(int)), this, SLOT(slotToolBoxChanged(int)));
 	connect(&tray_icon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(switch_tray(QSystemTrayIcon::ActivationReason)));
 	connect(&mainSplitter, SIGNAL(splitterMoved(int,int)), this, SLOT(slotSplitterMoved(int,int)));
+
+
 
 	/*
 		OTHER

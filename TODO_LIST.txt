@@ -12,4 +12,7 @@ If you want one of them, contact me!
 * spaces or apostrophes in filenames do not seem to be recognized sometimes
 * a button next to the artist's pixmap which let's you download pngs
 * extend the dbus code (write all functions)
+* write a "radio alarm clock" (simple: append a menu to play, which
+   will come up with a date selection)
+* get some nice new icons for some buttons/menu items
 
