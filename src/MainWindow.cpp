@@ -1,6 +1,6 @@
 /*************************************************************************/
 /* LoQuality - A music player for Linux/UNIX.                            */
-/* Copyright (C) 2010-2011                                               */
+/* Copyright (C) 2010-2012                                               */
 /* Johannes Lorenz, Philipp Lorenz                                       */
 /* https://github.com/DrSegfault/LoQuality                               */
 /*                                                                       */
@@ -278,8 +278,9 @@ void MainWindow::slotFileQuitAction () {
 void MainWindow::slotHelpAboutAction () {
 	QMessageBox::about ( NULL, "About - LoQuality",
 				"<h1>LoQuality</h1>"
-				"<i>(c) 2010-2011</i><br/>"
-				"by Philipp Lorenz, Johannes Lorenz<br/>");
+				"<i>(c) 2010-2012</i><br/>"
+				"by Philipp Lorenz, Johannes Lorenz<br/><br/>"
+				"<a href=\"https://github.com/DrSegfault/LoQuality\">https://github.com/DrSegfault/LoQuality</a>");
 				
 }
 
@@ -300,6 +301,7 @@ void MainWindow::slotFilterChanged ( const QString & text ) {
 		filterCount += (int) !(hiddenArray[i]);
 	}
 	player.setFilterCount(filterCount);
+	slotScrollToSong();
 }
 
 void MainWindow::slotChangeVolume (int newValue) {
@@ -757,32 +759,12 @@ MainWindow::MainWindow (QWidget* parent)
 	}
 
 	if(!main_exists)
-	{
-		query.exec(
-		"CREATE TABLE main ("
-		"'id' INTEGER PRIMARY KEY, "
-		"'titel' varchar(128),"
-		"'kuenstler' varchar(128),"
-		"'album' varchar(64),"
-		"'tag' varchar(255),"
-		"'genre' varchar(32),"
-		"'jahr' smallint(6),"
-		"'philipp' tinyint(4),"
-		"'johannes' tinyint(4),"
-		"'dateityp' varchar(8),"
-		"'qualitaet' smallint(6),"
-		"'bew_joh' tinyint(4),"
-		"'bew_phil' tinyint(4),"
-		"'pfad' varchar(255),"
-		"'last_changed' int,"
-		"'md5sum' varchar(128)"
-		");"
-		);
-	}
+	 sqlhelper.CREATE();
 
 	printf("Main exists? %d\n",(int)main_exists);
 #endif
 
+	tableWidget.setSortingEnabled(true);
 	reloadTable();
 	player.setFilterCount(tableWidget.rowCount());
 	
@@ -801,7 +783,6 @@ MainWindow::MainWindow (QWidget* parent)
 	/*
 		CONNECT SIGNALS TO SLOTS
 		*/
-	tableWidget.setSortingEnabled(true);
 	tableWidget.sortByColumn(14, Qt::AscendingOrder);
 	tableWidget.setEditTriggers(QAbstractItemView::NoEditTriggers);
 	tableWidget.setContextMenuPolicy(Qt::CustomContextMenu);

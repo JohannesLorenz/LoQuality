@@ -1,6 +1,6 @@
 /*************************************************************************/
 /* LoQuality - A music player for Linux/UNIX.                            */
-/* Copyright (C) 2010-2011                                               */
+/* Copyright (C) 2010-2012                                               */
 /* Johannes Lorenz, Philipp Lorenz                                       */
 /* https://github.com/DrSegfault/LoQuality                               */
 /*                                                                       */
@@ -161,3 +161,27 @@ void SqlHelper::INSERT(const char* filepath) const
 
 }
 
+void SqlHelper::CREATE(void) const
+{
+	QSqlQuery query;
+	query.exec(
+		"CREATE TABLE main ("
+		"'id' INTEGER PRIMARY KEY, "
+		"'titel' varchar(128),"
+		"'kuenstler' varchar(128),"
+		"'album' varchar(64),"
+		"'tag' varchar(255),"
+		"'genre' varchar(32),"
+		"'jahr' smallint(6),"
+		"'philipp' tinyint(4),"
+		"'johannes' tinyint(4),"
+		"'dateityp' varchar(8),"
+		"'qualitaet' smallint(6),"
+		"'bew_joh' tinyint(4),"
+		"'bew_phil' tinyint(4),"
+		"'pfad' varchar(255),"
+		"'last_changed' int,"
+		"'md5sum' varchar(128)"
+		");"
+	);
+}

@@ -1,6 +1,6 @@
 /*************************************************************************/
 /* LoQuality - A music player for Linux/UNIX.                            */
-/* Copyright (C) 2010-2011                                               */
+/* Copyright (C) 2010-2012                                               */
 /* Johannes Lorenz, Philipp Lorenz                                       */
 /* https://github.com/DrSegfault/LoQuality                               */
 /*                                                                       */
@@ -316,8 +316,8 @@ namespace Mpris1
 
 
 
-		map.insert( Field::ALBUM, QVariant( QString("Entenhits 2011") ) );
-		map.insert( Field::ARTIST, QVariant( QString("I don't know what you're looking for!!!") ) );
+		map.insert( Field::ALBUM, QVariant( QString("Album: TODO") ) );
+		map.insert( Field::ARTIST, QVariant( QString("Artist: TODO") ) );
 */
 		QTableWidget* _table = player->getCurSongItem()->tableWidget();
 		const unsigned int _row = player->getCurSongItem()->row();

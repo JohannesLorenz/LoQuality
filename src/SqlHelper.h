@@ -1,6 +1,6 @@
 /*************************************************************************/
 /* LoQuality - A music player for Linux/UNIX.                            */
-/* Copyright (C) 2010-2011                                               */
+/* Copyright (C) 2010-2012                                               */
 /* Johannes Lorenz, Philipp Lorenz                                       */
 /* https://github.com/DrSegfault/LoQuality                               */
 /*                                                                       */
@@ -60,6 +60,8 @@ class SqlHelper
 		//! executes the insert command on the whole database
 		//! @param argumentList list of values, each in single quotes (except NULL) and seperated by comma. e.g.: "'a', NULL , 'c'"
 		void INSERT(const char* filepath) const;
+
+		void CREATE(void) const;
 
 		inline bool start_insert_sequence(void) const {
 			return ( mPlayerConnection = new MPlayerConnection(_MPLAYER_META_PIPE, true) ) != NULL;
