@@ -32,7 +32,8 @@ HEADERS += src/AddEntries.h \
     src/dbus/Mpris1TrackListAdaptor.h \
     src/UpdateDlg.h \
     src/UpdateInfoDlg.h \
-    src/DownloadImageDlg.h
+    src/DownloadImageDlg.h \
+    src/md5sum.h
 SOURCES += src/AddEntries.cpp \
     src/FileManager.cpp \
     src/FlashDlg.cpp \

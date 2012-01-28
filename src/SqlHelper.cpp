@@ -20,7 +20,10 @@
 
 #include <QString>
 #include <QDir>
+#include <QDateTime>
+#include <QFileInfo>
 
+#include "md5sum.h"
 #include "SqlHelper.h"
 
 QString SqlHelper::corr(const QString& originalString)
@@ -111,9 +114,12 @@ void SqlHelper::INSERT(const char* filepath) const
 	}
 
 	QSqlQuery query;
+	QByteArray md5sum;
+	calculate_md5sum(filename, &md5sum);
+	QDateTime last_changed = QFileInfo(filename).lastModified();
 	query.exec(
-	/*QString str =*/	QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'philipp' ,'johannes' ,'dateityp' ,'qualitaet' ,'bew_joh' ,'bew_phil' ,'pfad') "
-					  "VALUES ( NULL, %1, %2, %3, '', %4, %5, '0', '0', %6, %7, '0', '0', '%8');")
+	/*QString str =*/	QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'philipp' ,'johannes' ,'dateityp' ,'qualitaet' ,'bew_joh' ,'bew_phil' ,'pfad', 'last_changed', 'md5sum') "
+					  "VALUES ( NULL, %1, %2, %3, '', %4, %5, '0', '0', %6, %7, '0', '0', '%8', '%9', '%10');")
 					.arg(
 						metaTitle,
 						corr( mPlayerConnection->fetchValue("get_meta_artist\n", "ANS_META_ARTIST=") ),
@@ -126,11 +132,15 @@ void SqlHelper::INSERT(const char* filepath) const
 						mPlayerConnection->fetchValue("get_audio_codec\n", "ANS_AUDIO_CODEC="),
 						mPlayerConnection->fetchValue("get_audio_bitrate\n", "ANS_AUDIO_BITRATE="),
 
-						filename
+						filename,
+						md5sum.toHex().data()
 						)
+					.arg (
+						last_changed.toTime_t()
+					)
 			);
-	printf("str: %s\n",QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'philipp' ,'johannes' ,'dateityp' ,'qualitaet' ,'bew_joh' ,'bew_phil' ,'pfad') "
-				   "VALUES ( NULL, %1, %2, %3, '', %4, %5, '0', '0', %6, %7, '0', '0', '%8');")
+	printf("str: %s\n",QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'philipp' ,'johannes' ,'dateityp' ,'qualitaet' ,'bew_joh' ,'bew_phil' ,'pfad', 'last_changed', 'md5sum') "
+				   "VALUES ( NULL, %1, %2, %3, '', %4, %5, '0', '0', %6, %7, '0', '0', '%8', '%9', '%10');")
 				 .arg(
 					 metaTitle,
 					 corr( mPlayerConnection->fetchValue("get_meta_artist\n", "ANS_META_ARTIST=") ),
@@ -143,8 +153,11 @@ void SqlHelper::INSERT(const char* filepath) const
 					 mPlayerConnection->fetchValue("get_audio_codec\n", "ANS_AUDIO_CODEC="),
 					 mPlayerConnection->fetchValue("get_audio_bitrate\n", "ANS_AUDIO_BITRATE="),
 
-					 filename
-					 ).toAscii().data());
+					 filename,
+					 md5sum.toHex().data()
+				).arg(
+					last_changed.toTime_t()
+				).toAscii().data());
 
 }
 

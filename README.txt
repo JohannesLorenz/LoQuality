@@ -9,8 +9,8 @@ In this document, you can find:
 1 Status
 2 Getting LoQuality
 3 Requirements
-3 Installation
-4 Known Bugs
+4 Installation
+5 Known Bugs
 
 1 Status
 ::::::::

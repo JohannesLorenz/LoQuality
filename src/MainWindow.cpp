@@ -366,7 +366,7 @@ void MainWindow::reloadTable()
 	tableWidget.clear();
 	//tableWidget.setRowCount(0);
 
-	tableWidget.setColumnCount(14);
+	tableWidget.setColumnCount(15);
 
 	QStringList description;
 	
@@ -384,6 +384,7 @@ void MainWindow::reloadTable()
 	description.insert(11, "Deine Bewertung");
 	description.insert(12, "Bewertung von ...");
 	description.insert(13, "Pfad");
+	description.insert(14, "Last Changes");
 	
 	tableWidget.setHorizontalHeaderLabels(description);
 	
@@ -423,6 +424,7 @@ void MainWindow::reloadTable()
 		QString vote_you = query.value(11).toString();
 		QString vote_other = query.value(12).toString();
 		QString path = query.value(13).toString();
+		QString last_change = query.value(15).toString();
 		
 		//QString &artistRef = artistAlbumList[artist];
 		//if(! artistRef.contains(artist) )
@@ -442,6 +444,7 @@ void MainWindow::reloadTable()
 		QTableWidgetItem* item_vote_you = new QTableWidgetItem(vote_you);
 		QTableWidgetItem* item_vote_other = new QTableWidgetItem(vote_other);
 		QTableWidgetItem* item_path = new QTableWidgetItem(path);
+		QTableWidgetItem* item_last_change = new QTableWidgetItem(last_change);
 		
 		item_id->setData(Qt::DisplayRole, id);
 		item_title->setData(Qt::DisplayRole, title);
@@ -457,6 +460,7 @@ void MainWindow::reloadTable()
 		item_vote_you->setData(Qt::DisplayRole, vote_you);
 		item_vote_other->setData(Qt::DisplayRole, vote_other);
 		item_path->setData(Qt::DisplayRole, path);
+		item_last_change->setData(Qt::DisplayRole, last_change);
 		
 		tableWidget.setItem(rowcount, 0, item_id);
 		tableWidget.setItem(rowcount, 1, item_title);
@@ -472,6 +476,7 @@ void MainWindow::reloadTable()
 		tableWidget.setItem(rowcount, 11, item_vote_you);
 		tableWidget.setItem(rowcount, 12, item_vote_other);
 		tableWidget.setItem(rowcount, 13, item_path);
+		tableWidget.setItem(rowcount, 14, item_last_change);
 		
 		++rowcount;
 	}
@@ -726,7 +731,7 @@ MainWindow::MainWindow (QWidget* parent)
 	 printf("CONNECTION TO DATABASE ESTABLISHED!!\n");
 	else
 	{
-		printf("COULD NOT OPEN DATABASE!\n");
+		printf("COULD NOT OPEN OR CREATE DATABASE!\n");
 		return;
 	}
 	
@@ -735,7 +740,7 @@ MainWindow::MainWindow (QWidget* parent)
 	// might need to create sqlite table...
 
 	QStringList tables = db.tables();
-	printf("tabels: %d\n",tables.size());
+	printf("tables: %d\n",tables.size());
 
 
 	bool main_exists = false;
@@ -768,7 +773,9 @@ MainWindow::MainWindow (QWidget* parent)
 		"'qualitaet' smallint(6),"
 		"'bew_joh' tinyint(4),"
 		"'bew_phil' tinyint(4),"
-		"'pfad' varchar(255)"
+		"'pfad' varchar(255),"
+		"'last_changed' int,"
+		"'md5sum' varchar(128)"
 		");"
 		);
 	}
@@ -794,6 +801,8 @@ MainWindow::MainWindow (QWidget* parent)
 	/*
 		CONNECT SIGNALS TO SLOTS
 		*/
+	tableWidget.setSortingEnabled(true);
+	tableWidget.sortByColumn(14, Qt::AscendingOrder);
 	tableWidget.setEditTriggers(QAbstractItemView::NoEditTriggers);
 	tableWidget.setContextMenuPolicy(Qt::CustomContextMenu);
 	tableWidget.setSelectionBehavior(QAbstractItemView::SelectRows);
