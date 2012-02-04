@@ -33,7 +33,8 @@ HEADERS += src/AddEntries.h \
     src/UpdateDlg.h \
     src/UpdateInfoDlg.h \
     src/DownloadImageDlg.h \
-    src/md5sum.h
+    src/md5sum.h \
+    SynchWizard.h
 SOURCES += src/AddEntries.cpp \
     src/FileManager.cpp \
     src/FlashDlg.cpp \
@@ -53,6 +54,7 @@ SOURCES += src/AddEntries.cpp \
     src/dbus/Mpris1TrackListAdaptor.cpp \
     src/UpdateDlg.cpp \
     src/UpdateInfoDlg.cpp \
-    src/DownloadImageDlg.cpp
+    src/DownloadImageDlg.cpp \
+    SynchWizard.cpp
 OTHER_FILES += TODO.txt \
     TODO_LIST.txt

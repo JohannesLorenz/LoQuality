@@ -155,7 +155,6 @@ void FlashDlg::setupUi()
 	/*
 		Setup UI...
 	*/
-
 	fileList.setSelectionMode(QAbstractItemView::MultiSelection);
 	topLayout.addWidget(&fileList);
 
@@ -186,9 +185,6 @@ void FlashDlg::setupUi()
 		"<b>use LoQuality for <u>illegal</u> downloads!!!</b>");
 	msgBox.setTextFormat(Qt::RichText);
 	msgBox.exec();
-
-//	QMessageBox::warning(this, "Warning!!!", "The auther does not encourage you to:\n\n"
-//		"<b>use LoQuality for <u>illegal</u> downloads!!!</b>", "Yes", "Yes");
 }
 
 void FlashDlg::buttonStorePressed()
@@ -197,7 +193,7 @@ void FlashDlg::buttonStorePressed()
 	for(QList<QListWidgetItem*>::const_iterator itr = items.begin();
 		itr != items.end(); itr++)
 	{
-		// ask for uptput file name
+		// ask for output file name
 		do {
 			curOutName = QFileDialog::getSaveFileName(this, QString("Bitte Speicherort fuer OGG ueberlegen... (%1)").arg((*itr)->text()), globals::MUSIC_ROOT, "*.ogg");
 			if(curOutName.isEmpty())

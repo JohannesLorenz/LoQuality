@@ -132,7 +132,7 @@ private:
 		void slotRemoveSong();
 
 		void slotStoreFlash();
-
+		void slotSynch();
 
 		void slotFileQuitAction();
 

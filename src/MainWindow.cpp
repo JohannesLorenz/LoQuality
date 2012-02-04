@@ -40,6 +40,7 @@
 
 #include "MainWindow.h"
 #include "FlashDlg.h"
+#include "SynchWizard.h"
 #include "FileManager.h"
 
 #define _MPLAYER_REMOTE_PIPE "/tmp/lq_remote_pipe"
@@ -265,6 +266,14 @@ void MainWindow::slotStoreFlash()
 	FlashDlg fdlg(sqlhelper);
 	fdlg.show();
 	if( fdlg.exec() == QDialog::Accepted )
+	 reloadTable();
+}
+
+void MainWindow::slotSynch()
+{
+	SynchWizard synch_wizard;
+	synch_wizard.show();
+	if( synch_wizard.exec() == QDialog::Accepted )
 	 reloadTable();
 }
 
@@ -637,6 +646,8 @@ MainWindow::MainWindow (QWidget* parent)
 	initButton2(BTN2_ADD, SLOT(slotAddFile()));
 	initButton2(BTN2_REMOVE, SLOT(slotRemoveSong()));
 	initButton2(BTN2_FLASH, SLOT(slotStoreFlash()));
+	initButton2(BTN2_SYNCH_MP3, SLOT(slotSynch()));
+	initButton2(BTN2_SYNCH_USB, SLOT(slotSynch()));
 
 	for(unsigned int i = 0; i < BTN1_SIZE; i++)
 	 hbox_buttons1.addWidget(& buttons1[i]);

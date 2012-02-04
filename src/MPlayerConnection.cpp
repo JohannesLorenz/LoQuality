@@ -71,6 +71,7 @@ QString MPlayerConnection::fetchValue(const char* remoteCommand, const char* ans
 	}
 	else for(unsigned int ret; (ret = read(mplayer_output, line, 255))>0; ) { // TODO : ANS_LENGTH can be parted into two buffers
 		line[255] = 0;
+		line[ret] = 0;
 		printf("ANSWER: %s, ret = %d\n",strstr(line, ansStr),ret);
 		const char* begin = strstr(line, ansStr);
 		if(ret > strlen(ansStr) && begin) {

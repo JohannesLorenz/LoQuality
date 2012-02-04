@@ -29,15 +29,17 @@
 /**
 	Returns md5sum of a file. Note: to get the sum as the md5sum command prints it, use QByteArray.toHex();
 */
-inline void calculate_md5sum(const QString& filename, QByteArray* result) {
+inline void calculate_md5sum(const char* filename, QByteArray* result) {
 
 	QFile file(filename);
 	if (file.open(QIODevice::ReadOnly))
 	{
 		QByteArray fileData = file.readAll();
 		*result = QCryptographicHash::hash(fileData,QCryptographicHash::Md5);
-	} else
-	 exit(1); // TODO
+	} else {
+		printf("Sorry, could not open `%s'\n", filename);
+		exit(1); // TODO
+	}
 
 }
 

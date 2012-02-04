@@ -16,3 +16,11 @@ If you want one of them, contact me!
    will come up with a date selection)
 * get some nice new icons for some buttons/menu items
 
+PLANS FOR MUSIC SHARING:
+
+0.) A sends song DB to B
+1.) B * opens song db (with lq)
+      * sees a comparison of tracks (created with a join op)
+      * chooses tracks (with lq)
+2.) B sends request (= textfile which only contains A's filepaths) to A
+3.) A somehow converts that into an SSH command and sends it to B
