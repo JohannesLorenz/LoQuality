@@ -34,7 +34,7 @@ HEADERS += src/AddEntries.h \
     src/UpdateInfoDlg.h \
     src/DownloadImageDlg.h \
     src/md5sum.h \
-    SynchWizard.h
+    src/SynchWizard.h
 SOURCES += src/AddEntries.cpp \
     src/FileManager.cpp \
     src/FlashDlg.cpp \
@@ -55,6 +55,6 @@ SOURCES += src/AddEntries.cpp \
     src/UpdateDlg.cpp \
     src/UpdateInfoDlg.cpp \
     src/DownloadImageDlg.cpp \
-    SynchWizard.cpp
+    src/SynchWizard.cpp
 OTHER_FILES += TODO.txt \
     TODO_LIST.txt

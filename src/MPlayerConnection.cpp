@@ -87,7 +87,7 @@ QString MPlayerConnection::fetchValue(const char* remoteCommand, const char* ans
 		}
 	}
 
-	return QString("");
+	return QString("''");
 }
 
 MPlayerConnection::MPlayerConnection(const char* _REMOTE_PIPE_NAME, bool nulldevice)

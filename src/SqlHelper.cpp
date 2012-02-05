@@ -30,14 +30,19 @@
 QString SqlHelper::corr(const QString& originalString)
 {
 	QString result = originalString;
-	// short fix: do not replace first and last 'es!
-	result[0] = '"';
-	result[result.length()-1] = '"';
+	if(!result.isEmpty())
+	{
+		// short fix: do not replace first and last 'es!
+		result[0] = '"';
+		result[result.length()-1] = '"';
 
-	result.replace('\'', "\''");
+		result.replace('\'', "''");
 
-	result[0] = '\'';
-	result[result.length()-1] = '\'';
+		result[0] = '\'';
+		result[result.length()-1] = '\'';
+	}
+	else
+	 result = "''";
 	return result;
 }
 
@@ -96,15 +101,19 @@ void SqlHelper::INSERT(const char* filepath) const
 				filepath
 				).toAscii().data() );*/
 	QString filename = filepath; // filename as SQL wants it
-	filename.replace('\'', "\\'");
+	filename.replace('\'', "''");
 
 	QString metaTitle = corr( mPlayerConnection->fetchValue("get_meta_title\n", "ANS_META_TITLE=") );
 	printf("metaTitle: %s\n",metaTitle.toAscii().data());
 	if(metaTitle == "''")
 	{
 		metaTitle = strrchr(filepath, QDir::separator().toAscii()) + 1;
+		metaTitle.resize(metaTitle.lastIndexOf('.')); // get rid of ending
+
+		/*
+			handle spaces
+		*/
 		metaTitle.replace('_', ' ');
-		metaTitle.resize(metaTitle.lastIndexOf('.'));
 		bool lastWasSpace = true;
 		for(int i = 0; i<metaTitle.size(); i++)
 		{
@@ -114,6 +123,8 @@ void SqlHelper::INSERT(const char* filepath) const
 		}
 		metaTitle.prepend('\'');
 		metaTitle.append('\'');
+
+		metaTitle = corr(metaTitle);
 		printf("metaTitle now: %s\n",metaTitle.toAscii().data());
 	}
 
@@ -121,7 +132,7 @@ void SqlHelper::INSERT(const char* filepath) const
 	QByteArray md5sum;
 	calculate_md5sum(filepath, &md5sum);
 	QDateTime last_changed = QFileInfo(filename).lastModified();
-	printf("str: %s\n",QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'philipp' ,'johannes' ,'dateityp' ,'qualitaet' ,'bew_joh' ,'bew_phil' ,'pfad', 'last_changed', 'md5sum') "
+	printf("str: %s\n",QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad', 'last_changed', 'md5sum') "
 				   "VALUES ( NULL, %1, %2, %3, '', %4, %5, '0', '0', %6, %7, '0', '0', '%8', '%9', '%10');")
 				 .arg(
 					 metaTitle,
@@ -142,7 +153,7 @@ void SqlHelper::INSERT(const char* filepath) const
 				).toAscii().data());
 
 	const bool return_value = query.exec(
-	/*QString str =*/	QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'philipp' ,'johannes' ,'dateityp' ,'qualitaet' ,'bew_joh' ,'bew_phil' ,'pfad', 'last_changed', 'md5sum') "
+	/*QString str =*/	QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad', 'last_changed', 'md5sum') "
 					  "VALUES ( NULL, %1, %2, %3, '', %4, %5, '0', '0', %6, %7, '0', '0', '%8', '%9', '%10');")
 					.arg(
 						metaTitle,
@@ -181,12 +192,12 @@ void SqlHelper::CREATE(void) const
 		"'tag' varchar(255),"
 		"'genre' varchar(32),"
 		"'jahr' smallint(6),"
-		"'philipp' tinyint(4),"
-		"'johannes' tinyint(4),"
+		"'others' tinyint(4),"
+		"'yours' tinyint(4),"
 		"'dateityp' varchar(8),"
 		"'qualitaet' smallint(6),"
-		"'bew_joh' tinyint(4),"
-		"'bew_phil' tinyint(4),"
+		"'bew_yours' tinyint(4),"
+		"'bew_others' tinyint(4),"
 		"'pfad' varchar(255),"
 		"'last_changed' int,"
 		"'md5sum' varchar(128)"
