@@ -230,7 +230,7 @@ void FlashDlg::buttonStorePressed()
 			const QString CPU_THREADS = globals::settings->value("number_of_cores",2).toString();
 			const QString ffmpeg_fullpath = globals::settings->value("ffmpeg_fullpath").toString();
 			//printf("%s -i %s ... -threads %s %s",,,CPU_THREADS, curOutName.toAscii().data())
-			execlp(ffmpeg_fullpath.toAscii().data(), "ffmpeg", "-i", strchr((*itr)->text().toAscii().data(), ':') + 2, "-vn", "-y", "-ar", "44100", "-aq", "4", "-acodec", "libvorbis", "-threads", CPU_THREADS.toAscii().data(), curOutName.toAscii().data(), NULL);
+			execlp(ffmpeg_fullpath.toAscii().data(), "ffmpeg", "-i", strchr((*itr)->text().toAscii().data(), ':') + 2, "-vn", "-y", "-ar", "44100", "-aq", "6", "-acodec", "libvorbis", "-threads", CPU_THREADS.toAscii().data(), curOutName.toAscii().data(), NULL);
 
 			exit(0);
 		}
