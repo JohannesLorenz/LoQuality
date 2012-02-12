@@ -220,8 +220,13 @@ void FlashDlg::buttonStorePressed()
 			// ffmpeg -i flashfile -vn -acodec libmp3lame -y -ar 44100 -ab 128000 outfilename
 			//execlp("ffmpeg", "ffmpeg", "-i", strchr((*itr)->text().toAscii().data(), ':') + 2, "-vn", "-acodec", "libmp3lame", "-y", "-ar", "44100", "-ab", "128000", curOutName.toAscii().data(), NULL);
 
+			/*
+				We need at most audio quality 6 = approx. 128 kbps. See:
+				http://en.wikipedia.org/wiki/YouTube#Quality_and_codecs
+				http://en.wikipedia.org/wiki/Vorbis
+			*/
 			// note: you might want to specify number of threads with "-threads n"
-			// ffmpeg -i flashfile -vn -y -ar 44100 -aq 4 -acodec libvorbis -threads THREADNUM outfile
+			// ffmpeg -i flashfile -vn -y -ar 44100 -aq 6 -acodec libvorbis -threads THREADNUM outfile
 			const QString CPU_THREADS = globals::settings->value("number_of_cores",2).toString();
 			const QString ffmpeg_fullpath = globals::settings->value("ffmpeg_fullpath").toString();
 			//printf("%s -i %s ... -threads %s %s",,,CPU_THREADS, curOutName.toAscii().data())
