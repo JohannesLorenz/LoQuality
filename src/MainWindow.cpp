@@ -588,15 +588,16 @@ void MainWindow::layoutWidgets(bool mobile)
 		buttons1[BTN1_RANDOM].setCheckable(true);
 		buttons1[BTN1_REPEAT].setCheckable(true);
 
-//		for(unsigned int i = 0; i < BTN1_SIZE; i++)
-//		 hbox_buttons1.addWidget(& buttons1[i]);
+		for(unsigned int i = 0; i < BTN1_SIZE; i++)
+		 hbox_buttons1.addWidget(& buttons1[i]);
 
-//		mobileButtonsVBox.addLayout(&hbox_buttons1);
-//		mobileButtonsVBox.addWidget(&progressBar);
+		mobileButtonsVBox.addLayout(&hbox_buttons1);
+		mobileButtonsVBox.addWidget(&progressBar);
 
-//		mobileTab1.setLayout(&mobileButtonsVBox);
-//		mobileTab.addTab(&mobileTab1, "Play");
-		mobileTab.addTab(&progressBar, "Play");
+		mobileTab1.setLayout(&mobileButtonsVBox);
+		mobileTab.addTab(&mobileTab1, "Play");
+
+		//mobileTab.addTab(&progressBar, "Play");
 
 		/*
 			TAB 2 : graphics
