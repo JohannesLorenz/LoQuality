@@ -18,37 +18,9 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
-#include "MainWindow.h"
+#ifndef DIALOGS_H
+#define DIALOGS_H
 
-#include <QApplication>
-#include <QMessageBox>
+bool question(const char* title, const char* text);
 
-int main(int argc, char** argv)
-{
-	int return_value = 0;
-
-	// pass arguments to Qt first
-	QApplication app(argc, argv);
-	app.setOrganizationName("LoQuality");
-	app.setOrganizationDomain("github.com/DrSegfault/LoQuality");
-	app.setApplicationName("LoQuality");
-
-	try {
-		// start program
-		globals::settings = new QSettings();
-		const bool mobile = (globals::settings->value("target", "pc").toString() == "mobile");
-
-		MainWindow mainwindow(mobile);
-		mainwindow.show();
-
-		return_value = app.exec();
-		delete globals::settings;
-
-	} catch (std::exception e) {
-		QMessageBox::warning(NULL, "Error", e.what());
-	} catch(...) {
-		QMessageBox::warning(NULL, "Error", "*** TODO: unknown exception");
-	}
-
-	return 0;
-}
+#endif // DIALOGS_H

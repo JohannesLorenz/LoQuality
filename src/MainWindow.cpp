@@ -549,7 +549,216 @@ void MainWindow::switch_tray(QSystemTrayIcon::ActivationReason reason)
 	}
 }
 
-MainWindow::MainWindow (QWidget* parent)
+void MainWindow::layoutWidgets(bool mobile)
+{
+	Q_UNUSED(mobile);
+
+	/*
+		MENU BAR
+		*/
+	if(!mobile)
+	 resize(792, 768);
+
+	setMenuBar(&menubar);
+	for(unsigned int i=0; i<MENU_SIZE; i++) {
+		menubar.addAction(topMenus[i].menuAction());
+	}
+
+	/*
+		TOOL BAR
+		*/
+	toolBar.setIconSize(QSize(24, 24));
+	addToolBar(Qt::TopToolBarArea, &toolBar);
+
+	/*
+		CENTRAL WIDGET
+		*/
+	setCentralWidget(&centralWidget);
+
+	if(mobile)
+	{
+		/*
+			TAB 1 : music buttons
+		*/
+		stopButtonMenu.addAction( "Sofort!", this, SLOT(slotStop()) /*, const QKeySequence & shortcut = 0 TODO*/);
+		stopButtonMenu.addAction( "Nach diesem Song.", this, SLOT(slotStopAfter()));
+		stopButtonMenu.addAction( "Nach ... Minuten" /*TODO*/ );
+		stopButtonMenu.actions().at(1)->setCheckable(true);
+		buttons1[BTN1_STOP].setMenu(&stopButtonMenu);
+		buttons1[BTN1_RANDOM].setCheckable(true);
+		buttons1[BTN1_REPEAT].setCheckable(true);
+
+//		for(unsigned int i = 0; i < BTN1_SIZE; i++)
+//		 hbox_buttons1.addWidget(& buttons1[i]);
+
+//		mobileButtonsVBox.addLayout(&hbox_buttons1);
+//		mobileButtonsVBox.addWidget(&progressBar);
+
+//		mobileTab1.setLayout(&mobileButtonsVBox);
+//		mobileTab.addTab(&mobileTab1, "Play");
+		mobileTab.addTab(&progressBar, "Play");
+
+		/*
+			TAB 2 : graphics
+		*/
+		mobileTab.addTab(&imageLabel, "Image");
+
+		/*
+			TAB 3 : table
+		*/
+		mobileTab.addTab(&tableWidget, "List");
+
+		/*
+			TAB 4: special buttons
+		*/
+		mobileTab4.setLayout(&mobileSpecialHBox);
+		mobileTab.addTab(&mobileTab4, "Special");
+
+		mobileTab.setCurrentIndex(2);
+
+		verticalLayout.addWidget(&mobileTab);
+	}
+	else
+	{
+		hbox_buttons1.addWidget(& filter);
+
+
+		//connect(buttons1 + BTN1_STOP, SIGNAL(clicked()), this, SLOT(slotStop()));
+		stopButtonMenu.addAction( "Sofort!", this, SLOT(slotStop()) /*, const QKeySequence & shortcut = 0 TODO*/);
+		stopButtonMenu.addAction( "Nach diesem Song.", this, SLOT(slotStopAfter()));
+		stopButtonMenu.addAction( "Nach ... Minuten" /*TODO*/ );
+		stopButtonMenu.actions().at(1)->setCheckable(true);
+		buttons1[BTN1_STOP].setMenu(&stopButtonMenu);
+		buttons1[BTN1_RANDOM].setCheckable(true);
+		buttons1[BTN1_REPEAT].setCheckable(true);
+
+		for(unsigned int i = 0; i < BTN1_SIZE; i++)
+		 hbox_buttons1.addWidget(& buttons1[i]);
+		hbox_buttons1.addWidget(&progressBar);
+		hbox_buttons1.addWidget( &volumeSlider );
+		verticalLayout.addLayout(&hbox_buttons1);
+
+
+		hbox_buttons2.addWidget(& filter);
+		for(unsigned int i = 0; i < BTN2_SIZE; i++)
+		 hbox_buttons2.addWidget(& buttons2[i]);
+		verticalLayout.addLayout(&hbox_buttons2);
+
+		playUnratedFilter.setChecked(true);
+
+		specialFilters.addWidget(&labelYearFilter);
+		specialFilters.addWidget(&minYearFilter);
+		specialFilters.addWidget(&maxYearFilter);
+		specialFilters.addWidget(&labelRatingFilter);
+		specialFilters.addWidget(&minRatingFilter);
+		specialFilters.addWidget(&maxRatingFilter);
+		specialFilters.addWidget(&playUnratedFilter);
+		//specialFilters.addWidget(&x1Filter);
+		//specialFilters.addWidget(&x2Filter);
+
+	//	specialFiltersContainer.setLayout(&specialFilters);
+
+		QWidget* newWidget = new QWidget(&mainSplitter);
+		newWidget->setLayout(&specialFilters);
+
+
+
+	//	toolBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
+	//	toolBox->adjustSize();
+		toolBox->addItem(newWidget, "SpecialFilters"); // TODO: Icons :)
+
+		informationBox.addWidget(&imageLabel);
+		//infoOptionsMenu.append();
+
+		optionsButton.setText("...");
+		optionsButton.setMenu(&infoOptionsMenu);
+		infoOptionsMenu.addAction(&infoActionDownload);
+		informationBox.addWidget(&optionsButton);
+
+		newWidget = new QWidget(toolBox);
+		newWidget->setLayout(&informationBox);
+		toolBox->addItem(newWidget, "Information");
+
+		toolBox->setCurrentIndex(1);
+
+		verticalLayout.addWidget(&mainSplitter);
+		mainSplitter.addWidget(toolBox);
+		mainSplitter.addWidget(&tableWidget);
+	}
+
+	/*
+		STATUS BAR
+		*/
+	setStatusBar(&statusBar);
+
+	/*
+		OTHER
+		*/
+	QIcon* tray_icon_icon = new QIcon("media/graphics/lq.png");
+	tray_icon.setIcon(*tray_icon_icon);
+	tray_icon.setVisible(true);
+}
+
+inline void removeAllChildrenFrom(QLayout* obj)
+{
+	const QObjectList& children = obj->children();
+	while(! children.empty())
+	 obj->removeWidget((QWidget*) children.front());
+}
+
+inline void removeAllLayoutsFrom(QLayout* obj)
+{
+	const unsigned int num_layouts = obj->count();
+	for (unsigned int i = 0; i<num_layouts; i++)
+	 obj->removeItem(obj->itemAt(i));
+}
+
+void MainWindow::freeLayout()
+{
+
+	/*
+		MENU BAR
+		*/
+	exit(99);
+	menubar.clear(); // delete all actions
+
+
+/*
+  TODO: ab hier...
+  */
+	removeAllChildrenFrom(&hbox_buttons1);
+	removeAllChildrenFrom(&hbox_buttons2);
+
+	stopButtonMenu.clear();
+
+	removeAllLayoutsFrom(&verticalLayout);
+
+	removeAllChildrenFrom(&specialFilters);
+
+	// TODO: ab hier
+	QWidget* newWidget = new QWidget(&mainSplitter);
+	newWidget->setLayout(&specialFilters);
+	toolBox = new QToolBox(&mainSplitter);
+	toolBox->addItem(newWidget, "SpecialFilters"); // TODO: Icons :)
+
+	removeAllChildrenFrom(&informationBox);
+	infoOptionsMenu.clear();
+
+	newWidget = new QWidget(toolBox);
+	newWidget->setLayout(&informationBox);
+	toolBox->addItem(newWidget, "Information");
+
+	mainSplitter.addWidget(toolBox);
+	mainSplitter.addWidget(&tableWidget);
+
+
+	/*
+		OTHER
+		*/
+	QIcon* tray_icon_icon = new QIcon("media/graphics/lq.png");
+}
+
+MainWindow::MainWindow (const bool mobile, QWidget* parent)
 	:
 	QMainWindow(parent),
 
@@ -570,12 +779,15 @@ MainWindow::MainWindow (QWidget* parent)
 //		      	(QIcon(QPixmap(media_playback_start_xpm)), "", this) ),
 	centralWidget(this),
 	verticalLayout(&centralWidget),
-	mainSplitter(Qt::Vertical, &centralWidget),
+	mainSplitter(Qt::Vertical, (mobile)?(NULL):&centralWidget),
+
+	toolBox(new QToolBox(&mainSplitter)),
 	infoActionDownload(this),
 
 	//table widget
-	tableWidget(&mainSplitter),
+	tableWidget((mobile)?(QWidget*)(NULL):(QWidget*)(&mainSplitter)),
 
+	mobileTab(&centralWidget),
 	// others
 	popupMenu(&tableWidget),
 	visible(true),
@@ -586,13 +798,10 @@ MainWindow::MainWindow (QWidget* parent)
 	statusBar(this)
 
 {
+	layoutWidgets(mobile);
 	/*
 		MENU BAR
 		*/
-	resize(792, 768);
-
-	setMenuBar(&menubar);
-	
 	Actions.resize(ACTION_SIZE);
 
 	initAction(MENU_FILE, ACTION_FILE_UPDATE, SLOT(slotFileUpdateAction()), QKeySequence(Qt::CTRL + Qt::Key_U));
@@ -609,61 +818,27 @@ MainWindow::MainWindow (QWidget* parent)
 	initAction(MENU_HELP, ACTION_HELP_ABOUT, SLOT(slotHelpAboutAction()));
 	initAction(MENU_HELP, ACTION_HELP_ABOUTQT, SLOT(slotHelpAboutQtAction()));
 
-	for(unsigned int i=0; i<MENU_SIZE; i++) {
-		menubar.addAction(topMenus[i].menuAction());
-	}
-
 	/*
 		TOOL BAR
 		*/
 	toolBar.setLocale(QLocale(QLocale::English, QLocale::UnitedStates));
-	toolBar.setIconSize(QSize(24, 24));
-	addToolBar(Qt::TopToolBarArea, &toolBar);
 	
 	/*
 		CENTRAL WIDGET
 		*/
-	setCentralWidget(&centralWidget);
-
-	hbox_buttons1.addWidget(& filter);
-	
 	initButton1(BTN1_PLAY, SLOT(slotPlay()), media_playback_start_xpm);
 	initButton1(BTN1_PAUSE, SLOT(slotPause()), media_playback_pause_xpm);
 	initButton1(BTN1_STOP, SLOT(slotStop()), media_playback_stop_xpm);
-	//connect(buttons1 + BTN1_STOP, SIGNAL(clicked()), this, SLOT(slotStop()));
-	stopButtonMenu.addAction( "Sofort!", this, SLOT(slotStop()) /*, const QKeySequence & shortcut = 0 TODO*/);
-	stopButtonMenu.addAction( "Nach diesem Song.", this, SLOT(slotStopAfter()));
-	stopButtonMenu.addAction( "Nach ... Minuten" /*TODO*/ );
-	stopButtonMenu.actions().at(1)->setCheckable(true);
-	buttons1[BTN1_STOP].setMenu(&stopButtonMenu);
 	initButton1(BTN1_RANDOM, NULL, media_playlist_shuffle_xpm);
-	buttons1[BTN1_RANDOM].setCheckable(true);
 	initButton1(BTN1_BWD, SLOT(slotBackward()), media_skip_backward_xpm);
 	initButton1(BTN1_FWD, SLOT(slotPlay()), media_skip_forward_xpm);
 	initButton1(BTN1_REPEAT, NULL, media_playlist_repeat_xpm);
-	buttons1[BTN1_REPEAT].setCheckable(true);
 
 	initButton2(BTN2_ADD, SLOT(slotAddFile()));
 	initButton2(BTN2_REMOVE, SLOT(slotRemoveSong()));
 	initButton2(BTN2_FLASH, SLOT(slotStoreFlash()));
 	initButton2(BTN2_SYNCH_MP3, SLOT(slotSynch()));
 	initButton2(BTN2_SYNCH_USB, SLOT(slotSynch()));
-
-	for(unsigned int i = 0; i < BTN1_SIZE; i++)
-	 hbox_buttons1.addWidget(& buttons1[i]);
-	hbox_buttons1.addWidget(&progressBar);
-	volumeSlider.setRange(0, 100);
-	volumeSlider.setNotchesVisible(true);
-	volumeSlider.setPageStep(5);
-	volumeSlider.setSingleStep(1);
-	hbox_buttons1.addWidget( &volumeSlider );
-	verticalLayout.addLayout(&hbox_buttons1);
-	
-
-	hbox_buttons2.addWidget(& filter);
-	for(unsigned int i = 0; i < BTN2_SIZE; i++)
-	 hbox_buttons2.addWidget(& buttons2[i]);
-	verticalLayout.addLayout(&hbox_buttons2);
 	
 	minYearFilter.setMinimum(1900); minYearFilter.setValue(1970); minYearFilter.setMaximum(2020);
 	maxYearFilter.setMinimum(1900); maxYearFilter.setValue(2000); maxYearFilter.setMaximum(2020);
@@ -671,42 +846,6 @@ MainWindow::MainWindow (QWidget* parent)
 	minRatingFilter.setMinimum(1); minRatingFilter.setValue(1); minRatingFilter.setMaximum(10);
 	maxRatingFilter.setMinimum(1); maxRatingFilter.setValue(10); maxRatingFilter.setMaximum(10);
 	playUnratedFilter.setChecked(true);
-
-	specialFilters.addWidget(&labelYearFilter);
-	specialFilters.addWidget(&minYearFilter);
-	specialFilters.addWidget(&maxYearFilter);
-	specialFilters.addWidget(&labelRatingFilter);
-	specialFilters.addWidget(&minRatingFilter);
-	specialFilters.addWidget(&maxRatingFilter);
-	specialFilters.addWidget(&playUnratedFilter);
-	//specialFilters.addWidget(&x1Filter);
-	//specialFilters.addWidget(&x2Filter);
-
-	specialFiltersContainer.setLayout(&specialFilters);
-	QWidget* newWidget = new QWidget(&mainSplitter);
-	newWidget->setLayout(&specialFilters);
-	toolBox = new QToolBox(&mainSplitter);
-//	toolBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
-//	toolBox->adjustSize();
-	toolBox->addItem(newWidget, "SpecialFilters"); // TODO: Icons :)
-
-	informationBox.addWidget(&imageLabel);
-	//infoOptionsMenu.append();
-
-	optionsButton.setText("...");
-	optionsButton.setMenu(&infoOptionsMenu);
-	infoOptionsMenu.addAction(&infoActionDownload);
-	informationBox.addWidget(&optionsButton);
-
-	newWidget = new QWidget(toolBox);
-	newWidget->setLayout(&informationBox);
-	toolBox->addItem(newWidget, "Information");
-
-	toolBox->setCurrentIndex(1);
-
-	verticalLayout.addWidget(&mainSplitter);
-	mainSplitter.addWidget(toolBox);
-	mainSplitter.addWidget(&tableWidget);
 
 	/*
 		TABLE WIDGET (WILL ALSO INITIALIZE DATABASE)
@@ -738,12 +877,11 @@ MainWindow::MainWindow (QWidget* parent)
 #endif
 
 
-	bool ok = db.open();
+	const bool ok = db.open();
 	
 	if(ok)
 	 printf("CONNECTION TO DATABASE ESTABLISHED!!\n");
-	else
-	{
+	else {
 		printf("COULD NOT OPEN OR CREATE DATABASE!\n");
 		return;
 	}
@@ -778,18 +916,6 @@ MainWindow::MainWindow (QWidget* parent)
 	tableWidget.setSortingEnabled(true);
 	reloadTable();
 	player.setFilterCount(tableWidget.rowCount());
-	
-	/*
-		STATUS BAR
-		*/
-	setStatusBar(&statusBar);
-
-	/*
-		OTHER
-		*/
-	QIcon* tray_icon_icon = new QIcon("media/graphics/lq.png");
-	tray_icon.setIcon(*tray_icon_icon);
-	tray_icon.setVisible(true);
 
 	/*
 		CONNECT SIGNALS TO SLOTS
@@ -835,6 +961,4 @@ MainWindow::~MainWindow()
 {
 	//close the database
 	db.close();
-
-	delete globals::settings;
 }

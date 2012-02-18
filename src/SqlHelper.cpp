@@ -167,11 +167,12 @@ void SqlHelper::INSERT(const char* filepath) const
 						mPlayerConnection->fetchValue("get_audio_codec\n", "ANS_AUDIO_CODEC="),
 						mPlayerConnection->fetchValue("get_audio_bitrate\n", "ANS_AUDIO_BITRATE="),
 
-						filename,
-						md5sum.toHex().data()
+						filename )
+					.arg(
+						last_changed.toTime_t()
 						)
 					.arg (
-						last_changed.toTime_t()
+						md5sum.toHex().data()
 					)
 			);
 	if(!return_value) {

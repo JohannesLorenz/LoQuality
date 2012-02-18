@@ -35,14 +35,9 @@
 #include <QToolBox>
 #include <QSpinBox>
 #include <QTableWidget>
+#include <QTabWidget>
 #include <QSqlTableModel>
 
-/*#include <QMap>
-#include <QToolBar>
-#include <QVBoxLayout>
-#include <QSplitter>
-#include <QTabWidget>
-#include <QList>*/
 #include <QAction>
 #include <QtGui/QStatusBar>
 #include <QMessageBox>
@@ -56,6 +51,7 @@
 #include "UpdateDlg.h"
 #include "src/UpdateInfoDlg.h"
 #include "src/DownloadImageDlg.h"
+#include "dialogs.h"
 
 /**
  * @class MainWindow
@@ -234,9 +230,11 @@ private:
 
 		class SettingsReader
 		{
-			inline void shouldBe(const char* option_name, QVariant initial_value) {
+			inline void shouldBe(const char* option_name, QVariant initial_value, bool first_start = false) {
 				if(globals::settings->value(option_name) == QVariant())
 				{
+					// on first start, do not inform user about updates.
+					if(!first_start)
 					QMessageBox::information(NULL, "Updated value",
 						QString("Inserted option \"%1\" due to update. "
 							"Default value \"%2\" will be used.").arg(option_name, initial_value.toString()));
@@ -244,21 +242,24 @@ private:
 				}
 			}
 
-			void checkIntegrity() {
-				shouldBe("ffmpeg_fullpath", "/usr/bin/ffmpeg");
-				shouldBe("mplayer_name", "mplayer2");
-				shouldBe("music_root", "insert_your_path");
-				shouldBe("number_of_cores", 2);
-				shouldBe("update_interval_days", 1);
-				shouldBe("do_updates", true);
+			void checkIntegrity(bool first_start = false) {
+				shouldBe("ffmpeg_fullpath", "/usr/bin/ffmpeg", first_start);
+				shouldBe("mplayer_name", "mplayer2", first_start);
+				shouldBe("music_root", "insert_your_path", first_start);
+				shouldBe("number_of_cores", 2, first_start);
+				shouldBe("update_interval_days", 1, first_start);
+				shouldBe("do_updates", true, first_start);
+				shouldBe("target", "pc", first_start);
 			}
 
 		public:
-			SettingsReader() {
-				globals::settings = new QSettings();
-				if(globals::settings->value("first_start", true).toBool())
-				 QMessageBox::information(NULL, "Please edit close LQ and then edit:", globals::settings->fileName().toAscii().data());
-
+			SettingsReader()
+			{
+				const bool first_start = globals::settings->value("first_start", true).toBool();
+				if(first_start) {
+					globals::settings->setValue("first_start", false);
+					QMessageBox::information(NULL, "Please close LQ and then edit:", globals::settings->fileName().toAscii().data());
+				}
 				if(globals::settings->value("update_applied").toBool()) {
 					UpdateInfoDlg u;
 					u.show();
@@ -267,7 +268,15 @@ private:
 				}
 				printf("Writing options to %s\n",
 					globals::settings->fileName().toAscii().data());
-				checkIntegrity();
+				checkIntegrity(first_start);
+
+				if(first_start) {
+					const bool mobile = question("Is this a mobile?",
+					"Are you running this on your mobile phone?");
+					globals::settings->setValue("target",
+						(mobile)?"mobile":"pc");
+				}
+
 
 				globals::MUSIC_ROOT = globals::settings->value("music_root").toString();
 				globals::MPLAYER_EXE = globals::settings->value("mplayer_name").toString();
@@ -309,8 +318,15 @@ private:
 		QProgressBar progressBar;
 		QDial volumeSlider;
 		
+		QTabWidget mobileTab;
+		QWidget mobileTab1;
+		QVBoxLayout mobileButtonsVBox;
+		QWidget mobileTab4;
+		QHBoxLayout mobileSpecialHBox;
+
 		// splitter between toolBox and tableWidget
 		QSplitter mainSplitter;
+		QToolBox* toolBox;
 
 		// information toolbox item
 		QHBoxLayout informationBox;
@@ -322,14 +338,13 @@ private:
 
 		// special filters toolbox item
 		QWidget specialFiltersContainer;
+		QWidget TODO;
 		QHBoxLayout specialFilters;
 		QLabel labelYearFilter, labelRatingFilter;
 		QSpinBox minYearFilter, maxYearFilter;
 		QSpinBox minRatingFilter, maxRatingFilter;
 		QCheckBox playUnratedFilter;
 	//	QCheckBox x1Filter, x2Filter;
-
-		QToolBox* toolBox;
 
 		// table Widget
 		QTableWidget tableWidget;
@@ -375,6 +390,10 @@ private:
 
 		//! (re)translates the GUI into another language
 		void retranslateUi();
+
+		//! layout stuff that needs to be redone for other layouts
+		void layoutWidgets(bool mobile = false);
+		void freeLayout();
 		
 		//! reloads the table from the database
 		void reloadTable();
@@ -387,7 +406,7 @@ private:
 		 * Constructor. Builds up the whole Main Window and sub widgets, connects all signals
 		 * @param parent parent pointer as it will be passed to QMainWindow. Not used otherwise.
 		 */
-		MainWindow (QWidget* parent=NULL);
+		MainWindow (const bool mobile, QWidget* parent=NULL);
 		~MainWindow();
 };
 

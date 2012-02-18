@@ -23,6 +23,12 @@ QWizardPage* SynchWizard::createPage(unsigned int page_id)
 		case PAGE_SELECT:
 			//QFileDialog::
 			break;
+
+
+			/*
+			ATTACH DATABASE "musicdb_johannes.sqlite" AS johannesdb;
+			select id,last_changed as lol from main group by id having count(id) > (select count(*) from johannesdb.main where last_changed = lol);
+			*/
 		default:
 			exit(1);
 	}

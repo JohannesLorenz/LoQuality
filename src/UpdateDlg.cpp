@@ -23,27 +23,12 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-#include <QMessageBox>
 #include <QDateTime>
+#include <QMessageBox>
 
 #include "UpdateDlg.h"
 #include "globals.h"
-
-bool question(const char* title, const char* text)
-{
-	QMessageBox dlg;
-
-	dlg.setIcon(QMessageBox::Question);
-
-	dlg.setWindowTitle(title);
-	dlg.setText(QString::fromLocal8Bit(text));
-	dlg.addButton("Yes", QMessageBox::YesRole); // returns 0
-	dlg.addButton("No", QMessageBox::AcceptRole); //returns 1
-
-	int ret_value=dlg.exec();
-
-	return (ret_value==0)?true:false;
-}
+#include "dialogs.h"
 
 bool UpdateDlg::readOutputToItems(int output)
 {

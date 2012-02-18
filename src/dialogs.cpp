@@ -18,37 +18,20 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
-#include "MainWindow.h"
-
-#include <QApplication>
 #include <QMessageBox>
 
-int main(int argc, char** argv)
+bool question(const char* title, const char* text)
 {
-	int return_value = 0;
+	QMessageBox dlg;
 
-	// pass arguments to Qt first
-	QApplication app(argc, argv);
-	app.setOrganizationName("LoQuality");
-	app.setOrganizationDomain("github.com/DrSegfault/LoQuality");
-	app.setApplicationName("LoQuality");
+	dlg.setIcon(QMessageBox::Question);
 
-	try {
-		// start program
-		globals::settings = new QSettings();
-		const bool mobile = (globals::settings->value("target", "pc").toString() == "mobile");
+	dlg.setWindowTitle(title);
+	dlg.setText(QString::fromLocal8Bit(text));
+	dlg.addButton("Yes", QMessageBox::YesRole); // returns 0
+	dlg.addButton("No", QMessageBox::AcceptRole); //returns 1
 
-		MainWindow mainwindow(mobile);
-		mainwindow.show();
+	int ret_value=dlg.exec();
 
-		return_value = app.exec();
-		delete globals::settings;
-
-	} catch (std::exception e) {
-		QMessageBox::warning(NULL, "Error", e.what());
-	} catch(...) {
-		QMessageBox::warning(NULL, "Error", "*** TODO: unknown exception");
-	}
-
-	return 0;
+	return (ret_value==0)?true:false;
 }
