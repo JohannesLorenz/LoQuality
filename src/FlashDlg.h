@@ -30,6 +30,7 @@
 #include <QRadioButton>
 #include <QWizard>
 
+#include <QLineEdit>
 #include <QListWidget>
 #include <QCheckBox>
 #include <QPushButton>
@@ -102,13 +103,21 @@ private slots:
 };
 
 
-class SelectFilesPage : public QWizardPage {
+class SelectFilesPage : public QWizardPage
+{
+	Q_OBJECT;
 	StoreHelper& storeHelper;
-	QLabel testLabel;
+	QLineEdit fileName;
+	QPushButton selectButton, storeButton;
+	QCheckBox cbAddAfterwards;
+	QVBoxLayout topLayout;
+	void setupUi();
+private slots:
+	void buttonStorePressed();
+	void selectFiles();
 public:
-	SelectFilesPage(StoreHelper& _storeHelper) : storeHelper(_storeHelper),
-	testLabel(this) {
-		testLabel.setText("TODO...");
+	SelectFilesPage(StoreHelper& _storeHelper) : storeHelper(_storeHelper) {
+		setupUi();
 	}
 	inline int nextId() const { return -1; }
 };

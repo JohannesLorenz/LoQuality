@@ -288,3 +288,30 @@ bool StoreHelper::convertToOgg(const char *infile, bool _insertSql)
 	downloadsMade = true;
 	return true;
 }
+
+void SelectFilesPage::setupUi()
+{
+	setLayout(&topLayout);
+
+	fileName.setReadOnly(true);
+	cbAddAfterwards.setChecked(true);
+
+	topLayout.addWidget(&fileName);
+	topLayout.addWidget(&selectButton);
+	topLayout.addWidget(&storeButton);
+	topLayout.addWidget(&cbAddAfterwards);
+
+	connect(&selectButton,SIGNAL(clicked ()), this, SLOT(selectFiles()));
+	connect(&storeButton,SIGNAL(clicked ()), this, SLOT(buttonStorePressed()));
+}
+
+void SelectFilesPage::buttonStorePressed()
+{
+	storeHelper.askForOutputFilename(fileName.text());
+	storeHelper.convertToOgg(fileName.text().toAscii().data(), cbAddAfterwards.isChecked());
+}
+
+void SelectFilesPage::selectFiles()
+{
+	fileName.setText(QFileDialog::getOpenFileName(NULL, "HDD video in flash or mp4 format"));
+}
