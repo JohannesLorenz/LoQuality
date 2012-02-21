@@ -29,15 +29,15 @@
 
 #define FIREFOX_NEW
 
-void FlashDlg::retranslateUi()
+void SelectFlashPage::retranslateUi()
 {
 	cbAddAfterwards.setText("Gleich einfuegen");
 	storeButton.setText("Abspeichern");
 	reloadButton.setText("Neu laden");
-	doneButton.setText("Fertig!");
+//	doneButton.setText("Fertig!");
 }
 
-void FlashDlg::addToFileList(const QString& basedir)
+void SelectFlashPage::addToFileList(const QString& basedir)
 {
 #ifdef FIREFOX_NEW
 	QDir tmpDir(basedir, /*"Flash*",*/"", QDir::Time, QDir::Files);
@@ -72,7 +72,7 @@ void FlashDlg::addToFileList(const QString& basedir)
 #endif
 }
 
-void FlashDlg::reload() // TODO: we could do that more efficient :P
+void SelectFlashPage::reload() // TODO: we could do that more efficient :P
 {
 	fileList.clear();
 #ifndef FIREFOX_NEW
@@ -127,7 +127,7 @@ void FlashDlg::reload() // TODO: we could do that more efficient :P
 #endif
 }
 
-void FlashDlg::slotTimerTimeout()
+void StoreHelper::slotTimerTimeout()
 {
 	puts("TIMEOUT!");
 	if( 0 != waitpid(ffmpegs_pid, NULL, WNOHANG) )  { // wait for ffmpeg to finish
@@ -135,7 +135,7 @@ void FlashDlg::slotTimerTimeout()
 		convertTimer.stop();
 		progressDlg->cancel();
 		progressDlg=NULL;
-		if(cbAddAfterwards.isChecked()) {
+		if(insertSql) { // cbAddAfterwards.isChecked()
 			sqlhelper.start_insert_sequence();
 			sqlhelper.INSERT(curOutName.toAscii().data());
 			sqlhelper.stop_insert_sequence();
@@ -145,7 +145,48 @@ void FlashDlg::slotTimerTimeout()
 
 void FlashDlg::setupUi()
 {
-	resize(600, 425);
+	setPage(PAGE_INTRO, &introPage);
+	setPage(PAGE_DECIDE, &decidePage);
+	setPage(PAGE_SELECT_FLASH, &selectFlashPage);
+	setPage(PAGE_SELECT_FILES, &selectFilesPage);
+}
+
+void SelectFlashPage::buttonStorePressed()
+{
+	QList<QListWidgetItem*> items = fileList.selectedItems();
+	for(QList<QListWidgetItem*>::const_iterator itr = items.begin();
+		itr != items.end(); itr++)
+	{
+		storeHelper.askForOutputFilename((*itr)->text());
+		storeHelper.convertToOgg(strchr((*itr)->text().toAscii().data(), ':') + 2,
+			cbAddAfterwards.isChecked());
+
+		/*int i=0;
+		//int stat_val;
+		while( 0 == waitpid(ffmpegs_pid, NULL, WNOHANG) )  { // wait for ffmpeg to finish
+			progressDlg.repaint();
+			sleep(1);
+		}*/
+
+
+		//waitpid(ffmpegs_pid, NULL, WCONTINUED);
+
+		//waitpid(ffmpegs_pid, NULL, WCONTINUED);
+
+		(*itr)->setSelected(false);
+		(*itr)->setFlags((*itr)->flags() ^ Qt::ItemIsEnabled );
+	}
+}
+
+void SelectFlashPage::selectionChanged (  )
+{
+	storeButton.setEnabled(fileList.selectedItems().size() > 0);
+}
+
+void SelectFlashPage::setupUi()
+{
+//	resize(600, 425);
+	setLayout(&topLayout);
 
 	/*
 		Calculate File List...
@@ -163,106 +204,87 @@ void FlashDlg::setupUi()
 	buttonLayout.addWidget(&cbAddAfterwards);
 	buttonLayout.addWidget(&storeButton);
 	buttonLayout.addWidget(&reloadButton);
-	buttonLayout.addWidget(&doneButton);
+	//buttonLayout.addWidget(&doneButton);
 
 	topLayout.addLayout(&buttonLayout);
-
-	convertTimer.setInterval(1000);
-	QObject::connect(&convertTimer, SIGNAL(timeout()), this, SLOT(slotTimerTimeout()));
 
 	connect(&fileList,SIGNAL(itemSelectionChanged ()),
 		this, SLOT(selectionChanged()));
 	connect(&storeButton,SIGNAL(clicked ()),
 		this, SLOT(buttonStorePressed()));
-	connect(&doneButton,SIGNAL(clicked ()),
-		this, SLOT(close()));
+	/*connect(&doneButton,SIGNAL(clicked ()),
+		this, SLOT(close()));*/
 	connect(&reloadButton,SIGNAL(clicked ()), this, SLOT(reload()));
 
 	retranslateUi();
-
-	QMessageBox msgBox;
-	msgBox.setText("The auther does not encourage you to<br/>"
-		"<b>use LoQuality for <u>illegal</u> downloads!!!</b>");
-	msgBox.setTextFormat(Qt::RichText);
-	msgBox.exec();
 }
 
-void FlashDlg::buttonStorePressed()
+void StoreHelper::askForOutputFilename(const QString& infile)
 {
-	QList<QListWidgetItem*> items = fileList.selectedItems();
-	for(QList<QListWidgetItem*>::const_iterator itr = items.begin();
-		itr != items.end(); itr++)
-	{
-		// ask for output file name
-		do {
-			curOutName = QFileDialog::getSaveFileName(this, QString("Bitte Speicherort fuer OGG ueberlegen... (%1)").arg((*itr)->text()), globals::MUSIC_ROOT, "*.ogg");
-			if(curOutName.isEmpty())
-			 break;
-			if( 0 != strncmp(curOutName.toAscii().data(),globals::MUSIC_ROOT.toAscii().data(), globals::MUSIC_ROOT.length())) {
-				QMessageBox::information(NULL, "Sorry...",QString("Dateien sollen nur in Verzeichnissen ab %1 gespeichert werden!").arg(globals::MUSIC_ROOT));
-				continue;
-			}
-			break;
-		} while(true);
+	// ask for output file name
+	do {
 
+
+
+		// TODO: NULL !!!!!!!!!!!!!!!!!!!!!!!!!!!11
+
+
+
+
+		curOutName = QFileDialog::getSaveFileName(NULL, QString("Bitte Speicherort fuer OGG ueberlegen... (%1)").arg(infile), globals::MUSIC_ROOT, "*.ogg");
 		if(curOutName.isEmpty())
-		 return;
-		if(!curOutName.endsWith(".ogg"))
-		 curOutName += ".ogg";
-
-		// fork ffmpeg
-		ffmpegs_pid=fork();
-		if(ffmpegs_pid < 0) {
-			QMessageBox::information(NULL, "Sorry...", "... fork() ging leider nicht, kann ffmpeg nicht starten :(");
-			return;
+		 break;
+		if( 0 != strncmp(curOutName.toAscii().data(),globals::MUSIC_ROOT.toAscii().data(), globals::MUSIC_ROOT.length())) {
+			QMessageBox::information(NULL, "Sorry...",QString("Dateien sollen nur in Verzeichnissen ab %1 gespeichert werden!").arg(globals::MUSIC_ROOT));
+			continue;
 		}
-		else if(ffmpegs_pid == 0) {
-			// ffmpeg -i flashfile -vn -acodec libmp3lame -y -ar 44100 -ab 128000 outfilename
-			//execlp("ffmpeg", "ffmpeg", "-i", strchr((*itr)->text().toAscii().data(), ':') + 2, "-vn", "-acodec", "libmp3lame", "-y", "-ar", "44100", "-ab", "128000", curOutName.toAscii().data(), NULL);
+		break;
+	} while(true);
 
-			/*
-				We need at most audio quality 6 = approx. 128 kbps. See:
-				http://en.wikipedia.org/wiki/YouTube#Quality_and_codecs
-				http://en.wikipedia.org/wiki/Vorbis
-			*/
-			// note: you might want to specify number of threads with "-threads n"
-			// ffmpeg -i flashfile -vn -y -ar 44100 -aq 6 -acodec libvorbis -threads THREADNUM outfile
-			const QString CPU_THREADS = globals::settings->value("number_of_cores",2).toString();
-			const QString ffmpeg_fullpath = globals::settings->value("ffmpeg_fullpath").toString();
-			//printf("%s -i %s ... -threads %s %s",,,CPU_THREADS, curOutName.toAscii().data())
-			execlp(ffmpeg_fullpath.toAscii().data(), "ffmpeg", "-i", strchr((*itr)->text().toAscii().data(), ':') + 2, "-vn", "-y", "-ar", "44100", "-aq", "6", "-acodec", "libvorbis", "-threads", CPU_THREADS.toAscii().data(), curOutName.toAscii().data(), NULL);
-
-			exit(0);
-		}
-
-		if(progressDlg == NULL)
-		{
-			progressDlg = new QProgressDialog("Konvertiere Daten mit ffmpeg...", "Abbrechen", 0, 0, this);
-			progressDlg->setWindowModality(Qt::WindowModal);
-			progressDlg->setValue(0);
-			progressDlg->show();
-			convertTimer.start();
-		}
-
-		/*int i=0;
-		//int stat_val;
-		while( 0 == waitpid(ffmpegs_pid, NULL, WNOHANG) )  { // wait for ffmpeg to finish
-			progressDlg.repaint();
-			sleep(1);
-		}*/
-
-
-		//waitpid(ffmpegs_pid, NULL, WCONTINUED);
-
-		//waitpid(ffmpegs_pid, NULL, WCONTINUED);
-
-		(*itr)->setSelected(false);
-		(*itr)->setFlags((*itr)->flags() ^ Qt::ItemIsEnabled );
-		downloadsMade = true;
-	}
+	if(curOutName.isEmpty())
+	 return;
+	if(!curOutName.endsWith(".ogg"))
+		curOutName += ".ogg";
 }
 
-void FlashDlg::selectionChanged (  )
+bool StoreHelper::convertToOgg(const char *infile, bool _insertSql)
 {
-	storeButton.setEnabled(fileList.selectedItems().size() > 0);
+	insertSql = _insertSql;
+
+	// fork ffmpeg
+	ffmpegs_pid=fork();
+	if(ffmpegs_pid < 0) {
+		QMessageBox::information(NULL, "Sorry...", "... fork() ging leider nicht, kann ffmpeg nicht starten :(");
+		return false;
+	}
+	else if(ffmpegs_pid == 0) {
+		// ffmpeg -i flashfile -vn -acodec libmp3lame -y -ar 44100 -ab 128000 outfilename
+		//execlp("ffmpeg", "ffmpeg", "-i", strchr((*itr)->text().toAscii().data(), ':') + 2, "-vn", "-acodec", "libmp3lame", "-y", "-ar", "44100", "-ab", "128000", curOutName.toAscii().data(), NULL);
+
+		/*
+			We need at most audio quality 6 = approx. 128 kbps. See:
+			http://en.wikipedia.org/wiki/YouTube#Quality_and_codecs
+			http://en.wikipedia.org/wiki/Vorbis
+		*/
+		// note: you might want to specify number of threads with "-threads n"
+		// ffmpeg -i flashfile -vn -y -ar 44100 -aq 6 -acodec libvorbis -threads THREADNUM outfile
+		const QString CPU_THREADS = globals::settings->value("number_of_cores",2).toString();
+		const QString ffmpeg_fullpath = globals::settings->value("ffmpeg_fullpath").toString();
+		//printf("%s -i %s ... -threads %s %s",,,CPU_THREADS, curOutName.toAscii().data())
+		execlp(ffmpeg_fullpath.toAscii().data(), "ffmpeg", "-i", infile, "-vn", "-y", "-ar", "44100", "-aq", "6", "-acodec", "libvorbis", "-threads", CPU_THREADS.toAscii().data(), curOutName.toAscii().data(), NULL);
+
+		exit(0);
+	}
+
+	if(progressDlg == NULL)
+	{
+		progressDlg = new QProgressDialog("Konvertiere Daten mit ffmpeg...", "Abbrechen", 0, 0, NULL); // TODO: NULL !!!
+		progressDlg->setWindowModality(Qt::WindowModal);
+		progressDlg->setValue(0);
+		progressDlg->show();
+		convertTimer.start();
+	}
+
+	downloadsMade = true;
+	return true;
 }
