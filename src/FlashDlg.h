@@ -59,7 +59,7 @@ protected:
 	QTimer convertTimer;
 public:
 	void askForOutputFilename(const QString& infile);
-	bool convertToOgg(const char* infile, bool _insertSql);
+	bool convertToOgg(QWidget* parent, const char* infile, bool _insertSql);
 
 public slots:
 	void slotTimerTimeout();
@@ -111,6 +111,7 @@ class SelectFilesPage : public QWizardPage
 	QPushButton selectButton, storeButton;
 	QCheckBox cbAddAfterwards;
 	QVBoxLayout topLayout;
+	void retranslateUi();
 	void setupUi();
 private slots:
 	void buttonStorePressed();
@@ -118,6 +119,7 @@ private slots:
 public:
 	SelectFilesPage(StoreHelper& _storeHelper) : storeHelper(_storeHelper) {
 		setupUi();
+		retranslateUi();
 	}
 	inline int nextId() const { return -1; }
 };
@@ -160,6 +162,7 @@ class FlashDlg : public QWizard
 			btn_files.setText("download files from HDD");
 			choice.addButton(&btn_flash, 0);
 			choice.addButton(&btn_files, 1);
+			btn_flash.setChecked(true);
 			vbox.addWidget(&btn_flash);
 			vbox.addWidget(&btn_files);
 			setLayout(&vbox);

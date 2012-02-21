@@ -158,7 +158,7 @@ void SelectFlashPage::buttonStorePressed()
 		itr != items.end(); itr++)
 	{
 		storeHelper.askForOutputFilename((*itr)->text());
-		storeHelper.convertToOgg(strchr((*itr)->text().toAscii().data(), ':') + 2,
+		storeHelper.convertToOgg(this, strchr((*itr)->text().toAscii().data(), ':') + 2,
 			cbAddAfterwards.isChecked());
 
 		/*int i=0;
@@ -223,14 +223,6 @@ void StoreHelper::askForOutputFilename(const QString& infile)
 {
 	// ask for output file name
 	do {
-
-
-
-		// TODO: NULL !!!!!!!!!!!!!!!!!!!!!!!!!!!11
-
-
-
-
 		curOutName = QFileDialog::getSaveFileName(NULL, QString("Bitte Speicherort fuer OGG ueberlegen... (%1)").arg(infile), globals::MUSIC_ROOT, "*.ogg");
 		if(curOutName.isEmpty())
 		 break;
@@ -247,14 +239,14 @@ void StoreHelper::askForOutputFilename(const QString& infile)
 		curOutName += ".ogg";
 }
 
-bool StoreHelper::convertToOgg(const char *infile, bool _insertSql)
+bool StoreHelper::convertToOgg(QWidget* parent, const char *infile, bool _insertSql)
 {
 	insertSql = _insertSql;
 
 	// fork ffmpeg
 	ffmpegs_pid=fork();
 	if(ffmpegs_pid < 0) {
-		QMessageBox::information(NULL, "Sorry...", "... fork() ging leider nicht, kann ffmpeg nicht starten :(");
+		QMessageBox::information(parent, "Sorry...", "... fork() ging leider nicht, kann ffmpeg nicht starten :(");
 		return false;
 	}
 	else if(ffmpegs_pid == 0) {
@@ -278,7 +270,7 @@ bool StoreHelper::convertToOgg(const char *infile, bool _insertSql)
 
 	if(progressDlg == NULL)
 	{
-		progressDlg = new QProgressDialog("Konvertiere Daten mit ffmpeg...", "Abbrechen", 0, 0, NULL); // TODO: NULL !!!
+		progressDlg = new QProgressDialog("Konvertiere Daten mit ffmpeg...", "Abbrechen", 0, 0, parent);
 		progressDlg->setWindowModality(Qt::WindowModal);
 		progressDlg->setValue(0);
 		progressDlg->show();
@@ -295,6 +287,7 @@ void SelectFilesPage::setupUi()
 
 	fileName.setReadOnly(true);
 	cbAddAfterwards.setChecked(true);
+	storeButton.setDisabled(true);
 
 	topLayout.addWidget(&fileName);
 	topLayout.addWidget(&selectButton);
@@ -308,10 +301,18 @@ void SelectFilesPage::setupUi()
 void SelectFilesPage::buttonStorePressed()
 {
 	storeHelper.askForOutputFilename(fileName.text());
-	storeHelper.convertToOgg(fileName.text().toAscii().data(), cbAddAfterwards.isChecked());
+	storeHelper.convertToOgg(this, fileName.text().toAscii().data(), cbAddAfterwards.isChecked());
 }
 
 void SelectFilesPage::selectFiles()
 {
 	fileName.setText(QFileDialog::getOpenFileName(NULL, "HDD video in flash or mp4 format"));
+	storeButton.setDisabled(fileName.text().isEmpty());
+}
+
+void SelectFilesPage::retranslateUi()
+{
+	cbAddAfterwards.setText("Gleich einfuegen");
+	selectButton.setText("Select Input file (flv or mp4)");
+	storeButton.setText("Convert File");
 }

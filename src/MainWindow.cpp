@@ -374,8 +374,10 @@ void MainWindow::slotToolBoxChanged(int newIndex)
 
 void MainWindow::reloadTable()
 {
+	tableWidget.setSortingEnabled(false); // no sorting during insertion - it takes too long
+
 	tableWidget.clear();
-	//tableWidget.setRowCount(0);
+	tableWidget.setRowCount(0);
 
 	tableWidget.setColumnCount(15);
 
@@ -435,7 +437,11 @@ void MainWindow::reloadTable()
 		QString vote_you = query.value(11).toString();
 		QString vote_other = query.value(12).toString();
 		QString path = query.value(13).toString();
-		QString last_change = query.value(15).toString();
+
+		QDateTime _last_change = QDateTime::fromTime_t(query.value(15).toInt());
+
+		QString last_change = (_last_change.isValid() && _last_change <= QDateTime::currentDateTime())?
+			_last_change.toString("yyyy-MM-dd") : "";
 		
 		//QString &artistRef = artistAlbumList[artist];
 		//if(! artistRef.contains(artist) )
@@ -501,6 +507,9 @@ void MainWindow::reloadTable()
 	
 	tableWidget.resizeColumnsToContents ();
 	tableWidget.resizeRowsToContents ();
+
+	tableWidget.setSortingEnabled(true);
+	tableWidget.sortByColumn(14, Qt::AscendingOrder);
 }
 
 void MainWindow::switch_tray(QSystemTrayIcon::ActivationReason reason)
