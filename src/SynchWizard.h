@@ -13,6 +13,8 @@
 #include <QFileDialog>
 #include <QCheckBox>
 
+#include <QTableWidget> // TODO
+
 enum PAGE_ID {
 	PAGE_INTRO,
 	PAGE_OPEN,
@@ -59,7 +61,7 @@ public:
 		hbox.addWidget(&lineEdit);
 		hbox.addWidget(&selectButton);
 
-		registerField("dbName*", &lineEdit);
+		registerField("importDbName*", &lineEdit);
 		connect(&selectButton,SIGNAL(clicked ()), this, SLOT(selectDatabase()));
 
 		/*import_or_export.addButton(&btn_import);
@@ -75,17 +77,21 @@ public:
 };
 
 class SelectPage : public QWizardPage {
+	QTableWidget newSongs;
 public:
-	SelectPage() {
+	bool getSongList();
+	SelectPage() : newSongs(this) {
 		setTitle("Select files");
 		setSubTitle("Please select all songs you would like to im- or export.");
 	}
+	void initializePage() { getSongList(); }
 	inline int nextId() const { return -1; }
 };
 
 
 class SynchWizard : public QWizard
 {
+	Q_OBJECT;
 private:
 	IntroPage introPage;
 	OpenPage openPage;

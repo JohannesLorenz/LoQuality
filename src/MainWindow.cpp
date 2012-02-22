@@ -764,7 +764,7 @@ void MainWindow::freeLayout()
 	/*
 		OTHER
 		*/
-	QIcon* tray_icon_icon = new QIcon("media/graphics/lq.png");
+	//QIcon* tray_icon_icon = new QIcon("media/graphics/lq.png");
 }
 
 MainWindow::MainWindow (const bool mobile, QWidget* parent)
@@ -788,6 +788,8 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 //		      	(QIcon(QPixmap(media_playback_start_xpm)), "", this) ),
 	centralWidget(this),
 	verticalLayout(&centralWidget),
+	mobileTab(NULL),
+
 	mainSplitter(Qt::Vertical, (mobile)?(NULL):&centralWidget),
 
 	toolBox(new QToolBox(&mainSplitter)),
@@ -796,7 +798,6 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 	//table widget
 	tableWidget((mobile)?(QWidget*)(NULL):(QWidget*)(&mainSplitter)),
 
-	mobileTab(&centralWidget),
 	// others
 	popupMenu(&tableWidget),
 	visible(true),
