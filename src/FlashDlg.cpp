@@ -31,9 +31,10 @@
 
 void SelectFlashPage::retranslateUi()
 {
-	cbAddAfterwards.setText("Gleich einfuegen");
-	storeButton.setText("Abspeichern");
-	reloadButton.setText("Neu laden");
+	setTitle("Flash videos from Firefox");
+	cbAddAfterwards.setText("Insert into my sql database");
+	storeButton.setText("Save");
+	reloadButton.setText("Reload");
 //	doneButton.setText("Fertig!");
 }
 
@@ -161,25 +162,12 @@ void SelectFlashPage::buttonStorePressed()
 		storeHelper.convertToOgg(this, strchr((*itr)->text().toAscii().data(), ':') + 2,
 			cbAddAfterwards.isChecked());
 
-		/*int i=0;
-		//int stat_val;
-		while( 0 == waitpid(ffmpegs_pid, NULL, WNOHANG) )  { // wait for ffmpeg to finish
-			progressDlg.repaint();
-			sleep(1);
-		}*/
-
-
-		//waitpid(ffmpegs_pid, NULL, WCONTINUED);
-
-		//waitpid(ffmpegs_pid, NULL, WCONTINUED);
-
 		(*itr)->setSelected(false);
 		(*itr)->setFlags((*itr)->flags() ^ Qt::ItemIsEnabled );
 	}
 }
 
-void SelectFlashPage::selectionChanged (  )
-{
+void SelectFlashPage::selectionChanged (  ) {
 	storeButton.setEnabled(fileList.selectedItems().size() > 0);
 }
 
@@ -312,7 +300,9 @@ void SelectFilesPage::selectFiles()
 
 void SelectFilesPage::retranslateUi()
 {
-	cbAddAfterwards.setText("Gleich einfuegen");
+	setTitle("Flash Files from HDD");
+	setSubTitle("Please Choose a song and then convert it.");
+	cbAddAfterwards.setText("Insert into my sql database");
 	selectButton.setText("Select Input file (flv or mp4)");
 	storeButton.setText("Convert File");
 }

@@ -157,9 +157,11 @@ private:
 		inline void slotInfoDownload() {
 			//QString currentDir = player.getCurSongItem()->text();
 			//currentDir.resize();
-			DownloadImageDlg idlg(player.getCurSongItem()->text());
-			idlg.show();
-			idlg.exec();
+			if(player.getCurSongItem() != NULL) {
+				DownloadImageDlg idlg(player.getCurSongItem()->text());
+				idlg.show();
+				idlg.exec();
+			}
 		}
 
 		void slotHelpAboutAction();

@@ -439,9 +439,8 @@ void MainWindow::reloadTable()
 		QString path = query.value(13).toString();
 
 		QDateTime _last_change = QDateTime::fromTime_t(query.value(15).toInt());
-
 		QString last_change = (_last_change.isValid() && _last_change <= QDateTime::currentDateTime())?
-			_last_change.toString("yyyy-MM-dd") : "";
+			_last_change.toString("yyyy-MM-dd") : "(incorrect)";
 		
 		//QString &artistRef = artistAlbumList[artist];
 		//if(! artistRef.contains(artist) )
@@ -850,11 +849,11 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 	initButton2(BTN2_SYNCH_MP3, SLOT(slotSynch()));
 	initButton2(BTN2_SYNCH_USB, SLOT(slotSynch()));
 	
-	minYearFilter.setMinimum(1900); minYearFilter.setValue(1970); minYearFilter.setMaximum(2020);
-	maxYearFilter.setMinimum(1900); maxYearFilter.setValue(2000); maxYearFilter.setMaximum(2020);
+	minYearFilter.setMinimum(1970); minYearFilter.setMaximum(2020); minYearFilter.setValue(1970);
+	maxYearFilter.setMinimum(1970); maxYearFilter.setMaximum(2020); maxYearFilter.setValue(2000);
 
-	minRatingFilter.setMinimum(1); minRatingFilter.setValue(1); minRatingFilter.setMaximum(10);
-	maxRatingFilter.setMinimum(1); maxRatingFilter.setValue(10); maxRatingFilter.setMaximum(10);
+	minRatingFilter.setMinimum(1); minRatingFilter.setMaximum(10); minRatingFilter.setValue(1);
+	maxRatingFilter.setMinimum(1); maxRatingFilter.setMaximum(10); maxRatingFilter.setValue(10);
 	playUnratedFilter.setChecked(true);
 
 	/*

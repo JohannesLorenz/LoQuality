@@ -136,14 +136,15 @@ class FlashDlg : public QWizard
 		PAGE_COUNT
 	};
 
-	//QVBoxLayout vbox[PAGE_COUNT];
-
 	class IntroPage : public QWizardPage {
 		QLabel infoLabel;
 	public:
 		IntroPage() : infoLabel(this) {
+			setTitle("Welcome");
 			infoLabel.setWordWrap(true);
-			infoLabel.setText("The auther does not encourage you to<br/>"
+			infoLabel.setText("This flash downloader lets you download"
+				"flash videos from youtube or from your HDD into ogg.<br/><br/>"
+				"The auther does not encourage you to<br/>"
 				"<b>use LoQuality for <u>illegal</u> downloads!!!</b>");
 		}
 		inline int nextId() const { return PAGE_DECIDE; }
@@ -151,13 +152,12 @@ class FlashDlg : public QWizard
 
 	class DecidePage : public QWizardPage {
 		QVBoxLayout vbox;
-		QLabel infoLabel;
 		QButtonGroup choice;
 		QRadioButton btn_flash, btn_files;
 	public:
 		DecidePage() {
-			infoLabel.setWordWrap(true);
-			infoLabel.setText("Please choose one of the options below.");
+			setTitle("Source Type");
+			setSubTitle("Please choose one of the options below.");
 			btn_flash.setText("download flash from Firefox");
 			btn_files.setText("download files from HDD");
 			choice.addButton(&btn_flash, 0);
@@ -175,9 +175,6 @@ class FlashDlg : public QWizard
 
 
 	private:
-
-		// QLabel lbl_title; ....
-
 		inline void closeEvent(QCloseEvent *event) {
 			Q_UNUSED(event);
 			if (storeHelper.made_downloads() /*&& cbAddAfterwards.isChecked()*/) accept();
