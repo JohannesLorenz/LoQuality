@@ -232,7 +232,8 @@ private:
 
 		class SettingsReader
 		{
-			inline void shouldBe(const char* option_name, QVariant initial_value, bool first_start = false) {
+			inline void shouldBe(const char* option_name, QVariant initial_value, bool first_start = false)
+			{
 				if(globals::settings->value(option_name) == QVariant())
 				{
 					// on first start, do not inform user about updates.
@@ -244,7 +245,8 @@ private:
 				}
 			}
 
-			void checkIntegrity(bool first_start = false) {
+			void checkIntegrity(bool first_start = false)
+			{
 				shouldBe("ffmpeg_fullpath", "/usr/bin/ffmpeg", first_start);
 				shouldBe("mplayer_name", "mplayer2", first_start);
 				shouldBe("music_root", "insert_your_path", first_start);
@@ -252,6 +254,7 @@ private:
 				shouldBe("update_interval_days", 1, first_start);
 				shouldBe("do_updates", true, first_start);
 				shouldBe("target", "pc", first_start);
+				shouldBe("equalizer","0:0:0:0:0:0:0:0:0:0", first_start);
 			}
 
 		public:
@@ -278,7 +281,6 @@ private:
 					globals::settings->setValue("target",
 						(mobile)?"mobile":"pc");
 				}
-
 
 				globals::MUSIC_ROOT = globals::settings->value("music_root").toString();
 				globals::MPLAYER_EXE = globals::settings->value("mplayer_name").toString();

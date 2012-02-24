@@ -851,7 +851,7 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 	initButton2(BTN2_SYNCH_USB, SLOT(slotSynch()));
 	
 	minYearFilter.setMinimum(1970); minYearFilter.setMaximum(2020); minYearFilter.setValue(1970);
-	maxYearFilter.setMinimum(1970); maxYearFilter.setMaximum(2020); maxYearFilter.setValue(2000);
+	maxYearFilter.setMinimum(1970); maxYearFilter.setMaximum(2020); maxYearFilter.setValue(QDate::currentDate().year());
 
 	minRatingFilter.setMinimum(1); minRatingFilter.setMaximum(10); minRatingFilter.setValue(1);
 	maxRatingFilter.setMinimum(1); maxRatingFilter.setMaximum(10); maxRatingFilter.setValue(10);
