@@ -163,7 +163,7 @@ namespace Mpris1
 
 	void PlayerHandler::Play() {
 		puts("TODO: keep random here!");
-		player->slotPlay(false, NULL);
+		player->slotPlay();
 	}
 
 	void PlayerHandler::PlayPause() {

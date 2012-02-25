@@ -35,6 +35,11 @@
 #define _MPLAYER_REMOTE_PIPE "/tmp/lq_remote_pipe"
 #define _MPLAYER_OUTPUT_PIPE "/tmp/lq_output_pipe"
 
+inline void exit_illegal_state() {
+	fputs("illegal button input in current state", stderr);
+	exit(1);
+}
+
 void PlayerEngine::setStatus(STATUS_FLAGS new_status) {
 	player_status = new_status;
 	emit signalStatusChanged(new_status);
@@ -43,24 +48,41 @@ void PlayerEngine::setStatus(STATUS_FLAGS new_status) {
 /*
 	BUTTONS SLOTS
 */
-void PlayerEngine::slotPlay(bool random, const QTableWidgetItem* item)
+void PlayerEngine::slotPlay(/*bool random, const QTableWidgetItem* item*/)
 {
-	if(player_status == STATUS_PAUSED && !item) { // the !item is important, if next song was deserved, ignore the pause...
-		mPlayerConnection.pass_remote_command("pause\n"); // unpause song
-		setStatus(STATUS_PLAYING);
-		songTimer.start();
+	if(!curSong) {
+		slotForward(0,0, true);
 	}
-	else slotForward(random, item);
+	else
+	{
+		switch(player_status) {
+			case STATUS_PAUSED:
+				mPlayerConnection.pass_remote_command("pause\n"); break;
+			case STATUS_STOPPED:
+				startSong(); break;
+			default: exit_illegal_state();
+		}
+		songTimer.start();
+		setStatus(STATUS_PLAYING);
+	}
 }
 
 void PlayerEngine::slotPause() {
+	switch(player_status) {
+		case STATUS_PAUSED:
+			songTimer.start(); setStatus(STATUS_PLAYING); break;
+		case STATUS_PLAYING:
+			songTimer.stop(); setStatus(STATUS_PAUSED); break;
+		default: exit_illegal_state();
+	}
 	mPlayerConnection.pass_remote_command("pause\n");
-	setStatus(STATUS_PAUSED);
-	songTimer.stop();
 }
 
 void PlayerEngine::slotStop() {
+	if(player_status == STATUS_PAUSED)
+	 mPlayerConnection.pass_remote_command("pause\n");
 	mPlayerConnection.pass_remote_command("stop\n");
+
 	setStatus(STATUS_STOPPED);
 	songTimer.stop();
 	emit signalUpdatePlaytime(100);
@@ -77,9 +99,14 @@ void PlayerEngine::startSong()
 	songTimer.start();
 }
 
-void PlayerEngine::slotForward(bool random, const QTableWidgetItem* item)
+void PlayerEngine::slotForward(bool random, const QTableWidgetItem* item, bool forcePlay)
 {
-	setStatus(STATUS_STOPPED);
+
+	if(player_status == STATUS_PAUSED)
+	 mPlayerConnection.pass_remote_command("pause\n"); // unpause song
+	mPlayerConnection.pass_remote_command("stop\n");
+
+//	setStatus(STATUS_STOPPED);
 	songTimer.stop();
 	emit signalUpdatePlaytime(0);
 
@@ -88,7 +115,6 @@ void PlayerEngine::slotForward(bool random, const QTableWidgetItem* item)
 	 lastSongs.enqueue(curSong);
 
 	if(item) { // user wishes a specified next song by double clicking
-		// TODO: could not we simply push it to the nextSongs list?
 		curSong = item;
 	}
 	else if( nextSongs.isEmpty() )
@@ -133,17 +159,18 @@ void PlayerEngine::slotForward(bool random, const QTableWidgetItem* item)
 
 	table->selectRow(curSong->row());
 
-	startSong();
-
-	puts("DONE");
-
+	if(forcePlay || player_status != STATUS_STOPPED)
+	 startSong();
 }
 
 void PlayerEngine::slotBackward()
 {
+	if(player_status == STATUS_PAUSED)
+	 mPlayerConnection.pass_remote_command("pause\n"); // unpause song
+
 	if( ! lastSongs.isEmpty() )
 	{
-		setStatus(STATUS_STOPPED);
+//		setStatus(STATUS_STOPPED);
 		songTimer.stop();
 		emit signalUpdatePlaytime(0);
 
@@ -152,7 +179,8 @@ void PlayerEngine::slotBackward()
 		curSong = lastSongs.dequeue();
 		table->selectRow(curSong->row());
 
-		startSong();
+		if(player_status != STATUS_STOPPED)
+		 startSong();
 	}
 }
 
@@ -192,4 +220,6 @@ PlayerEngine::PlayerEngine (QTableWidget* _table) : table(_table), curSong(NULL)
 	songTimer.setInterval(1000);
 	QObject::connect(&songTimer, SIGNAL(timeout()), this, SLOT(slotTimerTimeout()));
 }
+
+
 

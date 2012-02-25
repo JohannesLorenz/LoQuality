@@ -110,7 +110,7 @@ private:
 
 		//! argument-less wrapper to allow slot binding
 		inline void slotPlay() {
-			slotPlay(-1);
+			slotPlay(-1, 0);
 		}
 
 		void slotPause(); // eng
@@ -120,9 +120,8 @@ private:
 		}
 
 		void slotBackward();
-
-		//! This slot is actually only a
-		// void slotForward();
+		inline void slotForward() { slotForward(-1, -1); }
+		void slotForward(int x, int y);
 
 		void slotAddFile();
 		void slotRemoveSong();

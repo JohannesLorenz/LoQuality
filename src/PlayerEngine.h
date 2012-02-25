@@ -47,16 +47,18 @@ class PlayerEngine : public QObject
 			STATUS_SONGOVER,
 			STATUS_PAUSED
 		};
+	private:
+		void switchPause();
 
 	public slots:
 		//! @param item the table widget item containing the full path
-		void slotPlay(bool random, const QTableWidgetItem* item);
+		void slotPlay(/*bool random, const QTableWidgetItem* item*/);
 		void slotPause();
 		void slotStop();
 		void slotBackward();
 
 		//! @param item the table widget item containing the full path
-		void slotForward(bool random, const QTableWidgetItem* item);
+		void slotForward(bool random, const QTableWidgetItem* item, bool forcePlay=false);
 
 		void slotAddFile();
 		void slotRemoveSong();

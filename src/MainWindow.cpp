@@ -157,8 +157,10 @@ void MainWindow::onSetStatus(STATUS_FLAGS new_status) {
 	BUTTONS SLOTS
 */
 void MainWindow::slotPlay(int row, int column) {
-	
+
+	Q_UNUSED(row);
 	Q_UNUSED(column);
+
 
 /*	if(player_status == STATUS_PAUSED)
 	 pass_remote_command("pause\n"); // unpause song
@@ -182,7 +184,10 @@ void MainWindow::slotPlay(int row, int column) {
 
 	//QList<QTableWidgetItem*> items = tableWidget.selectedItems();
 	//player.slotPlay(buttons1[BTN1_RANDOM].isChecked(), items.isEmpty()?NULL:items.front());
-	player.slotPlay(buttons1[BTN1_RANDOM].isChecked(), (row==-1)?NULL:tableWidget.item(row,13));
+
+	//player.slotPlay(buttons1[BTN1_RANDOM].isChecked(), (row==-1)?NULL:tableWidget.item(row,13));
+	player.slotPlay(); // that simple :P
+
 //	player.slotChangeVolume(volumeSlider.sliderPosition()); // set volume again - only to be sure
 }
 
@@ -194,10 +199,14 @@ void MainWindow::slotStop() {
 	player.slotStop();
 }
 
-/*void MainWindow::slotForward() {
-	QList<QTableWidgetItem*> items = tableWidget.selectedItems();
-	player.slotForward(buttons1[BTN1_RANDOM].isChecked(), items.isEmpty()?NULL:items.front());
-}*/
+void MainWindow::slotForward(int row, int column) {
+
+	Q_UNUSED(column);
+	//QList<QTableWidgetItem*> items = tableWidget.selectedItems();
+	//player.slotForward(buttons1[BTN1_RANDOM].isChecked(), NULL);
+	const bool doubleClicked = (row!=-1);
+	player.slotForward(buttons1[BTN1_RANDOM].isChecked(), doubleClicked?tableWidget.item(row,13):NULL, doubleClicked);
+}
 
 void MainWindow::slotBackward() {
 	player.slotBackward();
@@ -438,7 +447,7 @@ void MainWindow::reloadTable()
 		QString vote_other = query.value(12).toString();
 		QString path = query.value(13).toString();
 
-		QDateTime _last_change = QDateTime::fromTime_t(query.value(15).toInt());
+		QDateTime _last_change = QDateTime::fromTime_t(query.value(14).toInt());
 		QString last_change = (_last_change.isValid() && _last_change <= QDateTime::currentDateTime())?
 			_last_change.toString("yyyy-MM-dd") : "(incorrect)";
 		
@@ -841,7 +850,7 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 	initButton1(BTN1_STOP, SLOT(slotStop()), media_playback_stop_xpm);
 	initButton1(BTN1_RANDOM, NULL, media_playlist_shuffle_xpm);
 	initButton1(BTN1_BWD, SLOT(slotBackward()), media_skip_backward_xpm);
-	initButton1(BTN1_FWD, SLOT(slotPlay()), media_skip_forward_xpm);
+	initButton1(BTN1_FWD, SLOT(slotForward()), media_skip_forward_xpm);
 	initButton1(BTN1_REPEAT, NULL, media_playlist_repeat_xpm);
 
 	initButton2(BTN2_ADD, SLOT(slotAddFile()));
@@ -936,7 +945,7 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 	tableWidget.setSelectionBehavior(QAbstractItemView::SelectRows);
 	//connect(&tableWidget, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(slotItemEdit(int, int)));
 
-	connect(&tableWidget, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(slotPlay(int, int)));
+	connect(&tableWidget, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(slotForward(int, int)));
 	connect(&tableWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showPopupMenu(const QPoint&)));
 	connect(&filter, SIGNAL(textChanged(const QString &)), this, SLOT(slotFilterChanged(const QString &)));
 	connect(&volumeSlider, SIGNAL(valueChanged(int)), &player, SLOT(slotChangeVolume(int)));
