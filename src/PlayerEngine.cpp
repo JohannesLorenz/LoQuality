@@ -36,7 +36,7 @@
 #define _MPLAYER_OUTPUT_PIPE "/tmp/lq_output_pipe"
 
 inline void exit_illegal_state() {
-	fputs("illegal button input in current state", stderr);
+	fputs("ERROR: illegal button input in current state\n", stderr);
 	exit(1);
 }
 
@@ -55,10 +55,12 @@ void PlayerEngine::slotPlay(/*bool random, const QTableWidgetItem* item*/)
 	}
 	else
 	{
+		// error: STATUS_PLAYING here after songover
 		switch(player_status) {
 			case STATUS_PAUSED:
 				mPlayerConnection.pass_remote_command("pause\n"); break;
 			case STATUS_STOPPED:
+			case STATUS_SONGOVER:
 				startSong(); break;
 			default: exit_illegal_state();
 		}
@@ -202,8 +204,10 @@ void PlayerEngine::slotTimerTimeout() {
 	curTime += 1.0f;
 	printf("playTime: %f, curTime: %f\n",playTime, curTime);
 	emit signalUpdatePlaytime((int)(100.0f * curTime/playTime));
-	if(curTime >= playTime && curTime >= 3.0f) // let mplayer 3 seconds to get playTime
-	 emit signalStatusChanged(STATUS_SONGOVER);
+	if(curTime >= playTime && curTime >= 3.0f) { // let mplayer 3 seconds to get playTime
+		//emit signalStatusChanged(STATUS_SONGOVER);
+		setStatus(STATUS_SONGOVER);
+	}
 }
 
 

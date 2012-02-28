@@ -15,6 +15,9 @@
 
 #include <QTableWidget> // TODO
 
+#include "SyncAddManager.h"
+class SqlHelper;
+
 enum PAGE_ID {
 	PAGE_INTRO,
 	PAGE_OPEN,
@@ -77,10 +80,14 @@ public:
 };
 
 class SelectPage : public QWizardPage {
-	QTableWidget newSongs;
+	//QTableWidget newSongs;
+
+	SyncAddManager syncAddManager;
+	//QTableWidget newSongs;
 public:
 	bool getSongList();
-	SelectPage() : newSongs(this) {
+	SelectPage(const SqlHelper& _sqlhelper)
+		: syncAddManager(_sqlhelper)/*, newSongs(this)*/ {
 		setTitle("Select files");
 		setSubTitle("Please select all songs you would like to im- or export.");
 	}
@@ -101,7 +108,7 @@ private:
 	void retranslateUi();
 	void setupUi();
 public:
-	SynchWizard();
+	SynchWizard(const SqlHelper& _sqlhelper);
 };
 
 #endif // SYNCHWIZARD_H

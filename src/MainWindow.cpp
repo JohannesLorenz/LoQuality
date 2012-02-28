@@ -141,7 +141,7 @@ void MainWindow::onSetStatus(STATUS_FLAGS new_status) {
 			break;
 		case PlayerEngine::STATUS_SONGOVER:
 			if(time_to_stop == 0 || time_to_stop > time(NULL))
-			 slotPlay();
+			 slotForward();
 			else
 			 slotStop();
 			break;
@@ -280,7 +280,7 @@ void MainWindow::slotStoreFlash()
 
 void MainWindow::slotSynch()
 {
-	SynchWizard synch_wizard;
+	SynchWizard synch_wizard(sqlhelper);
 	synch_wizard.show();
 	if( synch_wizard.exec() == QDialog::Accepted )
 	 reloadTable();

@@ -17,7 +17,8 @@ void SynchWizard::setupUi()
 	setPage(PAGE_SELECT, &selectPage);
 }
 
-SynchWizard::SynchWizard()
+SynchWizard::SynchWizard(const SqlHelper& _sqlhelper)
+	: selectPage(_sqlhelper)
 {
 	setupUi();
 	retranslateUi();
@@ -48,7 +49,7 @@ bool SelectPage::getSongList()
 	}
 
 	//QSqlQuery query2;
-	query.exec("select id,last_changed as lol from main group by id having count(id) > (select count(*) from johannesdb.main where last_changed = lol);");
+	query.exec("select id, titel, kuenstler, album, md5sum as lol from main group by id having count(id) > (select count(*) from johannesdb.main where md5sum = lol);");
 
 	if(!ok) {
 		QMessageBox::information(NULL, "Sql Error", query.lastError().text().toAscii().data());
@@ -58,12 +59,14 @@ bool SelectPage::getSongList()
 	int rowcount = 0;
 
 	while (query.next()) { // WARNING: DO !!!NEVER!!! rely on query.size() here!!! (see qt docs...)
-		puts("NEXT!!!");
-		if(rowcount % 250 == 0)
+
+		syncAddManager.appendItem(query.value(2).toString(), query.value(1).toString(), query.value(3).toString());
+
+/*		if(rowcount % 250 == 0)
 		 newSongs.setRowCount(rowcount+250);
 
 		QString id = query.value(0).toString();
-		QDateTime _last_change = QDateTime::fromTime_t(query.value(1).toInt());
+		QDateTime _last_change = QDateTime::fromTime_t(query.value(4).toInt());
 		QString last_change = (_last_change.isValid() && _last_change <= QDateTime::currentDateTime())?
 			_last_change.toString("yyyy-MM-dd") : "(incorrect)";
 
@@ -77,7 +80,7 @@ bool SelectPage::getSongList()
 		newSongs.setItem(rowcount, 0, item_id);
 		newSongs.setItem(rowcount, 1, item_last_change);
 
-		++rowcount;
+		++rowcount;*/
 	}
 
 
