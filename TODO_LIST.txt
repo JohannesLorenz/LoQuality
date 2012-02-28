@@ -5,7 +5,6 @@ If you want one of them, contact me!
 * multi-threading the code which fills in the main window table
 * closing LQ should keep it running in the background - via tray icon
 * tray Icons needs things like forward, backward, play, pause
-* something like ~/.LoQuality would be great...
 * we need a directory ./doc which lets doxygen be built via a Makefile
 * a graphical options dialog (automatic or pre-coded??)
 * set up wiki on github (mostly to give help about LQs features)
@@ -15,6 +14,7 @@ If you want one of them, contact me!
 * write a "radio alarm clock" (simple: append a menu to play, which
    will come up with a date selection)
 * get some nice new icons for some buttons/menu items
+* Translation code (how is that done??) and than translation files
 
 PLANS FOR MUSIC SHARING:
 

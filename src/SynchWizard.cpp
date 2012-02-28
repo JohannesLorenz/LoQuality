@@ -62,6 +62,8 @@ bool SelectPage::getSongList()
 
 		syncAddManager.appendItem(query.value(2).toString(), query.value(1).toString(), query.value(3).toString());
 
+		rowcount++; // TODO: useless?
+
 /*		if(rowcount % 250 == 0)
 		 newSongs.setRowCount(rowcount+250);
 

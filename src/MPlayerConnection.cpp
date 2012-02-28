@@ -106,6 +106,7 @@ MPlayerConnection::MPlayerConnection(const char* _REMOTE_PIPE_NAME, bool nulldev
 	fcntl(pipefd[0], F_SETFL, O_NONBLOCK);
 
 	// fork MPlayer
+	printf("MPLAYER EXE: %s\n",globals::MPLAYER_EXE.toAscii().data());
 	mplayers_pid=fork();
 	if(mplayers_pid < 0) {
 		QMessageBox::information(NULL, "Sorry...", "... fork() ging nicht, kein MPlayer!");
@@ -121,7 +122,7 @@ MPlayerConnection::MPlayerConnection(const char* _REMOTE_PIPE_NAME, bool nulldev
 		strcpy(file_param, "file=");
 		strcat(file_param, REMOTE_PIPE_NAME);
 		const char* _MPLAYER_EXE = globals::MPLAYER_EXE.toAscii().data();
-		printf("%s -input %s -idle -msglevel all=-1:global=5 -ao null -vo null\n",_MPLAYER_EXE,file_param);
+	//	printf("%s -input %s -idle -msglevel all=-1:global=5 -ao null -vo null\n",_MPLAYER_EXE,file_param);
 
 		const QString& eq = globals::settings->value("equalizer","0:0:0:0:0:0:0:0:0:0").toString();
 		if(nulldevice)

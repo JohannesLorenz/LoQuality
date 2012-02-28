@@ -207,9 +207,7 @@ namespace Mpris1
 	int PlayerHandler::PositionGet()
 	{
 		// return position in milliseconds
-		puts("TODO");
-		return 0;
-//	return The::engineController()->trackPositionMs();
+		return player->getCurrentTime() * 1000.0f; // TODO: more precise?
 	}
 
 	void PlayerHandler::PositionSet( int time )

@@ -311,6 +311,15 @@ private:
 		QWidget centralWidget;
 		QVBoxLayout verticalLayout;
 
+		// mobile stuff
+		QTabWidget mobileTab;
+		QWidget mobileTab1;
+		QVBoxLayout mobileButtonsVBox;
+		QWidget mobileTab3;
+		QVBoxLayout mobileTableVBox;
+		QWidget mobileTab4;
+		QHBoxLayout mobileSpecialHBox;
+
 		QHBoxLayout hbox_buttons1;
 		QLineEdit filter;
 		QPushButton buttons1[BTN1_SIZE];
@@ -320,12 +329,6 @@ private:
 		QPushButton buttons2[BTN2_SIZE];
 		QProgressBar progressBar;
 		QDial volumeSlider;
-		
-		QTabWidget mobileTab;
-		QWidget mobileTab1;
-		QVBoxLayout mobileButtonsVBox;
-		QWidget mobileTab4;
-		QHBoxLayout mobileSpecialHBox;
 
 		// splitter between toolBox and tableWidget
 		QSplitter mainSplitter;

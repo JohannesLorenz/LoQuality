@@ -108,6 +108,7 @@ class PlayerEngine : public QObject
 		}
 		int getNextSongIndex(int totalSongNumber);
 		inline void setFilterCount(int newValue) { filterCount = newValue; }
+		inline int getCurrentTime() { return curTime; }
 };
 
 #endif // _PLAYER_ENGINE_H_

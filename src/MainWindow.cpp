@@ -624,7 +624,10 @@ void MainWindow::layoutWidgets(bool mobile)
 		/*
 			TAB 3 : table
 		*/
-		mobileTab.addTab(&tableWidget, "List");
+		mobileTableVBox.addWidget(&filter);
+		mobileTableVBox.addWidget(&tableWidget);
+		mobileTab3.setLayout(&mobileTableVBox);
+		mobileTab.addTab(&mobileTab3, "Songs");
 
 		/*
 			TAB 4: special buttons

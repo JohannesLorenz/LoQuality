@@ -79,8 +79,7 @@ void FileAddBase::setupUi()
 		*/
 	fileView.setSelectionMode(QAbstractItemView::MultiSelection);
 	addWidget(&fileView);
-
-	QTreeWidgetItem* curItem = new QTreeWidgetItem( &fileView, QStringList() << "musik" );
+	new QTreeWidgetItem( &fileView, QStringList() << "musik" );
 
 	buttonLayout.addWidget(&btnDoIt);
 	//buttonLayout.addWidget(&btnDone);
