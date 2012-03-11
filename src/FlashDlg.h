@@ -66,7 +66,7 @@ public slots:
 public:
 	inline bool made_downloads() const { return downloadsMade; }
 	StoreHelper(const SqlHelper& _sqlhelper)
-		: sqlhelper(_sqlhelper), downloadsMade(false) {
+		: sqlhelper(_sqlhelper), downloadsMade(false), progressDlg(NULL) {
 		convertTimer.setInterval(1000);
 		QObject::connect(&convertTimer, SIGNAL(timeout()), this, SLOT(slotTimerTimeout()));
 	}

@@ -160,6 +160,10 @@ private:
 				DownloadImageDlg idlg(player.getCurSongItem()->text());
 				idlg.show();
 				idlg.exec();
+			//	if( idlg.exec() == QDialog::Accepted && toolBox->currentIndex() == TOOLBOX_METAINFO)
+			//	{
+			//		slotToolBoxChanged(TOOLBOX_METAINFO); // reload image
+			//	}
 			}
 		}
 

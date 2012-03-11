@@ -144,9 +144,10 @@ void PlayerEngine::slotForward(bool random, const QTableWidgetItem* item, bool f
 
 		}
 		else {
-			nextSongNumber = (curSong==NULL) ? 0 : ((curSong->row()) + 1);
-
 			const int rowCount = table->rowCount();
+
+			nextSongNumber = (curSong==NULL) ? 0 : ((curSong->row()) + 1);
+			nextSongNumber %= rowCount;
 			while(table->isRowHidden(nextSongNumber))
 			 nextSongNumber = (nextSongNumber + 1) % rowCount;
 		}
