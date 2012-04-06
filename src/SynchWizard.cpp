@@ -49,7 +49,7 @@ bool SelectPage::getSongList()
 	}
 
 	//QSqlQuery query2;
-	query.exec("select id, titel, kuenstler, album, md5sum as lol from main group by id having count(id) > (select count(*) from johannesdb.main where md5sum = lol);");
+	query.exec("select id, titel, kuenstler, album, pfad, md5sum as lol from main group by id having count(id) > (select count(*) from johannesdb.main where md5sum = lol);");
 
 	if(!ok) {
 		QMessageBox::information(NULL, "Sql Error", query.lastError().text().toAscii().data());
@@ -60,6 +60,7 @@ bool SelectPage::getSongList()
 
 	while (query.next()) { // WARNING: DO !!!NEVER!!! rely on query.size() here!!! (see qt docs...)
 
+		printf("new song: %s\n",query.value(4).toString().toAscii().data());
 		syncAddManager.appendItem(query.value(2).toString(), query.value(1).toString(), query.value(3).toString());
 
 		rowcount++; // TODO: useless?
