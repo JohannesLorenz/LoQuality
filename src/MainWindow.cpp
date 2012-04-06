@@ -290,6 +290,7 @@ void MainWindow::slotSynch()
 	MENU BAR SLOTS
 */
 void MainWindow::slotFileQuitAction () {
+	quitProgram = true;
 	close();
 }
 
@@ -977,10 +978,25 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 
 	UpdateDlg::autoCheckForUpdates(); // do NOT update settings->last_start before this line!
 	globals::settings->setValue("last_start", QDateTime::currentDateTime());
+
+	quitProgram = false;
 }
 
 MainWindow::~MainWindow()
 {
 	//close the database
 	db.close();
+}
+
+bool MainWindow::event(QEvent *event)
+{
+	if (event->type() == QEvent::Close && ! quitProgram)
+	{
+		event->ignore();
+		visible = false;
+		setVisible(false);
+		return true;
+	}
+
+	return QMainWindow::event(event);
 }

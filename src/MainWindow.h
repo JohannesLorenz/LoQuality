@@ -364,6 +364,7 @@ private:
 		QMenu popupMenu;
 		QSystemTrayIcon tray_icon;
 		bool visible; // for the tray icon
+		bool quitProgram; // only set to true if the program is exited with the menu bar
 		time_t time_to_stop;
 		DBusConnector dbus_connector;
 
@@ -418,6 +419,9 @@ private:
 		 */
 		MainWindow (const bool mobile, QWidget* parent=NULL);
 		~MainWindow();
+
+	protected:
+		bool event(QEvent *event);
 };
 
 #endif // _MAIN_WINDOW_H_
