@@ -56,7 +56,6 @@ void FileManagerAddDlg::retranslateUi(void)
 
 void FileManagerAddDlg::setupUi(void)
 {
-
 	resize(792, 420);
 
 	buttonLayout.addWidget(&abortBtn);

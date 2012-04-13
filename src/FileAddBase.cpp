@@ -1,7 +1,32 @@
 #include <cstdio>
 
 #include "FileAddBase.h"
-#include "FileManagerAddDlg.h"
+
+/*void FileProceedDlg::retranslateUi(void)
+{
+	dlgLabel.setText("Bitte Dateien de-selektieren, die nicht hinzugefügt werden sollen, dann bestätigen.");
+	okBtn.setText("Ok");
+	abortBtn.setText("Abbrechen");
+}
+
+void FileProceedDlg::setupUi(void)
+{
+	resize(792, 420);
+
+	buttonLayout.addWidget(&abortBtn);
+	buttonLayout.addWidget(&okBtn);
+	dlgLayout.addWidget(&dlgLabel);
+	dlgLayout.addWidget(&listWidget);
+	dlgLayout.addLayout(&buttonLayout);
+
+	listWidget.setSelectionMode(QAbstractItemView::MultiSelection);
+
+	QObject::connect(&okBtn, SIGNAL(clicked()), this, SLOT(slotBtnOk()));
+	QObject::connect(&abortBtn, SIGNAL(clicked()), this, SLOT(reject()));
+
+	listWidget.selectAll();
+}*/
+
 
 void FileAddBase::retranslateUi()
 {
@@ -12,15 +37,17 @@ void FileAddBase::retranslateUi()
 //	btnDone.setText("Fertig!");
 }
 
-void FileAddBase::slotBtnDoIt ()
+/*void FileAddBase::slotBtnDoIt ()
 {
+	puts("This should never happen.")
+	exit(1);
 	FileManagerAddDlg addDlg(&fileView, sqlhelper);
 	addDlg.show();
 	if( !anything_changed && addDlg.exec() == QDialog::Accepted ) {
 		puts("CHANGED!\n");
 		anything_changed = true;
 	}
-}
+}*/
 
 void FileAddBase::selectAllSubItems( QTreeWidgetItem* curItem, bool select )
 {
@@ -88,7 +115,7 @@ void FileAddBase::setupUi()
 	/*
 		CONNECT SIGNALS TO SLOTS
 		*/
-	connect(&btnDoIt, SIGNAL(clicked()), this, SLOT(slotBtnDoIt()));
+//	connect(&btnDoIt, SIGNAL(clicked()), this, SLOT(slotBtnDoIt()));
 	//connect(&btnDone, SIGNAL(clicked()), this, SLOT(close()));
 	connect(&fileView, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
 

@@ -15,10 +15,13 @@ void SynchWizard::setupUi()
 	setPage(PAGE_INTRO, &introPage);
 	setPage(PAGE_OPEN, &openPage);
 	setPage(PAGE_SELECT, &selectPage);
+	setPage(PAGE_TRANSMIT, &transmitPage);
+	setPage(PAGE_SCRIPT, &scriptPage);
 }
 
-SynchWizard::SynchWizard(const SqlHelper& _sqlhelper)
-	: selectPage(_sqlhelper)
+SynchWizard::SynchWizard(const SqlHelper& _sqlhelper) :
+	selectPage(&selectedSongs, _sqlhelper),
+	transmitPage(&selectedSongs)
 {
 	setupUi();
 	retranslateUi();
@@ -56,38 +59,48 @@ bool SelectPage::getSongList()
 		return false;
 	}
 
-	int rowcount = 0;
-
 	while (query.next()) { // WARNING: DO !!!NEVER!!! rely on query.size() here!!! (see qt docs...)
-
-		printf("new song: %s\n",query.value(4).toString().toAscii().data());
-		syncAddManager.appendItem(query.value(2).toString(), query.value(1).toString(), query.value(3).toString());
-
-		rowcount++; // TODO: useless?
-
-/*		if(rowcount % 250 == 0)
-		 newSongs.setRowCount(rowcount+250);
-
-		QString id = query.value(0).toString();
-		QDateTime _last_change = QDateTime::fromTime_t(query.value(4).toInt());
-		QString last_change = (_last_change.isValid() && _last_change <= QDateTime::currentDateTime())?
-			_last_change.toString("yyyy-MM-dd") : "(incorrect)";
-
-
-		QTableWidgetItem* item_id = new QTableWidgetItem(id);
-		QTableWidgetItem* item_last_change = new QTableWidgetItem(last_change);
-
-		item_id->setData(Qt::DisplayRole, id);
-		item_last_change->setData(Qt::DisplayRole, last_change);
-
-		newSongs.setItem(rowcount, 0, item_id);
-		newSongs.setItem(rowcount, 1, item_last_change);
-
-		++rowcount;*/
+		//printf("new song: %s\n",query.value(4).toString().toAscii().data());
+		syncAddManager.appendItem(query.value(2).toString(), query.value(3).toString(), query.value(1).toString(), query.value(4).toString());
 	}
 
 
 	return true;
+}
+
+void TransmitPage::runTransmission()
+{
+	QString command;
+
+	QListIterator<QListWidgetItem*> itr(*selectedSongs);
+/*	while (itr.hasNext()) {
+		const QListWidgetItem* curItem = itr.next();
+		puts("added 1");
+		command += curItem->text();
+		command.append(' ');
+	}
+
+	printf("command: %s\n", command.toAscii().data());*/
+
+	QString lca = selectedSongs->first()->text();
+	while (itr.hasNext()) {
+		const QString curString = itr.next()->text();
+		int i = 0;
+		for(; i < std::min(lca.length(), curString.length()); i++)
+		 if(lca[i] != curString[i])
+		  break;
+		lca.resize(i);
+	}
+
+
+	printf("lca: %s\n", lca.toAscii().data());
+
+	unsigned int i = 0;
+	while ((i = lca.indexOf(QDir::separator(), i)) != -1) {
+		fileBaseList.addItem(lca.left(i));
+		++i;
+	}
+
 }
 
 

@@ -30,13 +30,18 @@
 #include <QTabWidget>
 #include <QList>*/
 
+#include "SqlHelper.h"
 #include "FileAddBase.h"
 
 class FileManager : public QDialog
 {
+	Q_OBJECT;
 	private:
+		SqlHelper sqlhelper;
 		FileAddBase fileAddBase;
 		bool appendToItem(QTreeWidgetItem* parentItem, QDir* currentDir, QListIterator<QString> dbItr);
+	private slots:
+		void proceed();
 	public:
 		inline bool isAnythingChanged() const { return fileAddBase.isAnythingChanged(); }
 		FileManager (const SqlHelper& _sqlhelper);

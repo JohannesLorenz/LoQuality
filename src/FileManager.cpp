@@ -114,8 +114,9 @@ bool FileManager::appendToItem(QTreeWidgetItem* parentItem, QDir* currentDir, QL
 */
 
 
-FileManager::FileManager (const SqlHelper& _sqlhelper)
-	: fileAddBase(_sqlhelper, this)
+FileManager::FileManager (const SqlHelper& _sqlhelper) :
+	sqlhelper(_sqlhelper),
+	fileAddBase(_sqlhelper, this)
 {
 
 	QSqlQuery query("SELECT * FROM main;");
@@ -131,6 +132,20 @@ FileManager::FileManager (const SqlHelper& _sqlhelper)
 	QDir parseDir(globals::MUSIC_ROOT); // see above in this file!
 
 	appendToItem(fileAddBase.fileView.topLevelItem(0), &parseDir, dbItr);
+
+	fileAddBase.setProceedCallback(this, SLOT(proceed()));
+}
+
+#include "FileManagerAddDlg.h"
+
+void FileManager::proceed()
+{
+	FileManagerAddDlg addDlg(&fileAddBase.fileView, sqlhelper);
+	addDlg.show();
+	if( !fileAddBase.isAnythingChanged() && addDlg.exec() == QDialog::Accepted ) {
+		puts("CHANGED!\n");
+		fileAddBase.setAnythingChanged();
+	}
 }
 
 

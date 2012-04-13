@@ -16,12 +16,15 @@
 #include <QTableWidget> // TODO
 
 #include "SyncAddManager.h"
+#include "globals.h"
 class SqlHelper;
 
 enum PAGE_ID {
 	PAGE_INTRO,
 	PAGE_OPEN,
 	PAGE_SELECT,
+	PAGE_TRANSMIT,
+	PAGE_SCRIPT,
 	PAGE_COUNT
 };
 
@@ -54,7 +57,8 @@ class OpenPage : public QWizardPage
 private slots:
 	void selectDatabase();
 public:
-	OpenPage() {
+	OpenPage()
+	{
 		setTitle("Open database");
 		setSubTitle("Please select the database of the other PC or usb stick.");
 		setLayout(&hbox);
@@ -79,22 +83,109 @@ public:
 	inline int nextId() const { return PAGE_SELECT; }
 };
 
-class SelectPage : public QWizardPage {
-	//QTableWidget newSongs;
+class SelectPage : public QWizardPage
+{
+	Q_OBJECT
 
 	SyncAddManager syncAddManager;
-	//QTableWidget newSongs;
+	QListWidget songList;
+	QList<QListWidgetItem*>* selectedSongs;
+	QHBoxLayout hbox;
+
 public:
 	bool getSongList();
-	SelectPage(const SqlHelper& _sqlhelper)
-		: syncAddManager(_sqlhelper)/*, newSongs(this)*/ {
+	SelectPage(QList<QListWidgetItem*>* _selectedSongs, const SqlHelper& _sqlhelper) :
+		syncAddManager(_sqlhelper, this),
+		selectedSongs(_selectedSongs),
+		hbox(this)
+	{
 		setTitle("Select files");
 		setSubTitle("Please select all songs you would like to im- or export.");
+
+		hbox.addWidget(&syncAddManager);
+		hbox.addWidget(&songList);
+		songList.setSelectionMode(QAbstractItemView::MultiSelection);
+
+		registerField("songListWidget*", &songList);
+		connect(&syncAddManager, SIGNAL(signalSongsAdded()), this, SLOT(slotSongsAdded()));
 	}
 	void initializePage() { getSongList(); }
-	inline int nextId() const { return -1; }
+	inline int nextId() const {
+		*selectedSongs = songList.selectedItems();
+		return PAGE_TRANSMIT;
+	}
+public slots:
+	inline void slotSongsAdded() {
+		syncAddManager.fillListWidget(&songList);
+		QList<QListWidgetItem*> ptr = songList.selectedItems();
+	}
 };
 
+class TransmitPage : public QWizardPage
+{
+	Q_OBJECT
+	const QList<QListWidgetItem*>* selectedSongs;
+	QListWidget fileBaseList;
+	QLineEdit fileBase;
+	QLabel sampleCopy;
+	QVBoxLayout vbox;
+public slots:
+	inline void slotSelectionChanged(const QString& newText) {
+		fileBase.setText(newText);
+		QString firstFile = selectedSongs->front()->text();
+		const int num_chars_from_right = firstFile.length() - fileBase.text().length();
+
+		sampleCopy.setText(QString("Example: Copying %1 to %2/%3")
+			.arg(firstFile,globals::MUSIC_ROOT,
+			firstFile.right(num_chars_from_right)));
+	}
+public:
+	void runTransmission();
+	inline TransmitPage(const QList<QListWidgetItem*>* _selectedSongs) :
+		selectedSongs(_selectedSongs),
+		vbox(this)
+	{
+		setTitle("Select music Base");
+		setSubTitle("Please select from which directory you want to copy the songs from."
+			"On proceeding, you will get an overview.");
+
+		fileBaseList.setSelectionMode(QAbstractItemView::SingleSelection);
+		fileBase.setReadOnly(true);
+		registerField("fileBaseList*", &fileBaseList);
+		registerField("fileBase*", &fileBase);
+
+		vbox.addWidget(&fileBaseList);
+		vbox.addWidget(&fileBase);
+		vbox.addWidget(&sampleCopy);
+
+		connect(&fileBaseList, SIGNAL(currentTextChanged(const QString&)),this, SLOT(slotSelectionChanged(const QString&)));
+	}
+
+	void initializePage() { runTransmission(); }
+	inline int nextId() const { return PAGE_SCRIPT; }
+};
+
+class ScriptPage : public QWizardPage
+{
+	QVBoxLayout vbox;
+	//QLabel sampleCopy;
+	//const QList<QListWidgetItem*>* selectedSongs;
+public:
+	inline ScriptPage(/*const QList<QListWidgetItem*>* selectedSongs*/) : vbox(this) {
+		setTitle("Create script files");
+		setSubTitle("Please check whether everything is correct.");
+
+		//vbox.addWidget(&sampleCopy);
+		//QString firstFile =
+		//sampleCopy.setText(QString("Example: Copying %1/%2 to %3/%4").arg(,,globals::MUSIC_ROOT,));
+	}
+
+	void initializePage() {
+		QString base = field("fileBase").toString();
+		printf("base: %s\n", base.toAscii().data());
+	}
+	inline int nextId() const { return -1; }
+};
 
 class SynchWizard : public QWizard
 {
@@ -103,7 +194,9 @@ private:
 	IntroPage introPage;
 	OpenPage openPage;
 	SelectPage selectPage;
-	//QString db_name;
+	TransmitPage transmitPage;
+	ScriptPage scriptPage;
+	QList<QListWidgetItem*> selectedSongs;
 
 	void retranslateUi();
 	void setupUi();
