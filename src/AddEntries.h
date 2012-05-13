@@ -84,8 +84,10 @@ class AddEntryDlg : public QDialog
 	public:
 		void setupUi();
 	
-		AddEntryDlg(const SqlHelper& _sqlhelper, bool _edit=false, int _editnum=0) : sqlhelper(_sqlhelper), lbl_title(this), lbl_artist(this), lbl_album(this), lbl_tag(this), lbl_genre(this), lbl_year(this), lbl_interest_others(this), lbl_interest_yours(this), lbl_filetype(this), lbl_quality(this), lbl_vote_yours(this), lbl_vote_others(this), lbl_path(this), le_title(this), le_artist(this), le_album(this), le_tag(this), le_genre(this), le_year(this), cb_interest_others(this), cb_interest_yours(this), le_filetype(this), le_quality(this), sb_vote_yours(this), sb_vote_others(this), le_path(this), pb_choose_path(this), pb_cancel(this), pb_insert(this)
+		AddEntryDlg(const SqlHelper& _sqlhelper, bool _edit=false, QList<int>* _editnums = NULL)
+			: sqlhelper(_sqlhelper), lbl_title(this), lbl_artist(this), lbl_album(this), lbl_tag(this), lbl_genre(this), lbl_year(this), lbl_interest_others(this), lbl_interest_yours(this), lbl_filetype(this), lbl_quality(this), lbl_vote_yours(this), lbl_vote_others(this), lbl_path(this), le_title(this), le_artist(this), le_album(this), le_tag(this), le_genre(this), le_year(this), cb_interest_others(this), cb_interest_yours(this), le_filetype(this), le_quality(this), sb_vote_yours(this), sb_vote_others(this), le_path(this), pb_choose_path(this), pb_cancel(this), pb_insert(this)
 		{
+			const int _editnum = _editnums->front();
 			if(_edit)
 			{
 				edit=true;

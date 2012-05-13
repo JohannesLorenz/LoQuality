@@ -252,8 +252,6 @@ void MainWindow::slotRemoveSong()
 		return;
 	}	
 	else if(selectedRows == 1) {
-		printf("delete: %d\n",(*selectedItems.begin())->row());
-		printf("delete: %d\n",row2id((*selectedItems.begin())->row()));
 		QString songTitle = tableWidget.item( (*selectedItems.begin())->row(), 1)->text();
 		if(songTitle.isEmpty())
 		 songTitle = "diesen Titel";

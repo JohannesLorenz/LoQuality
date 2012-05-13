@@ -211,17 +211,28 @@ private:
 
 //			QTableWidgetItem* firstItem = tableWidget.item(ranges.front().topRow(), ranges.front().leftColumn());
 
-			if(ranges.size() == 1 && ranges.front().rowCount() == 1) {
-			//	AddEntryDlg dlg(sqlhelper, true, ranges.front().topRow());
-				printf("topRow: %d\n",ranges.front().topRow());
-				AddEntryDlg dlg(sqlhelper, true, row2id(ranges.front().topRow())); // ids begin with 1, columns with 0
+			QList<int> selectedRows;
+			for(QList<QTableWidgetSelectionRange>::const_iterator itr = ranges.begin(); itr!=ranges.end(); itr++)
+			{
+				for(int i = itr->topRow(); i <= itr->bottomRow(); i++)
+				 selectedRows.append(row2id(i));
+			}
+
+			AddEntryDlg dlg(sqlhelper, true, &selectedRows);
+			dlg.show();
+			if( dlg.exec() == QDialog::Accepted )
+			 reloadTable();
+
+
+			/*if(ranges.size() == 1 && ranges.front().rowCount() == 1) {
+				AddEntryDlg dlg(sqlhelper, true, row2id(ranges.front().topRow()));
 				dlg.show();
 				if( dlg.exec() == QDialog::Accepted )
 				 reloadTable();
 			}
 			else {
 				QMessageBox::information(NULL, "Sorry...", "Es kann im Moment nur je eine Zeile bearbeitet werden! Bitte nur eine *Zelle* anklicken!");
-			}
+			}*/
 		}
 		
 		//! (de)activates buttons depending on player_status variable
