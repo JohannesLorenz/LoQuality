@@ -46,25 +46,12 @@ QString SqlHelper::corr(const QString& originalString)
 	return result;
 }
 
-void SqlHelper::DELETE(const QString& id) const
+void SqlHelper::DELETE(const int id) const
 {
 	QSqlQuery query;
-	query.exec( QString("DELETE FROM `musicdb`.`main` WHERE `id`='%1'").arg(id) );
+	//printf("%s\n",QString("DELETE FROM `musicdb`.`main` WHERE `id`='%1'").arg(id).toAscii().data());
+	query.exec( QString("DELETE FROM 'main' WHERE `id`='%1'").arg(id) );
 }
-
-/*void SqlHelper::INSERT(QString& argumentList, bool askUser) const
-{
-	argumentList.prepend("INSERT INTO `musicdb`.`main` (`id` ,`titel` ,`kuenstler` ,`album` ,`tag` ,`genre` ,`jahr` ,`philipp` ,`johannes` ,`dateityp` ,`qualitaet` ,`bew_joh` ,`bew_phil` ,`pfad`) VALUES (");
-	argumentList.append(");");
-
-	printf("Query command: %s\n", argumentList.toAscii().data());
-
-	// TODO: Add Query to List...
-	QSqlQuery query;
-	query.exec(argumentList);
-}*/
-
-
 
 void SqlHelper::INSERT(const char* filepath) const
 {
@@ -73,33 +60,6 @@ void SqlHelper::INSERT(const char* filepath) const
 
 	mPlayerConnection->pass_remote_command((QString("loadfile \"%1\"\n").arg(filepath).toAscii().data()));
 
-
-/*	QString title = mPlayerConnection.fetchValue("get_meta_title\n", "ANS_META_TITLE=");
-	QString artist = mPlayerConnection.fetchValue("get_meta_artist\n", "ANS_META_ARTIST=");
-	QString album = mPlayerConnection.fetchValue("get_meta_album\n", "ANS_META_ALBUM=");
-	QString genre = mPlayerConnection.fetchValue("get_meta_genre\n", "ANS_META_GENRE=");
-	QString year = mPlayerConnection.fetchValue("get_meta_year\n", "ANS_META_YEAR=");
-	QString type = mPlayerConnection.fetchValue("get_audio_codec\n", "ANS_AUDIO_CODEC=");
-	QString quality = mPlayerConnection.fetchValue("get_audio_bitrate\n", "ANS_AUDIO_BITRATE=");
-	//QString length = mPlayerConnection.fetchValue("get_time_length\n", "ANS_LENGTH=").toFloat();*/
-
-/*	printf("INSERT CMD: %s\n",
-	QString("INSERT INTO `musicdb`.`main` (`id` ,`titel` ,`kuenstler` ,`album` ,`tag` ,`genre` ,`jahr` ,`philipp` ,`johannes` ,`dateityp` ,`qualitaet` ,`bew_joh` ,`bew_phil` ,`pfad`) "
-			  "VALUES ( NULL, %1, %2, %3, '', %4, %5, '0', '0', %6, %7, '0', '0', '%8')")
-			.arg(
-				mPlayerConnection.fetchValue("get_meta_title\n", "ANS_META_TITLE="),
-				mPlayerConnection.fetchValue("get_meta_artist\n", "ANS_META_ARTIST="),
-				mPlayerConnection.fetchValue("get_meta_album\n", "ANS_META_ALBUM="),
-
-				mPlayerConnection.fetchValue("get_meta_genre\n", "ANS_META_GENRE="),
-				mPlayerConnection.fetchValue("get_meta_year\n", "ANS_META_YEAR="),
-				// TODO: interest
-
-				mPlayerConnection.fetchValue("get_audio_codec\n", "ANS_AUDIO_CODEC="),
-				mPlayerConnection.fetchValue("get_audio_bitrate\n", "ANS_AUDIO_BITRATE="),
-
-				filepath
-				).toAscii().data() );*/
 	QString filename = filepath; // filename as SQL wants it
 	filename.replace('\'', "''");
 

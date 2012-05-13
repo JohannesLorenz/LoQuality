@@ -212,7 +212,8 @@ void MainWindow::slotBackward() {
 	player.slotBackward();
 }
 
-void MainWindow::slotAddFile() {
+void MainWindow::slotAddFile()
+{
 	FileManager fileManager(sqlhelper);
 	fileManager.show();
 	fileManager.exec();
@@ -225,7 +226,8 @@ void MainWindow::slotAddFile() {
 #endif
 }
 
-void MainWindow::slotRemoveSong() {
+void MainWindow::slotRemoveSong()
+{
 #if 0 // TODO: re-implement me if QTableWidget or QTreeWidget is done
 	if( tableWidget.selectedItems().size() < 1 )
 		QMessageBox::information(NULL, "Kein Song ausgewaehlt...", "Du musst erst noch einen Song auswaehlen, um ihn zu loeschen...");
@@ -250,6 +252,8 @@ void MainWindow::slotRemoveSong() {
 		return;
 	}	
 	else if(selectedRows == 1) {
+		printf("delete: %d\n",(*selectedItems.begin())->row());
+		printf("delete: %d\n",row2id((*selectedItems.begin())->row()));
 		QString songTitle = tableWidget.item( (*selectedItems.begin())->row(), 1)->text();
 		if(songTitle.isEmpty())
 		 songTitle = "diesen Titel";
@@ -262,9 +266,10 @@ void MainWindow::slotRemoveSong() {
 			QMessageBox::Yes | QMessageBox::No, QMessageBox::No) )
 			return;
 	}
+
 	for(QList<QTableWidgetItem*>::const_iterator itr = selectedItems.begin(); itr != selectedItems.end(); itr++) {
 		if( (*itr)->column() == 1) {
-			sqlhelper.DELETE( tableWidget.item((*itr)->row(), 0)->text() );
+			sqlhelper.DELETE( row2id((*itr)->row()) );
 			tableWidget.removeRow((*itr)->row());
 		}
 	}

@@ -97,6 +97,12 @@ private:
 		TOOLBOX_METAINFO
 	};
 
+		inline int row2id(int given_id) {
+			QTableWidgetItem* firstItem = tableWidget.item(given_id, 0);
+			return firstItem->data(Qt::DisplayRole).toInt()/*-1*/;
+			// ids begin with 1, columns with 0 - but not important here!
+		}
+
 	private slots:
 		/**
 		 * If no song is currently played, this slot is called to ask the player engine to play a new song.
@@ -198,8 +204,17 @@ private:
 			Q_UNUSED(row);
 			Q_UNUSED(column);
 			QList<QTableWidgetSelectionRange> ranges = tableWidget.selectedRanges();
+			if(ranges.empty()) {
+				QMessageBox::information(NULL, "Sorry...", "You can not edit 0 songs :) (at least, it would not make much sense)");
+				return;
+			}
+
+//			QTableWidgetItem* firstItem = tableWidget.item(ranges.front().topRow(), ranges.front().leftColumn());
+
 			if(ranges.size() == 1 && ranges.front().rowCount() == 1) {
-				AddEntryDlg dlg(sqlhelper, true, ranges.front().topRow());
+			//	AddEntryDlg dlg(sqlhelper, true, ranges.front().topRow());
+				printf("topRow: %d\n",ranges.front().topRow());
+				AddEntryDlg dlg(sqlhelper, true, row2id(ranges.front().topRow())); // ids begin with 1, columns with 0
 				dlg.show();
 				if( dlg.exec() == QDialog::Accepted )
 				 reloadTable();

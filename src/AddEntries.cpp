@@ -105,11 +105,11 @@ void AddEntryDlg::setupUi()
 	
 	if(edit)
 	{
-		++editnum; // increase row number
+		//++editnum; // increase row number // NOT ANYMORE - MainWindow must fix it!
 	
 		printf("Editing row %d...\n", editnum);
 		
-		QString q("SELECT * FROM main WHERE 'id'='");
+		QString q("SELECT * FROM main WHERE `id`='");
 		q.append(QString::number(editnum));
 		q.append("';");
 		

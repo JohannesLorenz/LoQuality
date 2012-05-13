@@ -55,7 +55,7 @@ class SqlHelper
 
 		//! execute the delete command on the whole database to remove
 		//! @param id id of the song which shall be deleted
-		void DELETE(const QString& id) const;
+		void DELETE(const int id) const;
 
 		//! executes the insert command on the whole database
 		//! @param argumentList list of values, each in single quotes (except NULL) and seperated by comma. e.g.: "'a', NULL , 'c'"
