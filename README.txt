@@ -24,7 +24,7 @@ Documentation of the player will be added soon.
 Please install git on your computer. Then, in a console, switch to where you
 want LoQuality to be put, and enter:
 
-  git clone git://github.com/DrSegfault/LoQuality.git
+  git clone git://github.com/JohannesLorenz/LoQuality.git
   cd LoQuality
 
 Then, you are ready for installation!

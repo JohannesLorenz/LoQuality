@@ -2,7 +2,7 @@
 /* LoQuality - A music player for Linux/UNIX.                            */
 /* Copyright (C) 2010-2012                                               */
 /* Johannes Lorenz, Philipp Lorenz                                       */
-/* https://github.com/DrSegfault/LoQuality                               */
+/* https://github.com/JohannesLorenz/LoQuality                           */
 /*                                                                       */
 /* This program is free software; you can redistribute it and/or modify  */
 /* it under the terms of the GNU General Public License as published by  */
@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 	// pass arguments to Qt first
 	QApplication app(argc, argv);
 	app.setOrganizationName("LoQuality");
-	app.setOrganizationDomain("github.com/DrSegfault/LoQuality");
+	app.setOrganizationDomain("github.com/JohannesLorenz/LoQuality");
 	app.setApplicationName("LoQuality");
 
 	try {

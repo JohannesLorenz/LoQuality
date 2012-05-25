@@ -302,7 +302,7 @@ void MainWindow::slotHelpAboutAction () {
 				"<h1>LoQuality</h1>"
 				"<i>(c) 2010-2012</i><br/>"
 				"by Philipp Lorenz, Johannes Lorenz<br/><br/>"
-				"<a href=\"https://github.com/DrSegfault/LoQuality\">https://github.com/DrSegfault/LoQuality</a>");
+				"<a href=\"https://github.com/JohannesLorenz/LoQuality\">https://github.com/DrSegfault/LoQuality</a>");
 				
 }
 
