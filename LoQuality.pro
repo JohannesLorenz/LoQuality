@@ -37,7 +37,8 @@ HEADERS += src/AddEntries.h \
     src/SynchWizard.h \
     src/dialogs.h \
     src/FileAddBase.h \
-    src/SyncAddManager.h
+    src/SyncAddManager.h \
+    src/params.h
 SOURCES += src/AddEntries.cpp \
     src/FileManager.cpp \
     src/FlashDlg.cpp \
@@ -61,6 +62,7 @@ SOURCES += src/AddEntries.cpp \
     src/SynchWizard.cpp \
     src/dialogs.cpp \
     src/FileAddBase.cpp \
-    src/SyncAddManager.cpp
+    src/SyncAddManager.cpp \
+    src/params.cpp
 OTHER_FILES += TODO.txt \
     TODO_LIST.txt

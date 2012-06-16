@@ -1,7 +1,7 @@
 This list contains tasks that need to be done in the future.
 If you want one of them, contact me!
 
-* writing parameter code, especially --help and --version
+* think about more useful commandline parameters
 * multi-threading the code which fills in the main window table
 * tray Icons needs things like forward, backward, play, pause
 * we need a directory ./doc which lets doxygen be built via a Makefile

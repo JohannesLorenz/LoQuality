@@ -18,41 +18,16 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
-#include "MainWindow.h"
-#include "params.h"
+#ifndef PARAMS_H
+#define PARAMS_H
 
-#include <QApplication>
-#include <QMessageBox>
+#include <iostream>
+using namespace std;
 
-int main(int argc, char** argv)
-{
-    if (read_params(argc, argv) == -1)
-        return 0;
-    
-	int return_value = 0;
+#include <getopt.h>
 
-	// pass arguments to Qt first
-	QApplication app(argc, argv);
-	app.setOrganizationName("LoQuality");
-	app.setOrganizationDomain("github.com/JohannesLorenz/LoQuality");
-	app.setApplicationName("LoQuality");
+#include "globals.h"
 
-	try {
-		// start program
-		globals::settings = new QSettings();
-		const bool mobile = (globals::settings->value("target", "pc").toString() == "mobile");
+int read_params(int p_argc, char *p_argv[]);
 
-		MainWindow mainwindow(mobile);
-		mainwindow.show();
-
-		return_value = app.exec();
-		delete globals::settings;
-
-	} catch (std::exception e) {
-		QMessageBox::warning(NULL, "Error", e.what());
-	} catch(...) {
-		QMessageBox::warning(NULL, "Error", "*** TODO: unknown exception");
-	}
-
-	return 0;
-}
+#endif // PARAMS_H
