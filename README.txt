@@ -1,10 +1,10 @@
 0 Greetings
 :::::::::::
 
-Thanks for deciding for LoQuality as a music player. Our intend is to let
+Thanks for deciding for LoQuality as a music player. Our intent is to let
 you gather as much music on your local hard disc as you like.
 
-In this document, you can find:
+In this document you can find:
 
 1 Status
 2 Getting LoQuality
@@ -27,14 +27,20 @@ want LoQuality to be put, and enter:
 	git clone git://github.com/JohannesLorenz/LoQuality.git
 	cd LoQuality
 
-Then, you are ready for installation!
+Then you are ready for installation!
 
 3 Requirements
 ::::::::::::::
 
-For the installation, of course, you'll need C++.
-You need the usual qt libraries and headers (mostly called devel packages).
-Also, make sure you have the package installed containing "qdbusxml2cpp".
+For the installation, of course, you'll need a C++ compiler.
+You need the usual Qt libraries and headers (mostly called devel packages).
+
+To install the Qt development files, run the following command:
+sudo apt-get install libqt4-dev (on Ubuntu / Debian)
+sudo zypper in libqt4-devel (on SuSE)
+
+Also, make sure you have the package installed containing "qdbusxml2cpp" (should
+also be available in the Qt4 development package).
 
 For running LoQuality, you will need mplayer, and, if you like, mplayer2, too.
 For the Flash Downloader, please install ffmpeg.
