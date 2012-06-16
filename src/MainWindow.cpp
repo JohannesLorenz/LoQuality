@@ -267,16 +267,13 @@ void MainWindow::slotRemoveSong()
 			return;
 	}
 
-    std::cout << "SELECTED ITEMS: " << selectedItems.size() << std::endl;
-    
-	for(QList<QTableWidgetItem*>::const_iterator itr = selectedItems.begin(); itr != selectedItems.end(); itr++)
-    {
-        std::cout << "REMOVE: " << (*itr)->column() << std::endl;
-        
-		if( (*itr)->column() == 1) {
-            std::cout << "--> ROW: " << (*itr)->row() << std::endl;
+	for (QList<QTableWidgetItem*>::const_iterator itr = selectedItems.begin(); itr != selectedItems.end() && selectedRows > 0; itr++)
+	{
+		if( (*itr)->column() == 1)
+		{
 			sqlhelper.DELETE( row2id((*itr)->row()) );
 			tableWidget.removeRow((*itr)->row());
+			--selectedRows;
 		}
 	}
 }
