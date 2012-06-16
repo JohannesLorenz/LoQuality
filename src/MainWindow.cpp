@@ -35,6 +35,8 @@
 #include <QTextBrowser>
 */
 
+#include <iostream> // TODO: remove me
+
 #include "MainWindowIcons.h"
 // TODO: get new icons from http://websvn.kde.org/trunk/kdesupport/oxygen-icons/
 
@@ -265,8 +267,14 @@ void MainWindow::slotRemoveSong()
 			return;
 	}
 
-	for(QList<QTableWidgetItem*>::const_iterator itr = selectedItems.begin(); itr != selectedItems.end(); itr++) {
+    std::cout << "SELECTED ITEMS: " << selectedItems.size() << std::endl;
+    
+	for(QList<QTableWidgetItem*>::const_iterator itr = selectedItems.begin(); itr != selectedItems.end(); itr++)
+    {
+        std::cout << "REMOVE: " << (*itr)->column() << std::endl;
+        
 		if( (*itr)->column() == 1) {
+            std::cout << "--> ROW: " << (*itr)->row() << std::endl;
 			sqlhelper.DELETE( row2id((*itr)->row()) );
 			tableWidget.removeRow((*itr)->row());
 		}

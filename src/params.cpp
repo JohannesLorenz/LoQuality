@@ -27,9 +27,9 @@ int read_params(int p_argc, char *p_argv[])
 	int option_index = 0;
 
 	static struct option long_options[] = {
-	{"help", 0, 0, 'h'},
-	{"version", 0, 0, 'v'},
-	{0, 0, 0, 0}
+        {"help", 0, 0, 'h'},
+        {"version", 0, 0, 'v'},
+        {0, 0, 0, 0}
 	};
  
 	optind=0;
@@ -44,24 +44,7 @@ int read_params(int p_argc, char *p_argv[])
 		switch(c)
 		{
    			case 'h':
-				/*puts("ODF-Image v0.1 alpha");
-				puts("::::::::::::::::::::\n");
-				puts("This is a program by the Open Descent Foundation (http://odf.sf.net).");
-				puts("You are allowed to modify this program under the conditions of the");
-				puts("GNU General Public License, version 3.\n");
-				printf("Usage: %s [OAF-file] [options]\n\n", p_argv[0]);
-				puts("Options:\n");
-				puts("[-h/--help]    - view this text");
-				puts("[-v/--version] - print version\n");
-				puts("Written and designed by Philipp \"D.Cent\" Lorenz\n");
-				puts("This program is based on open source and is for free!");
-				puts("Ideas are welcome: descent1@gmx.net\n");
-				puts("NOTE: This program is just in development.");
-				puts("      Don't expect it to work!");
-		
-				exit(0);*/
-				
-                cout << "LoQuality " << globals::LQ_VERSION << endl << endl;
+				cout << "LoQuality " << globals::LQ_VERSION << endl << endl;
 				
 				cout << "Project homepage: http://github.com/JohannesLorenz/LoQuality" << endl;
 				cout << "You are allowed to modify or redistribute this program under the conditions of the" << endl;
@@ -79,9 +62,8 @@ int read_params(int p_argc, char *p_argv[])
 				return -1;
   
 			case 'v':
-				//puts("ODF-Image v0.1 alpha; Written and designed by Philipp \"D.Cent\" Lorenz\nLicensed under GPL v3");
 				cout << "LoQuality " << globals::LQ_VERSION << " - written by Johannes & Philipp Lorenz" << endl;
-                cout << "Licensed under GPL v3 - see LICENSE.txt" << endl;
+				cout << "Licensed under GPL v3 - see LICENSE.txt" << endl;
             
 				return -1;
   
