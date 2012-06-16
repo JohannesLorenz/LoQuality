@@ -23,50 +23,49 @@
 int read_params(int p_argc, char *p_argv[])
 {
 	char c;
-	
+
 	int option_index = 0;
 
 	static struct option long_options[] = {
-        {"help", 0, 0, 'h'},
-        {"version", 0, 0, 'v'},
-        {0, 0, 0, 0}
+		{"help", 0, 0, 'h'},
+		{"version", 0, 0, 'v'},
+		{0, 0, 0, 0}
 	};
- 
+
 	optind=0;
 
 	while(1)
 	{
 		c=getopt_long_only(p_argc, p_argv, "hv",long_options,&option_index);
- 
+
 		if(c==-1)
-			break;
- 
+		 break;
+
 		switch(c)
 		{
-   			case 'h':
+			case 'h':
 				cout << "LoQuality " << globals::LQ_VERSION << endl << endl;
-				
+
 				cout << "Project homepage: http://github.com/JohannesLorenz/LoQuality" << endl;
 				cout << "You are allowed to modify or redistribute this program under the conditions of the" << endl;
 				cout << "GNU General Public License, at least version 3. See 'LICENSE.txt' for more information!" << endl << endl;
-                
+
 				cout << "Usage: " << p_argv[0] << endl << endl;
-                
+
 				cout << "Options:" << endl;
 				cout << "[-h/--help]    - view this text" << endl;
 				cout << "[-v/--version] - print version" << endl << endl;
-                
+
 				cout << "NOTE: This program is still in development." << endl;
-                cout << "      Any ideas or contributions are welcome!" << endl;
-		
+				cout << "      Any ideas or contributions are welcome!" << endl;
+
 				return -1;
-  
+
 			case 'v':
 				cout << "LoQuality " << globals::LQ_VERSION << " - written by Johannes & Philipp Lorenz" << endl;
 				cout << "Licensed under GPL v3 - see LICENSE.txt" << endl;
-            
+
 				return -1;
-  
 		}
 	}
 	
