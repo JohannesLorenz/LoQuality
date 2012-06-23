@@ -46,6 +46,7 @@ class SqlHelper;
 
 enum PAGE_ID {
 	PAGE_INTRO,
+	PAGE_START,
 	PAGE_OPEN,
 	PAGE_SELECT,
 	PAGE_TRANSMIT,
@@ -59,15 +60,41 @@ class IntroPage : public QWizardPage
 {
 	QLabel infoLabel;
 public:
-	IntroPage() : infoLabel(this) {
+	IntroPage() : infoLabel(this)
+	{
 		setTitle("Introduction");
+
 		infoLabel.setWordWrap(true);
 		infoLabel.setText("This wizard will help synchronize your files with "
 				"another computer or USB stick.<br/><br/>"
 				"Please note that sharing files is only allowed if the"
 				"creator of them gave you permission."
-				"LoQuality does not encourage illegal file transmissions!");
+				"LoQuality does not encourage illegal file transmissions!");		
+	}
+	inline int nextId() const { return PAGE_START; }
+};
 
+class StartPage : public QWizardPage
+{
+	QButtonGroup btnGroup;
+	QRadioButton btnFriendList, btnNewFriend;
+	QVBoxLayout vbox;
+	QLineEdit ip;
+public:
+	StartPage() : vbox(this)
+	{
+		btnFriendList.setText("Use connection data of a friend with IP:");
+		btnNewFriend.setText("Connect to a new friend with IP:");
+		btnFriendList.setChecked(true);
+		btnGroup.addButton(&btnFriendList);
+		btnGroup.addButton(&btnNewFriend);
+
+		vbox.addWidget(&btnFriendList);
+		vbox.addWidget(&btnNewFriend);
+
+		registerField("ip", &ip);
+		registerField("btnFriendList", &btnFriendList);
+		vbox.addWidget(&ip);
 	}
 	inline int nextId() const { return PAGE_OPEN; }
 };
@@ -139,7 +166,7 @@ public:
 	void initializePage() { getSongList(); }
 	inline int nextId() const {
 		*selectedSongs = songList.selectedItems();
-		return PAGE_TRANSMIT;
+		return (field("btnFriendList").toBool())?PAGE_SCRIPT:PAGE_TRANSMIT;
 	}
 public slots:
 	inline void slotSongsAdded() {
@@ -147,6 +174,13 @@ public slots:
 		QList<QListWidgetItem*> ptr = songList.selectedItems();
 	}
 };
+
+/*class FriendPage : public QWizardPage
+{
+	inline int nextId() const {
+		return PAGE_SCRIPT;
+	}
+};*/
 
 class TransmitPage : public QWizardPage
 {
@@ -159,7 +193,8 @@ class TransmitPage : public QWizardPage
 	QGroupBox hostGroupBox;
 	QVBoxLayout vbox2;
 	QLineEdit fileBase;
-	QLineEdit nameAtHost, ip, port, rsaKey;
+	QLineEdit nameAtHost, port, rsaKey;
+	QRadioButton saveAsFriend;
 
 public slots:
 	inline void slotSelectionChanged(const QString& newText) {
@@ -187,7 +222,6 @@ public:
 		registerField("fileBase*", &fileBase);
 
 		registerField("nameAtHost", &nameAtHost);
-		registerField("ip", &ip);
 		registerField("port", &port);
 		registerField("rsaKey", &rsaKey);
 
@@ -195,22 +229,29 @@ public:
 		vbox.addWidget(&fileBase);
 		vbox.addWidget(&sampleCopy);
 		vbox.addWidget(&hostGroupBox);
+		vbox.addWidget(&saveAsFriend);
+		saveAsFriend.setText("Save connection data for this friend");
 
 		hostGroupBox.setLayout(&vbox2);
 		vbox2.addWidget(&nameAtHost);
-		vbox2.addWidget(&ip);
 		vbox2.addWidget(&port);
 		vbox2.addWidget(&rsaKey);
 		rsaKey.setText("/home/whoever/.ssh/id_rsa");
 
 		// TODO: remove this:
-
-
 		connect(&fileBaseList, SIGNAL(currentTextChanged(const QString&)),this, SLOT(slotSelectionChanged(const QString&)));
 	}
 
 	void initializePage() { runTransmission(); }
-	inline int nextId() const { return PAGE_SCRIPT; }
+	inline int nextId() const
+	{
+		if(saveAsFriend.isChecked())
+		{
+			// TODO (FRIEND)... add to DB
+			// CAREFULE: DB might not exist yet!!!
+		}
+		return PAGE_SCRIPT;
+	}
 };
 
 class ScriptPage : public QWizardPage
@@ -338,6 +379,7 @@ class SynchWizard : public QWizard
 private:
 	QList<QListWidgetItem*> selectedSongs;
 	IntroPage introPage;
+	StartPage startPage;
 	OpenPage openPage;
 	SelectPage selectPage;
 	TransmitPage transmitPage;

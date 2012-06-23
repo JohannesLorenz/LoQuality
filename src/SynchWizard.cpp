@@ -33,6 +33,7 @@ void SynchWizard::retranslateUi()
 void SynchWizard::setupUi()
 {
 	setPage(PAGE_INTRO, &introPage);
+	setPage(PAGE_START, &startPage);
 	setPage(PAGE_OPEN, &openPage);
 	setPage(PAGE_SELECT, &selectPage);
 	setPage(PAGE_TRANSMIT, &transmitPage);
@@ -151,10 +152,20 @@ bool ScriptRunPage::forkScp(QString nextFile)
 {
 	QString srcFile, destFile;
 	const int num_chars_from_right = nextFile.length() - field("fileBase").toString().length();
-	QString port = field("port").toString();
-	QString rsaKey = field("rsaKey").toString();
-	QString nameAtHost = field("nameAtHost").toString();
-	QString ip = field("ip").toString();
+
+	QString port, rsaKey, nameAtHost;
+
+	if(field("btnFriendList").toBool())
+	{
+		// TODO (FRIEND): Read these values from DB
+	}
+	else
+	{
+		port = field("port").toString();
+		rsaKey = field("rsaKey").toString();
+		nameAtHost = field("nameAtHost").toString();
+	}
+	const QString ip = field("ip").toString();
 
 	puts("forkScp");
 	scps_pid=fork();
