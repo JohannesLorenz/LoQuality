@@ -93,7 +93,6 @@ private slots:
 	//! clears the listview and reloads all the files
 	//! also used for initial loading
 	void reload();
-	void addToFileList(const QString& basedir); // used by reload()
 
 	public:
 	inline SelectFlashPage(StoreHelper& _storeHelper) : storeHelper(_storeHelper) {

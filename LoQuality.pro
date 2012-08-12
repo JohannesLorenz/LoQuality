@@ -38,7 +38,8 @@ HEADERS += src/AddEntries.h \
     src/dialogs.h \
     src/FileAddBase.h \
     src/SyncAddManager.h \
-    src/params.h
+    src/params.h \
+    src/flash_tools.h
 SOURCES += src/AddEntries.cpp \
     src/FileManager.cpp \
     src/FlashDlg.cpp \
@@ -63,6 +64,7 @@ SOURCES += src/AddEntries.cpp \
     src/dialogs.cpp \
     src/FileAddBase.cpp \
     src/SyncAddManager.cpp \
-    src/params.cpp
+    src/params.cpp \
+    src/flash_tools.cpp
 OTHER_FILES += TODO.txt \
     TODO_LIST.txt

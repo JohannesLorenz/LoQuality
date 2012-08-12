@@ -24,6 +24,7 @@
 #include <QMessageBox>
 
 #include "globals.h"
+#include "flash_tools.h"
 #include "FlashDlg.h"
 #include "SqlHelper.h"
 
@@ -38,17 +39,17 @@ void SelectFlashPage::retranslateUi()
 //	doneButton.setText("Fertig!");
 }
 
-void SelectFlashPage::addToFileList(const QString& basedir)
+void SelectFlashPage::reload() // TODO: we could do that more efficient :P
 {
-#ifdef FIREFOX_NEW
-	QDir tmpDir(basedir, /*"Flash*",*/"", QDir::Time, QDir::Files);
-	QFileInfoList files = tmpDir.entryInfoList();
-	QDateTime time_now = QDateTime::currentDateTime ();
+	fileList.clear();
+
+	QDateTime time_now = QDateTime::currentDateTime();
 	int row = 0;
-	for(QList<QFileInfo>::const_iterator itr = files.begin(); itr != files.end(); itr++, row++)
+	QList<QFileInfo> allFiles;
+	getFileList(&allFiles);
+
+	for(QList<QFileInfo>::const_iterator itr = allFiles.begin(); itr != allFiles.end(); itr++, row++)
 	{
-		if(! itr->canonicalFilePath().contains("Flash"))
-		 continue;
 		QDateTime lastChanged = itr->lastModified();
 		if( lastChanged.daysTo(time_now) == 0 )
 			if( lastChanged.secsTo(time_now) <= 3600 ) { // TODO: make 3600 flexible
@@ -68,70 +69,16 @@ void SelectFlashPage::addToFileList(const QString& basedir)
 					.arg(minutesLeft)
 					.arg(itr->absoluteFilePath())
 					);
-			}
-	}
-#endif
-}
 
-void SelectFlashPage::reload() // TODO: we could do that more efficient :P
-{
-	fileList.clear();
-#ifndef FIREFOX_NEW
-	QDir tmpDir("/tmp", "Flash*", QDir::Time, QDir::Files);
-	QFileInfoList files = tmpDir.entryInfoList();
-	QDateTime time_now = QDateTime::currentDateTime ();
-	int row = 0;
-	for(QList<QFileInfo>::const_iterator itr = files.begin(); itr != files.end(); itr++, row++)
-	{
-		QDateTime lastChanged = itr->lastModified();
-		if( lastChanged.daysTo(time_now) == 0 )
-			if( lastChanged.secsTo(time_now) <= 3600 ) {// TODO: make 3600 flexible
-				int minutesLeft = (int) lastChanged.secsTo(time_now) / 60;
-				if( minutesLeft < 1 ) {
-					fileList.addItem(
-					QString("Still loading: %1")
-					.arg(itr->absoluteFilePath())
-					);
-					fileList.item(row)->setFlags(fileList.item(row)->flags() ^ Qt::ItemIsEnabled);
-				}
-				else
-					fileList.addItem(
-					QString("%1 Minutes ago: %2")
-					.arg(minutesLeft)
-					.arg(itr->absoluteFilePath())
-					);
-			}
-	}
-#else
-	QDir dir("/proc/");
-	QFileInfoList list = dir.entryInfoList();
-	for (int iList=0;iList<list.count();iList++)
-	{
-		QFileInfo info = list[iList];
-		QString sFilePath = info.filePath();
-		if (info.isDir())
-		{
-			if (info.fileName()!=".." && info.fileName()!=".")
-			{
-				QFile fp(sFilePath+"/cmdline");
-				if( fp.open(QIODevice::ReadOnly))
-				{
-					QByteArray line = fp.readLine();
-					fp.close();
-					if(line.contains("flashplayer"))
-					 addToFileList(sFilePath+"/fd");
-				}
-			}
 		}
-	}
 
-#endif
+	}
 }
 
 void StoreHelper::slotTimerTimeout()
 {
 	puts("TIMEOUT!");
-	if( 0 != waitpid(ffmpegs_pid, NULL, WNOHANG) )  { // wait for ffmpeg to finish
+	if( oggConvertionFinished(ffmpegs_pid) )  {
 		puts("WAIT FINISHED!");
 		convertTimer.stop();
 		progressDlg->cancel();
@@ -231,29 +178,10 @@ bool StoreHelper::convertToOgg(QWidget* parent, const char *infile, bool _insert
 {
 	insertSql = _insertSql;
 
-	// fork ffmpeg
-	ffmpegs_pid=fork();
+	ffmpegs_pid = startOggConvertion(infile, curOutName.toAscii().data());
 	if(ffmpegs_pid < 0) {
 		QMessageBox::information(parent, "Sorry...", "... fork() ging leider nicht, kann ffmpeg nicht starten :(");
 		return false;
-	}
-	else if(ffmpegs_pid == 0) {
-		// ffmpeg -i flashfile -vn -acodec libmp3lame -y -ar 44100 -ab 128000 outfilename
-		//execlp("ffmpeg", "ffmpeg", "-i", strchr((*itr)->text().toAscii().data(), ':') + 2, "-vn", "-acodec", "libmp3lame", "-y", "-ar", "44100", "-ab", "128000", curOutName.toAscii().data(), NULL);
-
-		/*
-			We need at most audio quality 6 = approx. 128 kbps. See:
-			http://en.wikipedia.org/wiki/YouTube#Quality_and_codecs
-			http://en.wikipedia.org/wiki/Vorbis
-		*/
-		// note: you might want to specify number of threads with "-threads n"
-		// ffmpeg -i flashfile -vn -y -ar 44100 -aq 6 -acodec libvorbis -threads THREADNUM outfile
-		const QString CPU_THREADS = globals::settings->value("number_of_cores",2).toString();
-		const QString ffmpeg_fullpath = globals::settings->value("ffmpeg_fullpath").toString();
-		//printf("%s -i %s ... -threads %s %s",,,CPU_THREADS, curOutName.toAscii().data())
-		execlp(ffmpeg_fullpath.toAscii().data(), "ffmpeg", "-i", infile, "-vn", "-y", "-ar", "44100", "-aq", "6", "-acodec", "libvorbis", "-threads", CPU_THREADS.toAscii().data(), curOutName.toAscii().data(), NULL);
-
-		exit(0);
 	}
 
 	if(progressDlg == NULL)
