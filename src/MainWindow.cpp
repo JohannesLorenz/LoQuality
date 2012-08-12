@@ -220,7 +220,7 @@ void MainWindow::slotAddFile()
 	fileManager.show();
 	fileManager.exec();
 	if(fileManager.isAnythingChanged())
-	 reloadTable();
+	 tableWidget.reloadTable();
 #if 0 // TODO: move this to the flashdlg
 	AddEntryDlg dlg(sqlhelper);
 	dlg.show();
@@ -228,62 +228,12 @@ void MainWindow::slotAddFile()
 #endif
 }
 
-void MainWindow::slotRemoveSong()
-{
-#if 0 // TODO: re-implement me if QTableWidget or QTreeWidget is done
-	if( tableWidget.selectedItems().size() < 1 )
-		QMessageBox::information(NULL, "Kein Song ausgewaehlt...", "Du musst erst noch einen Song auswaehlen, um ihn zu loeschen...");
-	else if( QMessageBox::Yes == QMessageBox::question(NULL, "Wirklich loeschen?", "Willst Du (TODO) wirklich aus der Wiedergabelist loeschen?",
-		QMessageBox::Yes | QMessageBox::No, QMessageBox::No) )
-	 tableWidget.removeItemWidget(tableWidget.selectedItems().front());
-#endif
-
-	QList<QTableWidgetItem*> selectedItems = tableWidget.selectedItems();
-	// count number of selected rows
-	unsigned int selectedRows;
-	{
-		QList<unsigned int> selectedRowList;
-		for(QList<QTableWidgetItem*>::const_iterator itr = selectedItems.begin(); itr!=selectedItems.end(); itr++)
-		 if(! selectedRowList.contains((*itr)->row()))
-		  selectedRowList.append((*itr)->row());
-		selectedRows = selectedRowList.size();
-	}
-
-	if(selectedRows < 1 ) {
-		QMessageBox::information(NULL, "Kein Song ausgewaehlt...", "Du musst erst noch einen Song auswaehlen, um ihn zu loeschen...");
-		return;
-	}	
-	else if(selectedRows == 1) {
-		QString songTitle = tableWidget.item( (*selectedItems.begin())->row(), 1)->text();
-		if(songTitle.isEmpty())
-		 songTitle = "diesen Titel";
-		if( QMessageBox::No == QMessageBox::question(NULL, "Wirklich loeschen?", QString("Willst Du <i>%1</i> wirklich aus der Wiedergabeliste loeschen?").arg( songTitle ),
-			QMessageBox::Yes | QMessageBox::No, QMessageBox::No) )
-			return;
-	}
-	else { // multiples...
-		if( QMessageBox::No == QMessageBox::question(NULL, "Wirklich loeschen?", QString("Willst Du diese <b>%1 Songs</b> wirklich aus der Wiedergabeliste loeschen?").arg( selectedRows ),
-			QMessageBox::Yes | QMessageBox::No, QMessageBox::No) )
-			return;
-	}
-
-	for (QList<QTableWidgetItem*>::const_iterator itr = selectedItems.begin(); itr != selectedItems.end() && selectedRows > 0; itr++)
-	{
-		if( (*itr)->column() == 1)
-		{
-			sqlhelper.DELETE( row2id((*itr)->row()) );
-			tableWidget.removeRow((*itr)->row());
-			--selectedRows;
-		}
-	}
-}
-
 void MainWindow::slotStoreFlash()
 {
 	FlashDlg fdlg(sqlhelper);
 	fdlg.show();
 	if( fdlg.exec() == QDialog::Accepted )
-	 reloadTable();
+	 tableWidget.reloadTable();
 }
 
 void MainWindow::slotSynch()
@@ -291,7 +241,7 @@ void MainWindow::slotSynch()
 	SynchWizard synch_wizard(sqlhelper);
 	synch_wizard.show();
 	if( synch_wizard.exec() == QDialog::Accepted )
-	 reloadTable();
+	 tableWidget.reloadTable();
 }
 
 /*
@@ -388,145 +338,6 @@ void MainWindow::slotToolBoxChanged(int newIndex)
 		//toolBox->adjustSize();
 
 	}
-}
-
-void MainWindow::reloadTable()
-{
-	tableWidget.setSortingEnabled(false); // no sorting during insertion - it takes too long
-
-	tableWidget.clear();
-	tableWidget.setRowCount(0);
-
-	tableWidget.setColumnCount(15);
-
-	QStringList description;
-	
-	description.insert(0, "ID");
-	description.insert(1, "Titel");
-	description.insert(2, "Künstler");
-	description.insert(3, "Album");
-	description.insert(4, "Tags");
-	description.insert(5, "Genre");
-	description.insert(6, "Jahr");
-	description.insert(7, "Interessiert Dich?");
-	description.insert(8, "Interessiert ...?");
-	description.insert(9, "Typ");
-	description.insert(10, "Qualität");
-	description.insert(11, "Deine Bewertung");
-	description.insert(12, "Bewertung von ...");
-	description.insert(13, "Pfad");
-	description.insert(14, "Last Changes");
-	
-	tableWidget.setHorizontalHeaderLabels(description);
-	
-	QSqlQuery query;
-	query.exec("SELECT * FROM main;");
-		printf("size: %d\n", query.size());
-		printf("last error: %s\n", query.lastError().text().toAscii().data());
-
-//	tableWidget.setRowCount(query.size());
-
-	QProgressDialog progressDlg("Lade Musik-Datenbank...", "Abbrechen", 0, query.size(), this);
-	progressDlg.setWindowModality(Qt::WindowModal);
-
-	unsigned int rowcount=0;
-
-	while (query.next()) { // WARNING: DO !!!NEVER!!! rely on query.size() here!!! (see qt docs...)
-
-		progressDlg.setValue(rowcount);
-		progressDlg.show();
-		if (progressDlg.wasCanceled())
-		 break;
-
-		if(rowcount % 250 == 0)
-		 tableWidget.setRowCount(rowcount+250);
-	
-		QString id = query.value(0).toString();
-		QString title = query.value(1).toString();
-		QString artist = query.value(2).toString();
-		QString album = query.value(3).toString();
-		QString tags = query.value(4).toString();
-		QString genre = query.value(5).toString();
-		QString year = query.value(6).toString();
-		QString int_you = query.value(7).toString(); // int = interest
-		QString int_other = query.value(8).toString();
-		QString type = query.value(9).toString();
-		QString quality = query.value(10).toString();
-		QString vote_you = query.value(11).toString();
-		QString vote_other = query.value(12).toString();
-		QString path = query.value(13).toString();
-
-		QDateTime _last_change = QDateTime::fromTime_t(query.value(14).toInt());
-		QString last_change = (_last_change.isValid() && _last_change <= QDateTime::currentDateTime())?
-			_last_change.toString("yyyy-MM-dd") : "(incorrect)";
-		
-		//QString &artistRef = artistAlbumList[artist];
-		//if(! artistRef.contains(artist) )
-		// artistRef.push_back(album);
-
-		QTableWidgetItem* item_id = new QTableWidgetItem(id);
-		QTableWidgetItem* item_title = new QTableWidgetItem(title);
-		QTableWidgetItem* item_artist = new QTableWidgetItem(artist);
-		QTableWidgetItem* item_album = new QTableWidgetItem(album);
-		QTableWidgetItem* item_tags = new QTableWidgetItem(tags);
-		QTableWidgetItem* item_genre = new QTableWidgetItem(genre);
-		QTableWidgetItem* item_year = new QTableWidgetItem(year);
-		QTableWidgetItem* item_int_other = new QTableWidgetItem(int_other);
-		QTableWidgetItem* item_int_you = new QTableWidgetItem(int_you);
-		QTableWidgetItem* item_type = new QTableWidgetItem(type);
-		QTableWidgetItem* item_quality = new QTableWidgetItem(quality);
-		QTableWidgetItem* item_vote_you = new QTableWidgetItem(vote_you);
-		QTableWidgetItem* item_vote_other = new QTableWidgetItem(vote_other);
-		QTableWidgetItem* item_path = new QTableWidgetItem(path);
-		QTableWidgetItem* item_last_change = new QTableWidgetItem(last_change);
-		
-		item_id->setData(Qt::DisplayRole, id);
-		item_title->setData(Qt::DisplayRole, title);
-		item_artist->setData(Qt::DisplayRole, artist);
-		item_album->setData(Qt::DisplayRole, album);
-		item_tags->setData(Qt::DisplayRole, tags);
-		item_genre->setData(Qt::DisplayRole, genre);
-		item_year->setData(Qt::DisplayRole, year);
-		item_int_other->setData(Qt::DisplayRole, int_other);
-		item_int_you->setData(Qt::DisplayRole, int_you);
-		item_type->setData(Qt::DisplayRole, type);
-		item_quality->setData(Qt::DisplayRole, quality);
-		item_vote_you->setData(Qt::DisplayRole, vote_you);
-		item_vote_other->setData(Qt::DisplayRole, vote_other);
-		item_path->setData(Qt::DisplayRole, path);
-		item_last_change->setData(Qt::DisplayRole, last_change);
-		
-		tableWidget.setItem(rowcount, 0, item_id);
-		tableWidget.setItem(rowcount, 1, item_title);
-		tableWidget.setItem(rowcount, 2, item_artist);
-		tableWidget.setItem(rowcount, 3, item_album);
-		tableWidget.setItem(rowcount, 4, item_tags);
-		tableWidget.setItem(rowcount, 5, item_genre);
-		tableWidget.setItem(rowcount, 6, item_year);
-		tableWidget.setItem(rowcount, 7, item_int_other);
-		tableWidget.setItem(rowcount, 8, item_int_you);
-		tableWidget.setItem(rowcount, 9, item_type);
-		tableWidget.setItem(rowcount, 10, item_quality);
-		tableWidget.setItem(rowcount, 11, item_vote_you);
-		tableWidget.setItem(rowcount, 12, item_vote_other);
-		tableWidget.setItem(rowcount, 13, item_path);
-		tableWidget.setItem(rowcount, 14, item_last_change);
-		
-		++rowcount;
-	}
-	tableWidget.setRowCount(rowcount);
-
-	tableWidget.hideColumn(0);
-	tableWidget.hideColumn(7);
-	tableWidget.hideColumn(8);
-	tableWidget.hideColumn(12);
-	tableWidget.hideColumn(13);
-	
-	tableWidget.resizeColumnsToContents ();
-	tableWidget.resizeRowsToContents ();
-
-	tableWidget.setSortingEnabled(true);
-	tableWidget.sortByColumn(14, Qt::AscendingOrder);
 }
 
 void MainWindow::switch_tray(QSystemTrayIcon::ActivationReason reason)
@@ -817,7 +628,7 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 	infoActionDownload(this),
 
 	//table widget
-	tableWidget((mobile)?(QWidget*)(NULL):(QWidget*)(&mainSplitter)),
+	tableWidget(sqlhelper, (mobile)?(QWidget*)(NULL):(QWidget*)(&mainSplitter)),
 
 	// others
 	popupMenu(&tableWidget),
@@ -945,7 +756,7 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 #endif
 
 	tableWidget.setSortingEnabled(true);
-	reloadTable();
+	tableWidget.reloadTable();
 	player.setFilterCount(tableWidget.rowCount());
 
 	/*

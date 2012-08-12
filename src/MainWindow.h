@@ -44,6 +44,7 @@
 #include <QSystemTrayIcon>
 
 #include "globals.h"
+#include "SongTableWidget.h"
 #include "AddEntries.h"
 #include "PlayerEngine.h"
 #include "SqlHelper.h"
@@ -97,12 +98,6 @@ private:
 		TOOLBOX_METAINFO
 	};
 
-		inline int row2id(int given_id) {
-			QTableWidgetItem* firstItem = tableWidget.item(given_id, 0);
-			return firstItem->data(Qt::DisplayRole).toInt()/*-1*/;
-			// ids begin with 1, columns with 0 - but not important here!
-		}
-
 	private slots:
 		/**
 		 * If no song is currently played, this slot is called to ask the player engine to play a new song.
@@ -130,7 +125,7 @@ private:
 		void slotForward(int x, int y);
 
 		void slotAddFile();
-		void slotRemoveSong();
+		inline void slotRemoveSong() { tableWidget.slotRemoveSong(); }
 
 		void slotStoreFlash();
 		void slotSynch();
@@ -154,10 +149,7 @@ private:
 					);
 		}
 
-		inline void slotScrollToSong() {
-			if(! tableWidget.selectedItems().empty())
-			 tableWidget.scrollToItem(*tableWidget.selectedItems().begin());
-		}
+		inline void slotScrollToSong() { tableWidget.slotScrollToSong(); }
 
 		inline void slotInfoDownload() {
 			//QString currentDir = player.getCurSongItem()->text();
@@ -188,51 +180,9 @@ private:
 			slotItemEdit(0, 0); // TODO ;)
 		}
 
-		void slotItemEdit(int row, int column)
+		inline void slotItemEdit(int row, int column)
 		{
-#if 0
-			Q_UNUSED(column);
-			
-		
-			AddEntryDlg dlg(sqlhelper, true, row);
-			dlg.show();
-			dlg.exec();
-			
-			reloadTable();
-#endif
-
-			Q_UNUSED(row);
-			Q_UNUSED(column);
-			QList<QTableWidgetSelectionRange> ranges = tableWidget.selectedRanges();
-			if(ranges.empty()) {
-				QMessageBox::information(NULL, "Sorry...", "You can not edit 0 songs :) (at least, it would not make much sense)");
-				return;
-			}
-
-//			QTableWidgetItem* firstItem = tableWidget.item(ranges.front().topRow(), ranges.front().leftColumn());
-
-			QList<int> selectedRows;
-			for(QList<QTableWidgetSelectionRange>::const_iterator itr = ranges.begin(); itr!=ranges.end(); itr++)
-			{
-				for(int i = itr->topRow(); i <= itr->bottomRow(); i++)
-				 selectedRows.append(row2id(i));
-			}
-
-			AddEntryDlg dlg(sqlhelper, true, &selectedRows);
-			dlg.show();
-			if( dlg.exec() == QDialog::Accepted )
-			 reloadTable();
-
-
-			/*if(ranges.size() == 1 && ranges.front().rowCount() == 1) {
-				AddEntryDlg dlg(sqlhelper, true, row2id(ranges.front().topRow()));
-				dlg.show();
-				if( dlg.exec() == QDialog::Accepted )
-				 reloadTable();
-			}
-			else {
-				QMessageBox::information(NULL, "Sorry...", "Es kann im Moment nur je eine Zeile bearbeitet werden! Bitte nur eine *Zelle* anklicken!");
-			}*/
+			tableWidget.slotItemEdit(row, column);
 		}
 		
 		//! (de)activates buttons depending on player_status variable
@@ -259,7 +209,7 @@ private:
 
 	private:
 
-		class SettingsReader
+		class SettingsReader // todo: extra file?
 		{
 			inline void shouldBe(const char* option_name, QVariant initial_value, bool first_start = false)
 			{
@@ -383,7 +333,7 @@ private:
 	//	QCheckBox x1Filter, x2Filter;
 
 		// table Widget
-		QTableWidget tableWidget;
+		SongTableWidget tableWidget;
 		
 		// other stuff
 		QVector<QAction*> Actions;
@@ -431,9 +381,6 @@ private:
 		//! layout stuff that needs to be redone for other layouts
 		void layoutWidgets(bool mobile = false);
 		void freeLayout();
-		
-		//! reloads the table from the database
-		void reloadTable();
 
 	signals:
 		

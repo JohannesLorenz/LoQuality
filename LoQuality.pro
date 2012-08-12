@@ -39,7 +39,8 @@ HEADERS += src/AddEntries.h \
     src/FileAddBase.h \
     src/SyncAddManager.h \
     src/params.h \
-    src/flash_tools.h
+    src/flash_tools.h \
+    src/SongTableWidget.h
 SOURCES += src/AddEntries.cpp \
     src/FileManager.cpp \
     src/FlashDlg.cpp \
@@ -65,6 +66,7 @@ SOURCES += src/AddEntries.cpp \
     src/FileAddBase.cpp \
     src/SyncAddManager.cpp \
     src/params.cpp \
-    src/flash_tools.cpp
+    src/flash_tools.cpp \
+    src/SongTableWidget.cpp
 OTHER_FILES += TODO.txt \
     TODO_LIST.txt
