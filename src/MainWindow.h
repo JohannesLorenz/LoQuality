@@ -34,7 +34,6 @@
 #include <QDial>
 #include <QToolBox>
 #include <QSpinBox>
-#include <QTableWidget>
 #include <QTabWidget>
 #include <QSqlTableModel>
 

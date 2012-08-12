@@ -23,19 +23,8 @@
 
 #include <QLocale>
 #include <QMessageBox>
-#include <QDateTime>
-#include <QProgressDialog>
 #include <QBitArray>
-#include <QSqlError> // TODO: remove me later
-/*#include <QDebug>
-
-#include <QString>
-#include <QSizePolicy>
-#include <QFileDialog>
-#include <QTextBrowser>
-*/
-
-#include <iostream> // TODO: remove me
+#include <QDateTime>
 
 #include "MainWindowIcons.h"
 // TODO: get new icons from http://websvn.kde.org/trunk/kdesupport/oxygen-icons/
@@ -47,8 +36,8 @@
 
 #define _MPLAYER_REMOTE_PIPE "/tmp/lq_remote_pipe"
 
-void MainWindow::retranslateUi() {
-
+void MainWindow::retranslateUi()
+{
 	topMenus[MENU_FILE].setTitle(tr("Datei"));
 	topMenus[MENU_EDIT].setTitle(tr("Bearbeiten"));
 	topMenus[MENU_VIEW].setTitle(tr("Ansicht"));
@@ -90,7 +79,8 @@ void MainWindow::retranslateUi() {
 }
 	
 QAction* MainWindow::initAction (enum MENU menuNo, enum ACTION actionNo, const char* slotName,
-					const QKeySequence& shortKeySequence, const char* const xpmStr[]) {
+					const QKeySequence& shortKeySequence, const char* const xpmStr[])
+{
 	QAction* new_action = new QAction(this);
 	
 	if(slotName != NULL) {
@@ -130,7 +120,8 @@ void MainWindow::initButton2 (enum BTN2 btn2No, const char* slotName /*, const c
 //	 interestingButton->setIcon( QIcon(QPixmap(xpmStr)) );
 }
 
-void MainWindow::onSetStatus(STATUS_FLAGS new_status) {
+void MainWindow::onSetStatus(STATUS_FLAGS new_status)
+{
 	switch(new_status)
 	{
 		case PlayerEngine::STATUS_PLAYING:
@@ -158,8 +149,8 @@ void MainWindow::onSetStatus(STATUS_FLAGS new_status) {
 /*
 	BUTTONS SLOTS
 */
-void MainWindow::slotPlay(int row, int column) {
-
+void MainWindow::slotPlay(int row, int column)
+{
 	Q_UNUSED(row);
 	Q_UNUSED(column);
 
@@ -735,24 +726,7 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 	QStringList tables = db.tables();
 	printf("tables: %d\n",tables.size());
 
-
-	bool main_exists = false;
-
-	QSqlQuery query;
-
-	query.exec("SELECT name FROM  sqlite_master WHERE type='table' ORDER BY name;");
-	printf("size: %d\n", query.size());
-	//printf("last error: %s\n", query.lastError().text().toAscii().data());
-	while (query.next() && !main_exists) {
-		printf("tables: %s\n",query.value(0).toString().toAscii().data());
-		if( query.value(0).toString() == "main" )
-			main_exists = true;
-	}
-
-	if(!main_exists)
-	 sqlhelper.CREATE();
-
-	printf("Main exists? %d\n",(int)main_exists);
+	sqlhelper.CREATE_if_main_missing();
 #endif
 
 	tableWidget.setSortingEnabled(true);

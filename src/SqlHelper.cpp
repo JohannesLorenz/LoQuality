@@ -23,6 +23,7 @@
 #include <QDateTime>
 #include <QFileInfo>
 #include <QSqlError>
+#include <QVariant>
 
 #include "md5sum.h"
 #include "SqlHelper.h"
@@ -53,7 +54,7 @@ void SqlHelper::DELETE(const int id) const
 	query.exec( QString("DELETE FROM 'main' WHERE `id`='%1'").arg(id) );
 }
 
-void SqlHelper::INSERT(const char* filepath) const
+void SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NULL allowed?
 {
 	if(mPlayerConnection == NULL)
 		return;
@@ -92,8 +93,8 @@ void SqlHelper::INSERT(const char* filepath) const
 	QByteArray md5sum;
 	calculate_md5sum(filepath, &md5sum);
 	QDateTime last_changed = QFileInfo(filename).lastModified();
-	printf("str: %s\n",QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad', 'last_changed', 'md5sum') "
-				   "VALUES ( NULL, %1, %2, %3, '', %4, %5, '0', '0', %6, %7, '0', '0', '%8', '%9', '%10');")
+	printf("str: %s\n",QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad', 'last_changed', 'md5sum', 'url') "
+				   "VALUES ( NULL, %1, %2, %3, '', %4, %5, '0', '0', %6, %7, '0', '0', '%8', '%9', '%10', '%11');")
 				 .arg(
 					 metaTitle,
 					 corr( mPlayerConnection->fetchValue("get_meta_artist\n", "ANS_META_ARTIST=") ),
@@ -110,11 +111,13 @@ void SqlHelper::INSERT(const char* filepath) const
 					 md5sum.toHex().data()
 				).arg(
 					last_changed.toTime_t()
+				).arg(
+					url
 				).toAscii().data());
 
 	const bool return_value = query.exec(
-	/*QString str =*/	QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad', 'last_changed', 'md5sum') "
-					  "VALUES ( NULL, %1, %2, %3, '', %4, %5, '0', '0', %6, %7, '0', '0', '%8', '%9', '%10');")
+	/*QString str =*/	QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad', 'last_changed', 'md5sum', 'url') "
+					  "VALUES ( NULL, %1, %2, %3, '', %4, %5, '0', '0', %6, %7, '0', '0', '%8', '%9', '%10', '%11');")
 					.arg(
 						metaTitle,
 						corr( mPlayerConnection->fetchValue("get_meta_artist\n", "ANS_META_ARTIST=") ),
@@ -133,6 +136,9 @@ void SqlHelper::INSERT(const char* filepath) const
 						)
 					.arg (
 						md5sum.toHex().data()
+					)
+					.arg (
+						url
 					)
 			);
 	if(!return_value) {
@@ -161,7 +167,27 @@ void SqlHelper::CREATE(void) const
 		"'bew_others' tinyint(4),"
 		"'pfad' varchar(255),"
 		"'last_changed' int,"
-		"'md5sum' varchar(128)"
+		"'md5sum' varchar(128),"
+		"'url' varchar(255)"
 		");"
 	);
 }
+
+bool SqlHelper::main_exists(void) const
+{
+	bool main_exists = false;
+	QSqlQuery query;
+
+	query.exec("SELECT name FROM  sqlite_master WHERE type='table' ORDER BY name;");
+	printf("size: %d\n", query.size());
+	//printf("last error: %s\n", query.lastError().text().toAscii().data());
+	while (query.next() && !main_exists) {
+		printf("tables: %s\n",query.value(0).toString().toAscii().data());
+		if( query.value(0).toString() == "main" )
+			main_exists = true;
+	}
+
+	printf("Main exists? %d\n",(int)main_exists);
+	return main_exists;
+}
+

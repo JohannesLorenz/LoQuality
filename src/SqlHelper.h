@@ -59,9 +59,15 @@ class SqlHelper
 
 		//! executes the insert command on the whole database
 		//! @param argumentList list of values, each in single quotes (except NULL) and seperated by comma. e.g.: "'a', NULL , 'c'"
-		void INSERT(const char* filepath) const;
+		void INSERT(const char* filepath, const char* url = "") const;
 
 		void CREATE(void) const;
+
+		bool main_exists(void) const;
+
+		inline void CREATE_if_main_missing(void) const {
+			if(!main_exists()) CREATE();
+		}
 
 		inline bool start_insert_sequence(void) const {
 			return ( mPlayerConnection = new MPlayerConnection(_MPLAYER_META_PIPE, true) ) != NULL;
