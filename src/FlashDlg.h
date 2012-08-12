@@ -39,6 +39,7 @@
 #include <QProgressDialog>
 #include <QTimer>
 
+#include "flash_tools.h"
 //#include <QLabel>
 //#include <QLineEdit>
 //#include <QPushButton>
@@ -53,10 +54,9 @@ protected:
 	bool downloadsMade;
 	bool insertSql;
 
-	pid_t ffmpegs_pid;
+	OggConvertion ogg_convertion;
 	QString curOutName; //!< empty if no current file is in progress
 	QProgressDialog* progressDlg;
-	QTimer convertTimer;
 public:
 	void askForOutputFilename(const QString& infile);
 	bool convertToOgg(QWidget* parent, const char* infile, bool _insertSql);
@@ -67,8 +67,7 @@ public:
 	inline bool made_downloads() const { return downloadsMade; }
 	StoreHelper(const SqlHelper& _sqlhelper)
 		: sqlhelper(_sqlhelper), downloadsMade(false), progressDlg(NULL) {
-		convertTimer.setInterval(1000);
-		QObject::connect(&convertTimer, SIGNAL(timeout()), this, SLOT(slotTimerTimeout()));
+		QObject::connect(&ogg_convertion, SIGNAL(finished()), this, SLOT(slotTimerTimeout()));
 	}
 };
 

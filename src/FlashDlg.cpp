@@ -77,17 +77,12 @@ void SelectFlashPage::reload() // TODO: we could do that more efficient :P
 
 void StoreHelper::slotTimerTimeout()
 {
-	puts("TIMEOUT!");
-	if( oggConvertionFinished(ffmpegs_pid) )  {
-		puts("WAIT FINISHED!");
-		convertTimer.stop();
-		progressDlg->cancel();
-		progressDlg=NULL;
-		if(insertSql) { // cbAddAfterwards.isChecked()
-			sqlhelper.start_insert_sequence();
-			sqlhelper.INSERT(curOutName.toAscii().data());
-			sqlhelper.stop_insert_sequence();
-		}
+	progressDlg->cancel();
+	progressDlg=NULL;
+	if(insertSql) { // cbAddAfterwards.isChecked()
+		sqlhelper.start_insert_sequence();
+		sqlhelper.INSERT(curOutName.toAscii().data());
+		sqlhelper.stop_insert_sequence();
 	}
 }
 
@@ -178,7 +173,7 @@ bool StoreHelper::convertToOgg(QWidget* parent, const char *infile, bool _insert
 {
 	insertSql = _insertSql;
 
-	ffmpegs_pid = startOggConvertion(infile, curOutName.toAscii().data());
+	pid_t ffmpegs_pid = startOggConvertion(infile, curOutName.toAscii().data());
 	if(ffmpegs_pid < 0) {
 		QMessageBox::information(parent, "Sorry...", "... fork() ging leider nicht, kann ffmpeg nicht starten :(");
 		return false;
@@ -190,7 +185,7 @@ bool StoreHelper::convertToOgg(QWidget* parent, const char *infile, bool _insert
 		progressDlg->setWindowModality(Qt::WindowModal);
 		progressDlg->setValue(0);
 		progressDlg->show();
-		convertTimer.start();
+		ogg_convertion.begin(ffmpegs_pid);
 	}
 
 	downloadsMade = true;

@@ -45,21 +45,41 @@ inline bool oggConvertionFinished(pid_t ffmpegs_pid) {
 	return 0 != waitpid(ffmpegs_pid, NULL, WNOHANG);
 }
 
-class OggConvertion : public QObject // NOTE: THIS CLASS IS NOT FINISHED YET
+/**
+	@class ForkedProcess
+	@brief Class to keep track of a downloaded process.
+
+	This class can be reused.
+*/
+class ForkedProcess : public QObject
 {
 	Q_OBJECT
 private:
-	QTimer convertTimer;
-	pid_t ffmpegs_pid;
+	QTimer lookupTimer;
+	pid_t remote_pid;
+private slots:
+	void slotTimerTimeout();
 public:
-	inline OggConvertion(unsigned int msecs = 1000) {
-		convertTimer.setInterval(msecs);
+	inline ForkedProcess() {
+		connect(&lookupTimer, SIGNAL(timeout()), this, SLOT(slotTimerTimeout()));
 	}
-	inline void start(const char *infile, const char* outfile) {
-		ffmpegs_pid = startOggConvertion(infile, outfile);
-	}
+	bool begin(pid_t _remote_pid, unsigned int msecs = 1000);
 signals:
 	void finished(void);
+};
+
+class OggConvertion : public ForkedProcess // NOTE: THIS CLASS IS NOT FINISHED YET
+{
+public:
+	inline bool start(const char *infile, const char* outfile) {
+		return begin(startOggConvertion(infile, outfile));
+	}
+};
+
+class YouTubeDlSession : public ForkedProcess
+{
+public:
+	bool download(const char* url, const char* dest);
 };
 
 #endif // FLASH_TOOLS_H

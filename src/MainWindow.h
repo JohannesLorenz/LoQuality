@@ -226,6 +226,7 @@ private:
 			void checkIntegrity(bool first_start = false)
 			{
 				shouldBe("ffmpeg_fullpath", "/usr/bin/ffmpeg", first_start);
+				shouldBe("youtubedl_fullpath", "/usr/bin/youtube-dl", first_start);
 				shouldBe("mplayer_name", "mplayer2", first_start);
 				shouldBe("music_root", "insert_your_path", first_start);
 				shouldBe("number_of_cores", 2, first_start);

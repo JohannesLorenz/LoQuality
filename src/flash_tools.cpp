@@ -81,7 +81,44 @@ pid_t startOggConvertion(const char *infile, const char* outfile)
 		exit(0);
 	}
 	else
-	 return ffmpegs_pid; // -1 for error or ffmpegs pid
+		return ffmpegs_pid; // -1 for error or ffmpegs pid
 }
+
+bool ForkedProcess::begin(pid_t _remote_pid, unsigned int msecs)
+{
+	if(_remote_pid == -1) // error calling fork()
+	 return false;
+	else
+	{
+		remote_pid = _remote_pid;
+		lookupTimer.start(msecs);
+		return true;
+	}
+}
+
+void ForkedProcess::slotTimerTimeout()
+{
+	puts("TIMEOUT!");
+	if( 0 != waitpid(remote_pid, NULL, WNOHANG) )  {
+		puts("WAIT FINISHED!");
+		lookupTimer.stop();
+		emit finished();
+	}
+}
+
+bool YouTubeDlSession::download(const char *url, const char *dest)
+{
+	//youtube-dl -w -cit --max-quality 60 --extract-audio --audio-format vorbis --audio-quality 320k <url>
+	const pid_t _youtubedls_pid=fork();
+	if(_youtubedls_pid == 0) {
+		const QString youtubedl_fullpath = globals::settings->value("youtubedl_fullpath").toString();
+		execlp(youtubedl_fullpath.toAscii().data(), "youtube-dl", "-w", "-cit", "--max-quality", "60", "--extract-audio", "--audio-format", "best", "--audio-quality", "320k", url, NULL);
+		exit(0);
+	}
+	else
+		return begin(_youtubedls_pid);
+}
+
+
 
 
