@@ -119,7 +119,7 @@ FileManager::FileManager (const SqlHelper& _sqlhelper) :
 	fileAddBase(_sqlhelper, this)
 {
 
-	QSqlQuery query("SELECT * FROM main;");
+	QSqlQuery query = sqlhelper.exec("SELECT * FROM main;");
 	QList<QString> dbNameList;
 
 	while (query.next()) {

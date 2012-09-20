@@ -40,9 +40,9 @@
 #include <QAction>
 #include <QtGui/QStatusBar>
 #include <QMessageBox>
-#include <QSystemTrayIcon>
 
 #include "globals.h"
+#include "MainWindowContainer.h"
 #include "SongTableWidget.h"
 #include "AddEntries.h"
 #include "PlayerEngine.h"
@@ -72,7 +72,7 @@ class MainWindow : public QMainWindow
 	};
 	
 	enum ACTION {
-		ACTION_FILE_QUIT, ACTION_FILE_UPDATE,
+		ACTION_FILE_OPEN, ACTION_FILE_QUIT, ACTION_FILE_UPDATE,
 		ACTION_EDIT_EDITTITLE, ACTION_EDIT_OPTIONS,
 		ACTION_VIEW_SCROLL_TO_SONG, ACTION_VIEW_FULLSCREEN, ACTION_VIEW_SWITCH_ALIGN,
 		ACTION_HELP_ABOUT, ACTION_HELP_ABOUTQT,
@@ -128,6 +128,8 @@ private:
 
 		void slotStoreFlash();
 		void slotSynch();
+
+		inline void slotOpenNewMainWindow() { mwContainer->openNewWindow(); }
 
 		void slotFileQuitAction();
 
@@ -193,8 +195,6 @@ private:
 			popupMenu.exec(p);
 		}
 
-		void switch_tray(QSystemTrayIcon::ActivationReason reason);
-
 		void slotSplitterMoved(int pos, int idx) {
 			Q_UNUSED(idx);
 			imageLabel.setFixedHeight(pos);
@@ -207,71 +207,11 @@ private:
 		}
 
 	private:
+		// MainWindowContainer
+		MainWindowContainer* mwContainer;
 
-		class SettingsReader // todo: extra file?
-		{
-			inline void shouldBe(const char* option_name, QVariant initial_value, bool first_start = false)
-			{
-				if(globals::settings->value(option_name) == QVariant())
-				{
-					// on first start, do not inform user about updates.
-					if(!first_start)
-					QMessageBox::information(NULL, "Updated value",
-						QString("Inserted option \"%1\" due to update. "
-							"Default value \"%2\" will be used.").arg(option_name, initial_value.toString()));
-					globals::settings->setValue(option_name, initial_value);
-				}
-			}
-
-			void checkIntegrity(bool first_start = false)
-			{
-				shouldBe("ffmpeg_fullpath", "/usr/bin/ffmpeg", first_start);
-				shouldBe("youtubedl_fullpath", "/usr/bin/youtube-dl", first_start);
-				shouldBe("mplayer_name", "mplayer2", first_start);
-				shouldBe("music_root", "insert_your_path", first_start);
-				shouldBe("number_of_cores", 2, first_start);
-				shouldBe("update_interval_days", 1, first_start);
-				shouldBe("do_updates", true, first_start);
-				shouldBe("target", "pc", first_start);
-				shouldBe("equalizer","0:0:0:0:0:0:0:0:0:0", first_start);
-			}
-
-		public:
-			SettingsReader()
-			{
-				const bool first_start = globals::settings->value("first_start", true).toBool();
-				if(first_start) {
-					globals::settings->setValue("first_start", false);
-					QMessageBox::information(NULL, "Please close LQ and then edit:", globals::settings->fileName().toAscii().data());
-				}
-				if(globals::settings->value("update_applied").toBool()) {
-					UpdateInfoDlg u;
-					u.show();
-					u.exec();
-					globals::settings->setValue("update_applied", false);
-				}
-				printf("Writing options to %s\n",
-					globals::settings->fileName().toAscii().data());
-				checkIntegrity(first_start);
-
-				if(first_start) {
-					const bool mobile = question("Is this a mobile?",
-					"Are you running this on your mobile phone?");
-					globals::settings->setValue("target",
-						(mobile)?"mobile":"pc");
-				}
-
-				globals::MUSIC_ROOT = globals::settings->value("music_root").toString();
-				globals::MPLAYER_EXE = globals::settings->value("mplayer_name").toString();
-			}
-		};
-
-	private:
 		//database
-		QSqlDatabase db;
 		SqlHelper sqlhelper;
-		
-		SettingsReader settingsReader;
 
 		//player engine
 		PlayerEngine player;
@@ -338,11 +278,8 @@ private:
 		// other stuff
 		QVector<QAction*> Actions;
 		QMenu popupMenu;
-		QSystemTrayIcon tray_icon;
-		bool visible; // for the tray icon
 		bool quitProgram; // only set to true if the program is exited with the menu bar
 		time_t time_to_stop;
-		DBusConnector dbus_connector;
 
 		// status bar
 		QStatusBar statusBar;
@@ -390,8 +327,10 @@ private:
 		 * Constructor. Builds up the whole Main Window and sub widgets, connects all signals
 		 * @param parent parent pointer as it will be passed to QMainWindow. Not used otherwise.
 		 */
-		MainWindow (const bool mobile, QWidget* parent=NULL);
+		MainWindow (MainWindowContainer* _mwContainer, const QString& dbname, const bool mobile, QWidget* parent=NULL);
 		~MainWindow();
+		inline PlayerEngine* get_player() { return &player; }
+		//inline void setVisible(bool visible) { setVisible(true); }
 
 	protected:
 		bool event(QEvent *event);

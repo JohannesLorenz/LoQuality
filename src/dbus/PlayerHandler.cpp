@@ -96,26 +96,26 @@ namespace Mpris1
 
 
 	PlayerHandler::PlayerHandler(PlayerEngine* _player) : player(_player)
-    {
-	qDBusRegisterMetaType<Status>();
+	{
+		qDBusRegisterMetaType<Status>();
 
-	setObjectName("PlayerHandler");
+		setObjectName("PlayerHandler");
 
-	new Mpris1PlayerAdaptor( this );
-	// amarok extensions:
-//	new Mpris1AmarokPlayerAdaptor( this );
-	QDBusConnection::sessionBus().registerObject("/Player", this);
-/*
-	connect( The::playlistActions(), SIGNAL(navigatorChanged()),
-		 this, SLOT(updateStatus()) );
+		new Mpris1PlayerAdaptor( this );
+		// amarok extensions:
+		//	new Mpris1AmarokPlayerAdaptor( this );
+		QDBusConnection::sessionBus().registerObject("/Player", this);
+		/*
+		connect( The::playlistActions(), SIGNAL(navigatorChanged()),
+			 this, SLOT(updateStatus()) );
 
-	EngineController *engine = The::engineController();
+		EngineController *engine = The::engineController();
 
-	connect( engine, SIGNAL( playbackqDBusRegisterMetaTypeStateChanged() ),
-		 this, SLOT( slotStateChanged() ) );
-	connect( engine, SIGNAL( trackChanged( Meta::TrackPtr ) ),
-		 this, SLOT( slotTrackChanged( Meta::TrackPtr ) ) );*/
-    }
+		connect( engine, SIGNAL( playbackqDBusRegisterMetaTypeStateChanged() ),
+			 this, SLOT( slotStateChanged() ) );
+		connect( engine, SIGNAL( trackChanged( Meta::TrackPtr ) ),
+			 this, SLOT( slotTrackChanged( Meta::TrackPtr ) ) );*/
+	}
 
 	Status PlayerHandler::GetStatus()
 	{

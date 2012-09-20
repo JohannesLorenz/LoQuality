@@ -19,6 +19,7 @@
 /*************************************************************************/
 
 #include <cstdlib>
+#include <unistd.h>
 #include <QDir>
 #include "globals.h"
 #include "flash_tools.h"

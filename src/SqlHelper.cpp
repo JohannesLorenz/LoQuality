@@ -28,6 +28,64 @@
 #include "md5sum.h"
 #include "SqlHelper.h"
 
+int SqlHelper::dbs_open = 0;
+
+SqlHelper::SqlHelper(const QString& dbname)
+{
+#ifdef USE_MYSQL
+	db = QSqlDatabase::addDatabase("QMYSQL");
+	db.setUserName("music");
+	db.setPassword("opensource");
+	db.setHostName("localhost");
+	db.setDatabaseName("musicdb");
+#else
+	/*if(!dbs_open)
+	 db = QSqlDatabase::addDatabase("QSQLITE");
+	else
+	 db = QSqlDatabase::addDatabase();*/
+
+	db = QSqlDatabase::addDatabase("QSQLITE", QString::number(dbs_open));
+
+
+	QString path;
+#ifdef Q_OS_LINUX
+	// NOTE: We have to store database file into user home folder in Linux
+	// path.append(QDir::home().path());
+	// path.append(QDir::separator()).append("musicdb");
+	// path = QDir::toNativeSeparators(path);
+	// db.setDatabaseName(path);
+	path.append(dbname);
+#else
+	// NOTE: File exists in the application private folder, in Symbian Qt implementation
+	path.append(dbname);
+#endif
+
+	db.setDatabaseName(path);
+#endif
+
+
+	const bool ok = db.open();
+
+	if(ok)
+	 printf("CONNECTION TO DATABASE ESTABLISHED!!\n");
+	else {
+		printf("COULD NOT OPEN OR CREATE DATABASE!\n Error: %s",
+			db.lastError().text().toAscii().data()
+		);
+		return;
+	}
+	dbs_open++;
+
+#ifndef USE_MYSQL
+	// might need to create sqlite table...
+
+	QStringList tables = db.tables();
+	printf("tables: %d\n",tables.size());
+
+	CREATE_if_main_missing();
+#endif
+}
+
 QString SqlHelper::corr(const QString& originalString)
 {
 	QString result = originalString;
@@ -49,9 +107,9 @@ QString SqlHelper::corr(const QString& originalString)
 
 void SqlHelper::DELETE(const int id) const
 {
-	QSqlQuery query;
+	//QSqlQuery query();
 	//printf("%s\n",QString("DELETE FROM `musicdb`.`main` WHERE `id`='%1'").arg(id).toAscii().data());
-	query.exec( QString("DELETE FROM 'main' WHERE `id`='%1'").arg(id) );
+	db.exec( QString("DELETE FROM 'main' WHERE `id`='%1'").arg(id) );
 }
 
 void SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NULL allowed?
@@ -89,7 +147,6 @@ void SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 		printf("metaTitle now: %s\n",metaTitle.toAscii().data());
 	}
 
-	QSqlQuery query;
 	QByteArray md5sum;
 	calculate_md5sum(filepath, &md5sum);
 	QDateTime last_changed = QFileInfo(filename).lastModified();
@@ -115,7 +172,7 @@ void SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 					url
 				).toAscii().data());
 
-	const bool return_value = query.exec(
+	const QSqlQuery query = db.exec(
 	/*QString str =*/	QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad', 'last_changed', 'md5sum', 'url') "
 					  "VALUES ( NULL, %1, %2, %3, '', %4, %5, '0', '0', %6, %7, '0', '0', '%8', '%9', '%10', '%11');")
 					.arg(
@@ -141,7 +198,7 @@ void SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 						url
 					)
 			);
-	if(!return_value) {
+	if(!query.isValid()) {
 		fputs(query.lastError().text().toAscii().data(),stderr);
 	}
 
@@ -149,8 +206,7 @@ void SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 
 void SqlHelper::CREATE(void) const
 {
-	QSqlQuery query;
-	query.exec(
+	db.exec(
 		"CREATE TABLE main ("
 		"'id' INTEGER PRIMARY KEY, "
 		"'titel' varchar(128),"
@@ -176,9 +232,7 @@ void SqlHelper::CREATE(void) const
 bool SqlHelper::main_exists(void) const
 {
 	bool main_exists = false;
-	QSqlQuery query;
-
-	query.exec("SELECT name FROM  sqlite_master WHERE type='table' ORDER BY name;");
+	QSqlQuery query = db.exec("SELECT name FROM  sqlite_master WHERE type='table' ORDER BY name;");
 	printf("size: %d\n", query.size());
 	//printf("last error: %s\n", query.lastError().text().toAscii().data());
 	while (query.next() && !main_exists) {

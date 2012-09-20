@@ -18,33 +18,33 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
-#ifndef _FILE_MANAGER_H_
-#define _FILE_MANAGER_H_ _FILE_MANAGER_H_
+#ifndef MAINWINDOWCONTAINER_H
+#define MAINWINDOWCONTAINER_H
 
-#include <QDialog>
+#include <QObject>
+#include <QList>
+#include <QSystemTrayIcon>
+class MainWindow;
 
-/*#include <QMap>
-#include <QToolBar>
-#include <QVBoxLayout>
-#include <QSplitter>
-#include <QTabWidget>
-#include <QList>*/
-
-#include "SqlHelper.h"
-#include "FileAddBase.h"
-
-class FileManager : public QDialog
+class MainWindowContainer : public QObject
 {
 	Q_OBJECT
-	private:
-		SqlHelper sqlhelper;
-		FileAddBase fileAddBase;
-		bool appendToItem(QTreeWidgetItem* parentItem, QDir* currentDir, QListIterator<QString> dbItr);
-	private slots:
-		void proceed();
-	public:
-		inline bool isAnythingChanged() const { return fileAddBase.isAnythingChanged(); }
-		FileManager (const SqlHelper& _sqlhelper);
+	QList<MainWindow*> mainWindows, oldMainWindows;
+
+	QSystemTrayIcon tray_icon;
+	bool visible; // for the tray icon
+	bool quitProgram; // only set to true if the program is exited with the menu bar
+private slots:
+	void switch_tray(QSystemTrayIcon::ActivationReason reason);
+
+public:
+	MainWindowContainer();
+	~MainWindowContainer();
+
+public slots:
+	MainWindow* openNewWindow();
+	MainWindow* openNewWindow(const QString& filename);
+	bool removeFrom(MainWindow* me);
 };
 
-#endif // _FILE_MANAGER_H_
+#endif // MAINWINDOWCONTAINER_H

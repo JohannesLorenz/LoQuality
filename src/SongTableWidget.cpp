@@ -18,10 +18,17 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
+#include <QApplication>
 #include <QSqlError>
 #include <QProgressDialog>
 #include <QDateTime>
 #include <QMessageBox>
+
+// drag drop:
+#include <QMimeData>
+#include <QDrag>
+#include <QDragEnterEvent>
+#include <QDebug>
 
 #include "SqlHelper.h"
 #include "AddEntries.h"
@@ -32,7 +39,88 @@ SongTableWidget::SongTableWidget(SqlHelper& _sqlhelper, QWidget *parent) :
 	QTableWidget(parent),
 	sqlhelper(_sqlhelper)
 {
+	setAcceptDrops(true);
+}
 
+void SongTableWidget::mousePressEvent(QMouseEvent *event)
+{
+	if (event->button() == Qt::RightButton)
+	{
+		QList<QTableWidgetItem*> items = selectedItems();
+
+			QListIterator<QTableWidgetItem*> itr(items);
+			QModelIndexList modelIndexes;
+			while (itr.hasNext())
+			{
+				modelIndexes.prepend(indexFromItem(itr.next()));
+			}
+
+
+			QMimeData *mimeDataObj = model()->mimeData(modelIndexes);
+
+			if(mimeDataObj)
+			{
+				// Create drag
+				QDrag *drag = new QDrag(this);
+				drag->setMimeData(mimeDataObj);
+
+				qDebug() << "mousePressEvent before exec";
+				drag->exec(Qt::CopyAction);
+				qDebug() << "mousePressEvent after exec";
+			}
+	}
+
+	QTableWidget::mousePressEvent(event);
+}
+
+void SongTableWidget::mouseMoveEvent(QMouseEvent *event)
+{
+
+
+	QTableWidget::mouseMoveEvent(event);
+}
+
+void SongTableWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+//	qDebug() << "dragEnterEvent text: " << event->mimeData()->text();
+
+	// Allways accept at first
+	event->acceptProposedAction();
+
+	QTableWidget::dragEnterEvent(event);
+}
+
+void SongTableWidget::dropEvent(QDropEvent *event)
+{
+	qDebug() << "enter in dropEvent";
+//	itemAt(event->pos())->row();
+//	QEvent;
+
+
+	//qDebug() << "point: " << event->pos() << ", which is row: " << itemAt(event->pos())->row();
+//	if(!dropMimeData(rowCount(), 1, event->mimeData(), Qt::CopyAction))
+//	 qDebug() << "Drop failed!";
+
+	QTableWidget::dropEvent(event);
+}
+
+QMimeData* SongTableWidget::mimeData(const QList<QTableWidgetItem *> items) const
+{
+	/*QListIterator<QTableWidgetItem*> itr(items);
+	QModelIndexList modelIndexes;
+	while (itr.hasNext())
+	{
+		modelIndexes.prepend(indexFromItem(itr.next()));
+	}
+
+	return model()->mimeData(modelIndexes);*/
+	return QTableWidget::mimeData(items);
+}
+
+bool SongTableWidget::dropMimeData(int row, int column, const QMimeData *data, Qt::DropAction action)
+{
+	Q_UNUSED(column);
+	return QTableWidget::dropMimeData(row, 1, data, action);
 }
 
 bool SongTableWidget::slotItemEdit(int row, int column)
@@ -161,8 +249,7 @@ void SongTableWidget::reloadTable()
 
 	setHorizontalHeaderLabels(description);
 
-	QSqlQuery query;
-	query.exec("SELECT * FROM main;");
+	QSqlQuery query = sqlhelper.exec("SELECT * FROM main;");
 		printf("size: %d\n", query.size());
 		printf("last error: %s\n", query.lastError().text().toAscii().data());
 

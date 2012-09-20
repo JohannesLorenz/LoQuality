@@ -141,6 +141,7 @@ class SelectPage : public QWizardPage
 {
 	Q_OBJECT
 
+	const SqlHelper& sqlhelper;
 	SyncAddManager syncAddManager;
 	QListWidget songList;
 	QList<QListWidgetItem*>* selectedSongs;
@@ -149,6 +150,7 @@ class SelectPage : public QWizardPage
 public:
 	bool getSongList();
 	SelectPage(QList<QListWidgetItem*>* _selectedSongs, const SqlHelper& _sqlhelper) :
+		sqlhelper(_sqlhelper),
 		syncAddManager(_sqlhelper, this),
 		selectedSongs(_selectedSongs),
 		hbox(this)

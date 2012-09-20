@@ -18,8 +18,9 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
-#include "AddEntries.h"
+#include <QSqlQuery>
 
+#include "AddEntries.h"
 #include "SqlHelper.h"
 
 void AddEntryDlg::setupUi()
@@ -115,7 +116,7 @@ void AddEntryDlg::setupUi()
 		
 		printf("Executing: %s\n", q.toAscii().data());
 		
-		QSqlQuery query(q);
+		QSqlQuery query = sqlhelper.exec(q);
 		
 		query.next();
 		
@@ -159,7 +160,7 @@ void AddEntryDlg::setupUi()
 		le_path.setText(path);
 	}
 	
-	QSqlQuery queryArtist("SELECT * FROM main;");
+	QSqlQuery queryArtist = sqlhelper.exec("SELECT * FROM main;");
 	QStringList completitionListArtist;
 
 	while (queryArtist.next()) {
@@ -175,7 +176,7 @@ void AddEntryDlg::setupUi()
 	completerArtist->setCaseSensitivity(Qt::CaseInsensitive);
 	le_artist.setCompleter(completerArtist);
 	
-	QSqlQuery queryAlbum("SELECT * FROM main;");
+	QSqlQuery queryAlbum = sqlhelper.exec("SELECT * FROM main;");
 	QStringList completitionListAlbum;
 
 	while (queryAlbum.next()) {
@@ -304,8 +305,7 @@ void AddEntryDlg::OnButtonEditInsertPressed()
 	
 	printf("Query command: %s\n", insert_cmd.toAscii().data());
 	
-	QSqlQuery query;
-	query.exec(insert_cmd);
+	sqlhelper.exec(insert_cmd);
 	
 	accept();
 }

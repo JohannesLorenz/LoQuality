@@ -43,6 +43,7 @@ void MainWindow::retranslateUi()
 	topMenus[MENU_VIEW].setTitle(tr("Ansicht"));
 	topMenus[MENU_HELP].setTitle(tr("Hilfe"));
 
+	Actions[ACTION_FILE_OPEN]->setText(tr("Open Database in new Window"));
 	Actions[ACTION_FILE_UPDATE]->setText(tr("Update"));
 	Actions[ACTION_FILE_QUIT]->setText(tr("Beenden"));
 	Actions[ACTION_VIEW_SCROLL_TO_SONG]->setText(tr("Scroll zum aktuellen Song"));
@@ -192,8 +193,8 @@ void MainWindow::slotStop() {
 	player.slotStop();
 }
 
-void MainWindow::slotForward(int row, int column) {
-
+void MainWindow::slotForward(int row, int column)
+{
 	Q_UNUSED(column);
 	//QList<QTableWidgetItem*> items = tableWidget.selectedItems();
 	//player.slotForward(buttons1[BTN1_RANDOM].isChecked(), NULL);
@@ -328,52 +329,6 @@ void MainWindow::slotToolBoxChanged(int newIndex)
 		// TODO
 		//toolBox->adjustSize();
 
-	}
-}
-
-void MainWindow::switch_tray(QSystemTrayIcon::ActivationReason reason)
-{
-	switch (reason)
-	{
-		case QSystemTrayIcon::Trigger:
-		case QSystemTrayIcon::DoubleClick:
-		{
-			visible ^= 1;
-			setVisible(visible);
-			break;
-		}
-		case QSystemTrayIcon::MiddleClick:
-		{
-			QMessageBox::information(NULL, "Oh dude", "*head ---> table* :P wrong key ^^");
-			break;
-		}
-		default:
-		{
-/*			int limit = link_list.size();
-
-			for(int count=0; count < limit; ++count)
-			{
-				if(count > 9)
-				 break;
-
-				cout << "Setting IP no. " << count << " as '" << link_list[count].c_str() << "'" << endl;
-
-				launchlinks[count]->setText(link_list[count].c_str());
-
-				cout << "SET!" << endl;
-
-				popup.addAction(launchlinks[count]);
-
-				cout << "ADDED!" << endl;
-			}
-
-			popup.addSeparator();
-			popup.addAction(&act_exit);
-
-			popup.exec(QCursor::pos());
-
-			break;*/
-		}
 	}
 }
 
@@ -523,12 +478,6 @@ void MainWindow::layoutWidgets(bool mobile)
 		*/
 	setStatusBar(&statusBar);
 
-	/*
-		OTHER
-		*/
-	QIcon* tray_icon_icon = new QIcon("media/graphics/lq.png");
-	tray_icon.setIcon(*tray_icon_icon);
-	tray_icon.setVisible(true);
 }
 
 inline void removeAllChildrenFrom(QLayout* obj)
@@ -582,22 +531,15 @@ void MainWindow::freeLayout()
 
 	mainSplitter.addWidget(toolBox);
 	mainSplitter.addWidget(&tableWidget);
-
-
-	/*
-		OTHER
-		*/
-	//QIcon* tray_icon_icon = new QIcon("media/graphics/lq.png");
 }
 
-MainWindow::MainWindow (const bool mobile, QWidget* parent)
+MainWindow::MainWindow (MainWindowContainer* _mwContainer, const QString& dbname, const bool mobile, QWidget* parent)
 	:
 	QMainWindow(parent),
 
-	// settings - the first thing to do!
-	settingsReader(),
-
 	// non gui
+	mwContainer(_mwContainer),
+	sqlhelper(dbname),
 	player(&tableWidget),
 
 	// menu bar
@@ -623,9 +565,7 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 
 	// others
 	popupMenu(&tableWidget),
-	visible(true),
 	time_to_stop(0),
-	dbus_connector(&player),
 
 	// status bar
 	statusBar(this)
@@ -637,6 +577,7 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 		*/
 	Actions.resize(ACTION_SIZE);
 
+	initAction(MENU_FILE, ACTION_FILE_OPEN, SLOT(slotOpenNewMainWindow()), QKeySequence(Qt::CTRL + Qt::Key_O));
 	initAction(MENU_FILE, ACTION_FILE_UPDATE, SLOT(slotFileUpdateAction()), QKeySequence(Qt::CTRL + Qt::Key_U));
 	initAction(MENU_FILE, ACTION_FILE_QUIT, SLOT(slotFileQuitAction()), QKeySequence(Qt::CTRL + Qt::Key_Q), application_exit_xpm);
 
@@ -681,54 +622,8 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 	playUnratedFilter.setChecked(true);
 
 	/*
-		TABLE WIDGET (WILL ALSO INITIALIZE DATABASE)
+		TABLE WIDGET
 		*/
-
-//#define USE_MYSQL
-#ifdef USE_MYSQL
-	db = QSqlDatabase::addDatabase("QMYSQL");
-	db.setUserName("music");
-	db.setPassword("opensource");
-	db.setHostName("localhost");
-	db.setDatabaseName("musicdb");
-#else
-	db = QSqlDatabase::addDatabase("QSQLITE");
-	QString path;
-	#ifdef Q_OS_LINUX
-		// NOTE: We have to store database file into user home folder in Linux
-//		path.append(QDir::home().path());
-//		path.append(QDir::separator()).append("musicdb");
-//		path = QDir::toNativeSeparators(path);
-//		db.setDatabaseName(path);
-		path.append("musicdb");
-	#else
-		// NOTE: File exists in the application private folder, in Symbian Qt implementation
-		path.append("musicdb");
-	#endif
-
-	db.setDatabaseName(path);
-#endif
-
-
-	const bool ok = db.open();
-	
-	if(ok)
-	 printf("CONNECTION TO DATABASE ESTABLISHED!!\n");
-	else {
-		printf("COULD NOT OPEN OR CREATE DATABASE!\n");
-		return;
-	}
-	
-
-#ifndef USE_MYSQL
-	// might need to create sqlite table...
-
-	QStringList tables = db.tables();
-	printf("tables: %d\n",tables.size());
-
-	sqlhelper.CREATE_if_main_missing();
-#endif
-
 	tableWidget.setSortingEnabled(true);
 	tableWidget.reloadTable();
 	player.setFilterCount(tableWidget.rowCount());
@@ -752,9 +647,7 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 	connect(&player, SIGNAL(signalStatusChanged(STATUS_FLAGS)), this, SLOT(onSetStatus(STATUS_FLAGS)));
 	connect(&player, SIGNAL(signalUpdatePlaytime(int)), &progressBar, SLOT(setValue(int)));
 	connect(toolBox, SIGNAL(currentChanged(int)), this, SLOT(slotToolBoxChanged(int)));
-	connect(&tray_icon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(switch_tray(QSystemTrayIcon::ActivationReason)));
 	connect(&mainSplitter, SIGNAL(splitterMoved(int,int)), this, SLOT(slotSplitterMoved(int,int)));
-
 
 
 	/*
@@ -767,8 +660,6 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 	onSetStatus(PlayerEngine::STATUS_STOPPED);
 	progressBar.setValue(100);
 
-	dbus_connector.start();
-
 	UpdateDlg::autoCheckForUpdates(); // do NOT update settings->last_start before this line!
 	globals::settings->setValue("last_start", QDateTime::currentDateTime());
 
@@ -777,16 +668,30 @@ MainWindow::MainWindow (const bool mobile, QWidget* parent)
 
 MainWindow::~MainWindow()
 {
-	//close the database
-	db.close();
 }
 
 bool MainWindow::event(QEvent *event)
 {
+#if 0
 	if (event->type() == QEvent::Close && ! quitProgram)
 	{
 		event->ignore();
 		visible = false;
+		setVisible(false);
+		return true;
+	}
+
+	return QMainWindow::event(event);
+#endif
+	/*
+		if it is a close-event, but no quit button was pressed,
+		we hide in the tray icon iff we are the last window
+	*/
+	if (event->type() == QEvent::Close && ! quitProgram
+		&& !mwContainer->removeFrom(this))
+	{
+		event->ignore();
+	//	visible = false;
 		setVisible(false);
 		return true;
 	}

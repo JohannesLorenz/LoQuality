@@ -27,19 +27,20 @@
 
 class PlayerEngine;
 
-namespace Mpris1 {
-    class PlayerHandler;
+namespace Mpris1
+{
+	class PlayerHandler;
 }
 
 namespace Mpris1
 {
-    struct Status
-    {
+struct Status
+{
 	int Play; //Playing = 0, Paused = 1, Stopped = 2
 	int Random; //Linearly = 0, Randomly = 1
 	int Repeat; //Go_To_Next = 0, Repeat_Current = 1
 	int RepeatPlaylist; //Stop_When_Finished = 0, Never_Give_Up_Playing = 1
-    };
+};
 }
 
 Q_DECLARE_METATYPE( Mpris1::Status )
@@ -60,14 +61,14 @@ namespace Mpris1
 		PlayerHandler(PlayerEngine* _player);
 
 		enum DBusCaps {
-		 NONE                  = 0,
-		 CAN_GO_NEXT           = 1 << 0,
-		 CAN_GO_PREV           = 1 << 1,
-		 CAN_PAUSE             = 1 << 2,
-		 CAN_PLAY              = 1 << 3,
-		 CAN_SEEK              = 1 << 4,
-		 CAN_PROVIDE_METADATA  = 1 << 5,
-		 CAN_HAS_TRACKLIST     = 1 << 6
+			NONE                  = 0,
+			CAN_GO_NEXT           = 1 << 0,
+			CAN_GO_PREV           = 1 << 1,
+			CAN_PAUSE             = 1 << 2,
+			CAN_PLAY              = 1 << 3,
+			CAN_SEEK              = 1 << 4,
+			CAN_PROVIDE_METADATA  = 1 << 5,
+			CAN_HAS_TRACKLIST     = 1 << 6
 		};
 
 	public slots:

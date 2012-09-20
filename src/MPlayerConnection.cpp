@@ -19,6 +19,7 @@
 /*************************************************************************/
 
 #include <cstdio>
+#include <unistd.h>
 #include <fcntl.h>
 #include <sys/select.h>
 #include <sys/stat.h>
@@ -122,13 +123,13 @@ MPlayerConnection::MPlayerConnection(const char* _REMOTE_PIPE_NAME, bool nulldev
 		strcpy(file_param, "file=");
 		strcat(file_param, REMOTE_PIPE_NAME);
 		const char* _MPLAYER_EXE = globals::MPLAYER_EXE.toAscii().data();
-	//	printf("%s -input %s -idle -msglevel all=-1:global=5 -ao null -vo null\n",_MPLAYER_EXE,file_param);
+		printf("%s -input %s -idle -msglevel all=-1:global=5 -ao null -vo null\n",_MPLAYER_EXE,file_param);
 
 		const QString& eq = globals::settings->value("equalizer","0:0:0:0:0:0:0:0:0:0").toString();
 		if(nulldevice)
 		 execlp(_MPLAYER_EXE, _MPLAYER_EXE, "-input", file_param, "-idle", "-msglevel", "all=-1:global=5", "-ao", "null", "-vo", "null", "-af", ("equalizer="+eq).toAscii().data(), NULL);
 		else
-		 execlp(_MPLAYER_EXE, _MPLAYER_EXE, "-input", file_param, "-idle", "-msglevel", "all=-1:global=5", "-af", ("equalizer="+eq).toAscii().data(), NULL);
+		 execlp("mplayer2", "mplayer2", "-input", file_param, "-idle", "-msglevel", "all=-1:global=5", "-af", ("equalizer="+eq).toAscii().data(), NULL);
 		delete[] file_param;
 
 		close(pipefd[1]); /* Reader will see EOF */

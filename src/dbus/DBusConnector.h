@@ -30,22 +30,28 @@
 
 class PlayerEngine;
 
-class DBusConnector {
-	Mpris1::RootHandler root_handler;
-	Mpris1::TrackListHandler tracklist_handler;
-	Mpris1::PlayerHandler player_handler;
+class DBusConnector
+{
+	Mpris1::RootHandler* root_handler;
+	Mpris1::TrackListHandler* tracklist_handler;
+	Mpris1::PlayerHandler* player_handler;
 	//PlayerEngine* player;
 public:
-	DBusConnector(PlayerEngine* _player) : player_handler(_player){
-	}
 
-	void start() {
+	void start(PlayerEngine* _player)
+	{
 		QDBusConnection::sessionBus().registerService("org.mpris.LoQuality");
 		QDBusConnection::sessionBus().registerService("org.kde.amarok");
 		QDBusConnection::sessionBus().registerService("org.mpris.amarok");
+
+		// looks ugly, but I don't know any fix
+		root_handler = new Mpris1::RootHandler;
+		tracklist_handler = new Mpris1::TrackListHandler;
+		player_handler = new Mpris1::PlayerHandler(_player);
 	}
 
-	void stop() {
+	void stop()
+	{
 		// work around for KUniqueApplication being not completely implemented on windows
 		QDBusConnectionInterface* dbusService = NULL;
 		if (QDBusConnection::sessionBus().isConnected() && (dbusService = QDBusConnection::sessionBus().interface()))
@@ -56,8 +62,9 @@ public:
 		}
 	}
 
-	~DBusConnector() {
+	inline ~DBusConnector() {
 		stop();
+		delete root_handler; delete tracklist_handler; delete player_handler;
 	}
 
 };

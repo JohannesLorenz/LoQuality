@@ -21,10 +21,12 @@
 #ifndef _SQLHELPER_H_
 #define _SQLHELPER_H_ _SQLHELPER_H_
 
-#include <QSqlQuery>
 #include <stdio.h> // only for printf
+#include <QSqlDatabase>
+#include <QSqlQuery>
 
 #include "MPlayerConnection.h"
+class QSqlQuery;
 class QString;
 
 #define _MPLAYER_META_PIPE "/tmp/lq_edit_pipe"
@@ -32,6 +34,8 @@ class QString;
 class SqlHelper
 {
 	private:
+		static int dbs_open;
+		QSqlDatabase db;
 		mutable MPlayerConnection* mPlayerConnection;
 
 		/**
@@ -40,12 +44,14 @@ class SqlHelper
 		 */
 		static QString corr(const QString& originalString);
 
-	public:
-		//QList<QSqlQuery> queries;
-		SqlHelper()
-		{
+		bool main_exists(void) const;
 
+		inline void CREATE_if_main_missing(void) const {
+			if(!main_exists()) CREATE();
 		}
+	public:
+		SqlHelper(const QString &dbname);
+		inline ~SqlHelper() { db.close(); }
 
 		void inform(QSqlQuery* new_query)
 		{
@@ -63,18 +69,16 @@ class SqlHelper
 
 		void CREATE(void) const;
 
-		bool main_exists(void) const;
-
-		inline void CREATE_if_main_missing(void) const {
-			if(!main_exists()) CREATE();
-		}
-
 		inline bool start_insert_sequence(void) const {
 			return ( mPlayerConnection = new MPlayerConnection(_MPLAYER_META_PIPE, true) ) != NULL;
 		}
 
 		inline void stop_insert_sequence(void) const {
 			delete mPlayerConnection;
+		}
+
+		inline QSqlQuery exec(const QString & query ) const {
+			return db.exec(query);
 		}
 
 };

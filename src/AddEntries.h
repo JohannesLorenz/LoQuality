@@ -33,7 +33,6 @@
 
 //sql
 #include <QSqlDatabase>
-#include <QSqlQuery>
 class SqlHelper;
 
 class AddEntryDlg : public QDialog

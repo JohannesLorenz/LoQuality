@@ -18,11 +18,13 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
+#include <unistd.h>
 #include <QDateTime>
 #include <QMessageBox>
 #include <QSqlQuery>
 #include <QSqlError>
 
+#include "SqlHelper.h"
 #include "SynchWizard.h"
 
 void SynchWizard::retranslateUi()
@@ -65,29 +67,23 @@ bool SelectPage::getSongList()
 	und der folgende befehl gibt dir alle ids und md5sums von meiner datenbank, die in deiner datenbank nicht drin sind:
 	select id,last_changed as lol from main group by id having count(id) > (select count(*) from johannesdb.main where last_changed = lol);
 	*/
-	bool ok;
-
 	printf("%s\n",( QString("ATTACH DATABASE \"%1\" AS johannesdb;").arg(field("importDbName").toString()).toAscii().data()));
-	QSqlQuery query;
-	ok = query.exec( QString("ATTACH DATABASE \"%1\" AS johannesdb;").arg(field("importDbName").toString()) );
-	if(!ok) {
+	QSqlQuery query = sqlhelper.exec( QString("ATTACH DATABASE \"%1\" AS johannesdb;").arg(field("importDbName").toString()) );
+	if(!query.isValid()) {
 		QMessageBox::information(NULL, "Error loading database", query.lastError().text().toAscii().data());
 		return false;
 	}
 
 	//QSqlQuery query2;
-	query.exec("select id, titel, kuenstler, album, pfad, md5sum as lol from johannesdb.main group by id having count(id) > (select count(*) from main where md5sum = lol);");
-
-	if(!ok) {
+	query = sqlhelper.exec("select id, titel, kuenstler, album, pfad, md5sum as lol from johannesdb.main group by id having count(id) > (select count(*) from main where md5sum = lol);");
+	if(!query.isValid()) {
 		QMessageBox::information(NULL, "Sql Error", query.lastError().text().toAscii().data());
 		return false;
 	}
-
 	while (query.next()) { // WARNING: DO !!!NEVER!!! rely on query.size() here!!! (see qt docs...)
 		//printf("new song: %s\n",query.value(4).toString().toAscii().data());
 		syncAddManager.appendItem(query.value(2).toString(), query.value(3).toString(), query.value(1).toString(), query.value(4).toString());
 	}
-
 
 	return true;
 }

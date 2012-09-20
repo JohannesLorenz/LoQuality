@@ -28,6 +28,7 @@ class SongTableWidget : public QTableWidget
 {
 	Q_OBJECT
 
+	QPoint dragStartPosition;
 	SqlHelper& sqlhelper;
 	inline int row2id(int given_id) {
 		QTableWidgetItem* firstItem = item(given_id, 0);
@@ -35,7 +36,12 @@ class SongTableWidget : public QTableWidget
 		// ids begin with 1, columns with 0 - but not important here!
 	}
 
-
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dropEvent(QDropEvent *event);
+	bool dropMimeData(int row, int column, const QMimeData *data, Qt::DropAction action);
+	QMimeData *mimeData(const QList<QTableWidgetItem *> items) const;
 
 public:
 	//! reloads the table from the database
@@ -44,6 +50,7 @@ public:
 	explicit SongTableWidget(SqlHelper& _sqlhelper, QWidget *parent = 0);
 
 signals:
+
 
 public slots:
 

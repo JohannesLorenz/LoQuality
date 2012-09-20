@@ -41,7 +41,8 @@ class PlayerEngine : public QObject
 	Q_OBJECT
 
 	public:
-		enum STATUS_FLAGS {
+		enum STATUS_FLAGS
+		{
 			STATUS_STOPPED,
 			STATUS_PLAYING,
 			STATUS_SONGOVER,

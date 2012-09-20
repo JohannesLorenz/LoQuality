@@ -79,7 +79,7 @@ void FileManagerAddDlg::setupUi(void)
 		grepNewFiles(i.next(), &parseDir);
 	}*/
 
-	QSqlQuery query("SELECT * FROM main;");
+	QSqlQuery query = sqlhelper.exec("SELECT * FROM main;");
 	QList<QString> dbNameList;
 	while (query.next()) {
 		dbNameList.push_back( query.value(13).toString() );

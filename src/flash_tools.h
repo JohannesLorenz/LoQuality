@@ -82,4 +82,9 @@ public:
 	bool download(const char* url, const char* dest);
 };
 
+inline void unpack_playlist()
+{
+
+}
+
 #endif // FLASH_TOOLS_H
