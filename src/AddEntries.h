@@ -57,6 +57,7 @@ class AddEntryDlg : public QDialog
 		QLabel lbl_vote_yours;
 		QLabel lbl_vote_others;
 		QLabel lbl_path;
+		QLabel lbl_source;
 		
 		QLineEdit le_title;
 		QLineEdit le_artist;
@@ -76,6 +77,8 @@ class AddEntryDlg : public QDialog
 		
 		QLineEdit le_path;
 		QPushButton pb_choose_path;
+
+		QLineEdit le_source;
 	
 		QPushButton pb_cancel;
 		QPushButton pb_insert;
@@ -84,17 +87,12 @@ class AddEntryDlg : public QDialog
 		void setupUi();
 	
 		AddEntryDlg(const SqlHelper& _sqlhelper, bool _edit=false, QList<int>* _editnums = NULL)
-			: sqlhelper(_sqlhelper), lbl_title(this), lbl_artist(this), lbl_album(this), lbl_tag(this), lbl_genre(this), lbl_year(this), lbl_interest_others(this), lbl_interest_yours(this), lbl_filetype(this), lbl_quality(this), lbl_vote_yours(this), lbl_vote_others(this), lbl_path(this), le_title(this), le_artist(this), le_album(this), le_tag(this), le_genre(this), le_year(this), cb_interest_others(this), cb_interest_yours(this), le_filetype(this), le_quality(this), sb_vote_yours(this), sb_vote_others(this), le_path(this), pb_choose_path(this), pb_cancel(this), pb_insert(this)
+			: sqlhelper(_sqlhelper), lbl_title(this), lbl_artist(this), lbl_album(this), lbl_tag(this), lbl_genre(this), lbl_year(this), lbl_interest_others(this), lbl_interest_yours(this), lbl_filetype(this), lbl_quality(this), lbl_vote_yours(this), lbl_vote_others(this), lbl_path(this), lbl_source(this), le_title(this), le_artist(this), le_album(this), le_tag(this), le_genre(this), le_year(this), cb_interest_others(this), cb_interest_yours(this), le_filetype(this), le_quality(this), sb_vote_yours(this), sb_vote_others(this), le_path(this), pb_choose_path(this), le_source(this), pb_cancel(this), pb_insert(this)
 		{
-			const int _editnum = _editnums->front();
+			edit = _edit;
 			if(_edit)
-			{
-				edit=true;
-				editnum=_editnum;
-			}
-			else
-			 edit=false;
-		
+			 editnum=_editnums->front();
+
 			setupUi();
 		}
 	

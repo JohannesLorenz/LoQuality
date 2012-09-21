@@ -149,7 +149,7 @@ void SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 
 	QByteArray md5sum;
 	calculate_md5sum(filepath, &md5sum);
-	QDateTime last_changed = QFileInfo(filename).lastModified();
+	QDateTime last_changed = QFileInfo(filepath).lastModified();
 	printf("str: %s\n",QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad', 'last_changed', 'md5sum', 'url') "
 				   "VALUES ( NULL, %1, %2, %3, '', %4, %5, '0', '0', %6, %7, '0', '0', '%8', '%9', '%10', '%11');")
 				 .arg(

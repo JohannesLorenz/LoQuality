@@ -18,14 +18,17 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
+#include <QDateTime>
+#include <QMessageBox>
 #include <QSqlQuery>
 
 #include "AddEntries.h"
 #include "SqlHelper.h"
+#include "md5sum.h"
 
 void AddEntryDlg::setupUi()
 {
-	resize(600, 495);
+	resize(600, 530);
 
 	lbl_title.setGeometry(5, 5, 290, 30);
 	lbl_title.setText("Titel:");
@@ -66,6 +69,9 @@ void AddEntryDlg::setupUi()
 	lbl_path.setGeometry(5, 425, 355, 30);
 	lbl_path.setText("Pfad:");
 	
+	lbl_source.setGeometry(5, 460, 290, 30);
+	lbl_source.setText("Source:");
+
 	le_title.setGeometry(305, 5, 290, 30);
 	
 	le_artist.setGeometry(305, 40, 290, 30);
@@ -98,10 +104,12 @@ void AddEntryDlg::setupUi()
 	pb_choose_path.setGeometry(450, 425, 145, 30);
 	pb_choose_path.setText("Durchsuchen...");
 	
-	pb_cancel.setGeometry(5, 460, 290, 30);
+	le_source.setGeometry(305, 460, 290, 30);
+
+	pb_cancel.setGeometry(5, 495, 290, 30);
 	pb_cancel.setText("Abbrechen");
 	
-	pb_insert.setGeometry(305, 460, 290, 30);
+	pb_insert.setGeometry(305, 495, 290, 30);
 	pb_insert.setText("Übernehmen");
 	
 	if(edit)
@@ -134,6 +142,7 @@ void AddEntryDlg::setupUi()
 		QString vote_yours = query.value(11).toString();
 		QString vote_others = query.value(12).toString();
 		QString path = query.value(13).toString();
+		QString source = query.value(16).toString();
 		
 		le_title.setText(title);
 		le_artist.setText(artist);
@@ -158,6 +167,7 @@ void AddEntryDlg::setupUi()
 		sb_vote_others.setValue(vote_others_value);
 		
 		le_path.setText(path);
+		le_source.setText(source);
 	}
 	
 	QSqlQuery queryArtist = sqlhelper.exec("SELECT * FROM main;");
@@ -213,9 +223,19 @@ void AddEntryDlg::onButtonChoosePressed()
 
 void AddEntryDlg::OnButtonInsertPressed() // depricated ?
 {
-#if 0
-	//QString insert_cmd("INSERT INTO 'musicdb'.'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad') VALUES (NULL , '");
-	QString insert_cmd("NULL , '");
+	QString filepath = le_path.text();
+	QByteArray md5sum;
+	QDateTime last_changed;
+	if(!filepath.isEmpty() && !QFile::exists(filepath))
+	{
+		if( QMessageBox::No == QMessageBox::question(this, "Incorrect Filepath", "The File does not exist. Do you really want to continue?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No))
+		 return;
+
+		calculate_md5sum(filepath.toAscii().data(), &md5sum);
+		last_changed = QFileInfo(filepath).lastModified();
+	}
+	QString insert_cmd("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad', 'last_changed', 'md5sum', 'url') VALUES (NULL , '");
+
 	insert_cmd.append(le_title.text());
 	insert_cmd.append("', '");
 	insert_cmd.append(le_artist.text());
@@ -250,21 +270,27 @@ void AddEntryDlg::OnButtonInsertPressed() // depricated ?
 	insert_cmd.append("', '");
 	insert_cmd.append(QString::number(sb_vote_others.value()));
 	insert_cmd.append("', '");
-	insert_cmd.append(le_path.text());
-	insert_cmd.append("'");
+	insert_cmd.append(filepath);
+	insert_cmd.append("', '");
+	insert_cmd.append(last_changed.toTime_t());
+	insert_cmd.append("', '");
+	insert_cmd.append(md5sum.toHex().data());
+	insert_cmd.append("', '");
+	insert_cmd.append(le_source.text());
+	insert_cmd.append("');");
 	
 	printf("Query command: %s\n", insert_cmd.toAscii().data());
 	
-	//QSqlQuery query;
-	//query.exec(insert_cmd);
-	sqlhelper.INSERT(insert_cmd);
-#endif
+	sqlhelper.exec(insert_cmd);
+	// sqlhelper.INSERT(insert_cmd);
+
 	close();
 }
 
 void AddEntryDlg::OnButtonEditInsertPressed()
 {
-	QString insert_cmd("UPDATE 'musicdb'.'main' SET 'titel' = '");
+	//QString insert_cmd("UPDATE 'musicdb'.'main' SET 'titel' = '");
+	QString insert_cmd("UPDATE 'main' SET 'titel' = '");
 	insert_cmd.append(le_title.text());
 	insert_cmd.append("', 'kuenstler' = '");
 	insert_cmd.append(le_artist.text());
@@ -300,6 +326,9 @@ void AddEntryDlg::OnButtonEditInsertPressed()
 	insert_cmd.append(QString::number(sb_vote_others.value()));
 	insert_cmd.append("', 'pfad' = '");
 	insert_cmd.append(le_path.text());
+	insert_cmd.append("', 'url' = '");
+	insert_cmd.append(le_source.text());
+
 	insert_cmd.append("' WHERE 'main'.'id' =");
 	insert_cmd.append(QString::number(editnum));
 	

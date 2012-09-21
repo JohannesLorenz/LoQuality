@@ -124,6 +124,7 @@ private:
 		void slotForward(int x, int y);
 
 		void slotAddFile();
+		void slotAddFileChooser();
 		inline void slotRemoveSong() { tableWidget.slotRemoveSong(); }
 
 		void slotStoreFlash();
@@ -247,6 +248,7 @@ private:
 
 		QHBoxLayout hbox_buttons2;
 		QPushButton buttons2[BTN2_SIZE];
+		QMenu insertButtonMenu;
 		QProgressBar progressBar;
 		QDial volumeSlider;
 

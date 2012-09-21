@@ -206,18 +206,20 @@ void MainWindow::slotBackward() {
 	player.slotBackward();
 }
 
-void MainWindow::slotAddFile()
+void MainWindow::slotAddFileChooser()
 {
 	FileManager fileManager(sqlhelper);
 	fileManager.show();
 	fileManager.exec();
 	if(fileManager.isAnythingChanged())
 	 tableWidget.reloadTable();
-#if 0 // TODO: move this to the flashdlg
+}
+
+void MainWindow::slotAddFile()
+{
 	AddEntryDlg dlg(sqlhelper);
 	dlg.show();
 	dlg.exec();
-#endif
 }
 
 void MainWindow::slotStoreFlash()
@@ -425,7 +427,9 @@ void MainWindow::layoutWidgets(bool mobile)
 		hbox_buttons1.addWidget( &volumeSlider );
 		verticalLayout.addLayout(&hbox_buttons1);
 
-
+		insertButtonMenu.addAction( "File Chooser", this, SLOT(slotAddFileChooser()) /*, const QKeySequence & shortcut = 0 TODO*/);
+		insertButtonMenu.addAction( "Per Dialog", this, SLOT(slotAddFile()));
+		buttons2[BTN2_ADD].setMenu(&insertButtonMenu);
 		hbox_buttons2.addWidget(& filter);
 		for(unsigned int i = 0; i < BTN2_SIZE; i++)
 		 hbox_buttons2.addWidget(& buttons2[i]);
