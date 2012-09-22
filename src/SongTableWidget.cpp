@@ -227,7 +227,7 @@ void SongTableWidget::reloadTable()
 
 	clear();
 	setRowCount(0);
-	setColumnCount(15);
+	setColumnCount(16);
 
 	QStringList description;
 
@@ -246,6 +246,7 @@ void SongTableWidget::reloadTable()
 	description.insert(12, "Bewertung von ...");
 	description.insert(13, "Pfad");
 	description.insert(14, "Last Changes");
+	description.insert(15, "Source");
 
 	setHorizontalHeaderLabels(description);
 
@@ -284,6 +285,7 @@ void SongTableWidget::reloadTable()
 		QString vote_you = query.value(11).toString();
 		QString vote_other = query.value(12).toString();
 		QString path = query.value(13).toString();
+		QString source = query.value(16).toString();
 
 		QDateTime _last_change = QDateTime::fromTime_t(query.value(14).toInt());
 		QString last_change = (_last_change.isValid() && _last_change <= QDateTime::currentDateTime())?
@@ -308,6 +310,7 @@ void SongTableWidget::reloadTable()
 		QTableWidgetItem* item_vote_other = new QTableWidgetItem(vote_other);
 		QTableWidgetItem* item_path = new QTableWidgetItem(path);
 		QTableWidgetItem* item_last_change = new QTableWidgetItem(last_change);
+		QTableWidgetItem* item_source = new QTableWidgetItem(source);
 
 		item_id->setData(Qt::DisplayRole, id);
 		item_title->setData(Qt::DisplayRole, title);
@@ -324,6 +327,7 @@ void SongTableWidget::reloadTable()
 		item_vote_other->setData(Qt::DisplayRole, vote_other);
 		item_path->setData(Qt::DisplayRole, path);
 		item_last_change->setData(Qt::DisplayRole, last_change);
+		item_source->setData(Qt::DisplayRole, source);
 
 		setItem(rowcount, 0, item_id);
 		setItem(rowcount, 1, item_title);
@@ -340,6 +344,7 @@ void SongTableWidget::reloadTable()
 		setItem(rowcount, 12, item_vote_other);
 		setItem(rowcount, 13, item_path);
 		setItem(rowcount, 14, item_last_change);
+		setItem(rowcount, 15, item_source);
 
 		++rowcount;
 	}
@@ -350,6 +355,7 @@ void SongTableWidget::reloadTable()
 	hideColumn(8);
 	hideColumn(12);
 	hideColumn(13);
+	hideColumn(15);
 
 	resizeColumnsToContents ();
 	resizeRowsToContents ();

@@ -18,51 +18,61 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
-#ifndef SONGTABLEWIDGET_H
-#define SONGTABLEWIDGET_H
+#ifndef PLAYLISTDOWNLOADER_H
+#define PLAYLISTDOWNLOADER_H
 
-#include <QTableWidget>
+#include <QDialog>
+#include <QLabel>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QProgressDialog>
 class SqlHelper;
 
-class SongTableWidget : public QTableWidget
+#include "flash_tools.h"
+class SongTableWidget;
+
+class PlaylistDownloader : public QDialog
 {
 	Q_OBJECT
 
-	QPoint dragStartPosition;
-	SqlHelper& sqlhelper;
+//	const SqlHelper& sqlhelper;
+	QVBoxLayout boxMain;
 
-	void mousePressEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-	void dragEnterEvent(QDragEnterEvent *event);
-	void dropEvent(QDropEvent *event);
-	bool dropMimeData(int row, int column, const QMimeData *data, Qt::DropAction action);
-	QMimeData *mimeData(const QList<QTableWidgetItem *> items) const;
+	QLabel lblFormat;
+	QComboBox cbFormat;
+	QHBoxLayout boxFormat;
 
+	QLabel lblFolder;
+	QLineEdit leFolder;
+	QPushButton btnFolder;
+	QHBoxLayout boxFolder;
+
+	QPushButton okBtn, abortBtn;
+	QHBoxLayout boxButtons;
+
+	YouTubeDlSession convertion;
+	SongTableWidget* table;
+	int currentDownloadRow;
+	QProgressDialog* progressDlg;
+	const SqlHelper& sqlhelper; // TODO: not needed???
+	const char* TMP_DIRECTORY;
+
+	bool shallDownloadFile(int row);
+	void nextDownload();
+	int countDownloads();
 public:
-	//! reloads the table from the database
-	void reloadTable();
-
-	inline int row2id(int given_id) {
-		QTableWidgetItem* firstItem = item(given_id, 0);
-		return firstItem->data(Qt::DisplayRole).toInt()/*-1*/;
-		// ids begin with 1, columns with 0 - but not important here!
-	}
-
-	explicit SongTableWidget(SqlHelper& _sqlhelper, QWidget *parent = 0);
+	void setupUi();
+	void retranslateUi();
+	explicit PlaylistDownloader(SongTableWidget* _table, const SqlHelper& _sqlhelper, QWidget *parent = 0);
 
 signals:
-
-
-public slots:
-
-	bool slotItemEdit(int row, int column);
-	void slotRemoveSong();
-	inline void slotScrollToSong() {
-		if(! selectedItems().empty())
-		 scrollToItem(*selectedItems().begin());
-	}
-
-
+	
+private slots:
+	void slotBtnOk();
+	void slotTimerTimeout();
+	void btnFolderClicked();
 };
 
-#endif // SONGTABLEWIDGET_H
+#endif // PLAYLISTDOWNLOADER_H

@@ -79,7 +79,7 @@ public:
 class YouTubeDlSession : public ForkedProcess
 {
 public:
-	bool download(const char* url, const char* dest);
+	bool download(const char* url, const char* dest, const char *audio_format = "best");
 };
 
 inline void unpack_playlist()

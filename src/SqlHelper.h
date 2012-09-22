@@ -81,6 +81,10 @@ class SqlHelper
 			return db.exec(query);
 		}
 
+		MPlayerConnection* getMPlayerConnection() const {
+			return mPlayerConnection;
+		}
+
 };
 
 /*

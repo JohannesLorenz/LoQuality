@@ -41,7 +41,8 @@ HEADERS += src/AddEntries.h \
     src/params.h \
     src/flash_tools.h \
     src/SongTableWidget.h \
-    src/MainWindowContainer.h
+    src/MainWindowContainer.h \
+    src/PlaylistDownloader.h
 SOURCES += src/AddEntries.cpp \
     src/FileManager.cpp \
     src/FlashDlg.cpp \
@@ -69,6 +70,7 @@ SOURCES += src/AddEntries.cpp \
     src/params.cpp \
     src/flash_tools.cpp \
     src/SongTableWidget.cpp \
-    src/MainWindowContainer.cpp
+    src/MainWindowContainer.cpp \
+    src/PlaylistDownloader.cpp
 OTHER_FILES += TODO.txt \
     TODO_LIST.txt

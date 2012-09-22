@@ -50,6 +50,7 @@ void MainWindow::retranslateUi()
 	Actions[ACTION_VIEW_FULLSCREEN]->setText(tr("Vollbild"));
 	Actions[ACTION_VIEW_SWITCH_ALIGN]->setText(tr("Ausrichtung ändern"));
 	Actions[ACTION_EDIT_EDITTITLE]->setText(tr("Titel-Info bearbeiten..."));
+	Actions[ACTION_EDIT_DOWNLOAD]->setText(tr("Download missing tracks..."));
 	Actions[ACTION_EDIT_OPTIONS]->setText(tr("Einstellungen"));
 	Actions[ACTION_HELP_ABOUT]->setText(tr("Über LoQuality"));
 	Actions[ACTION_HELP_ABOUTQT]->setText(tr("Über Qt"));
@@ -220,6 +221,7 @@ void MainWindow::slotAddFile()
 	AddEntryDlg dlg(sqlhelper);
 	dlg.show();
 	dlg.exec();
+	tableWidget.reloadTable();
 }
 
 void MainWindow::slotStoreFlash()
@@ -586,6 +588,8 @@ MainWindow::MainWindow (MainWindowContainer* _mwContainer, const QString& dbname
 	initAction(MENU_FILE, ACTION_FILE_QUIT, SLOT(slotFileQuitAction()), QKeySequence(Qt::CTRL + Qt::Key_Q), application_exit_xpm);
 
 	initAction(MENU_EDIT, ACTION_EDIT_EDITTITLE, SLOT(slotItemEdit()), QKeySequence(Qt::CTRL + Qt::Key_E));
+	initAction(MENU_EDIT, ACTION_EDIT_DOWNLOAD, SLOT(slotEditDownload()), QKeySequence(Qt::CTRL + Qt::Key_D));
+	topMenus[MENU_EDIT].addSeparator();
 	initAction(MENU_EDIT, ACTION_EDIT_OPTIONS, SLOT(slotOpenOptionsDlg()), QKeySequence(Qt::CTRL + Qt::Key_B)); // note: is B good?
 
 	initAction(MENU_VIEW, ACTION_VIEW_SCROLL_TO_SONG, SLOT(slotScrollToSong()), QKeySequence("^"));

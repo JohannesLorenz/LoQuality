@@ -52,6 +52,7 @@
 #include "src/UpdateInfoDlg.h"
 #include "src/DownloadImageDlg.h"
 #include "dialogs.h"
+#include "PlaylistDownloader.h"
 
 /**
  * @class MainWindow
@@ -73,7 +74,7 @@ class MainWindow : public QMainWindow
 	
 	enum ACTION {
 		ACTION_FILE_OPEN, ACTION_FILE_QUIT, ACTION_FILE_UPDATE,
-		ACTION_EDIT_EDITTITLE, ACTION_EDIT_OPTIONS,
+		ACTION_EDIT_EDITTITLE, ACTION_EDIT_DOWNLOAD, ACTION_EDIT_OPTIONS,
 		ACTION_VIEW_SCROLL_TO_SONG, ACTION_VIEW_FULLSCREEN, ACTION_VIEW_SWITCH_ALIGN,
 		ACTION_HELP_ABOUT, ACTION_HELP_ABOUTQT,
 		ACTION_SIZE
@@ -142,6 +143,11 @@ private:
 
 		inline void slotViewFullscreenAction() {
 			if( isFullScreen() ) showNormal(); else showFullScreen();
+		}
+
+		inline void slotEditDownload() {
+			PlaylistDownloader downloader(&tableWidget, sqlhelper);
+			downloader.show(); downloader.exec();
 		}
 
 		inline void slotViewSwitchAlignment() {

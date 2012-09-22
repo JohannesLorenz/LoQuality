@@ -107,13 +107,15 @@ void ForkedProcess::slotTimerTimeout()
 	}
 }
 
-bool YouTubeDlSession::download(const char *url, const char *dest)
+bool YouTubeDlSession::download(const char *url, const char *dest, const char* audio_format)
 {
 	//youtube-dl -w -cit --max-quality 60 --extract-audio --audio-format vorbis --audio-quality 320k <url>
 	const pid_t _youtubedls_pid=fork();
-	if(_youtubedls_pid == 0) {
+	if(_youtubedls_pid == 0)
+	{
 		const QString youtubedl_fullpath = globals::settings->value("youtubedl_fullpath").toString();
-		execlp(youtubedl_fullpath.toAscii().data(), "youtube-dl", "-w", "-cit", "--max-quality", "60", "--extract-audio", "--audio-format", "best", "--audio-quality", "320k", url, NULL);
+		if( -1 == execlp(youtubedl_fullpath.toAscii().data(), "youtube-dl", "-o", dest, "-w", "-c", "-i", "--max-quality", "60", "--extract-audio", "--audio-format", audio_format , "--audio-quality", "320k", url, NULL) )
+		 perror("Could not start youtube-dl");
 		exit(0);
 	}
 	else
