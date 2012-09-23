@@ -91,14 +91,20 @@ QString SqlHelper::corr(const QString& originalString)
 	QString result = originalString;
 	if(!result.isEmpty())
 	{
+		printf("result: %s\n",result.toAscii().data());
 		// short fix: do not replace first and last 'es!
-		result[0] = '"';
-		result[result.length()-1] = '"';
+		bool isInQuotes = (result[0]=='\'') && (result[result.length()-1]=='\'');
+		if(isInQuotes){
+			result[0] = '"';
+			result[result.length()-1] = '"';
+		}
 
 		result.replace('\'', "''");
 
-		result[0] = '\'';
-		result[result.length()-1] = '\'';
+		if(isInQuotes) {
+			result[0] = '\'';
+			result[result.length()-1] = '\'';
+		}
 	}
 	else
 	 result = "''";
@@ -195,7 +201,7 @@ void SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 						md5sum.toHex().data()
 					)
 					.arg (
-						url
+						corr(url)
 					)
 			);
 	if(!query.isValid()) {

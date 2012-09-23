@@ -236,15 +236,15 @@ void AddEntryDlg::OnButtonInsertPressed() // depricated ?
 	}
 	QString insert_cmd("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad', 'last_changed', 'md5sum', 'url') VALUES (NULL , '");
 
-	insert_cmd.append(le_title.text());
+	insert_cmd.append(corr(le_title.text()));
 	insert_cmd.append("', '");
-	insert_cmd.append(le_artist.text());
+	insert_cmd.append(corr(le_artist.text()));
 	insert_cmd.append("', '");
-	insert_cmd.append(le_album.text());
+	insert_cmd.append(corr(le_album.text()));
 	insert_cmd.append("', '");
-	insert_cmd.append(le_tag.text());
+	insert_cmd.append(corr(le_tag.text()));
 	insert_cmd.append("', '");
-	insert_cmd.append(le_genre.text());
+	insert_cmd.append(corr(le_genre.text()));
 	insert_cmd.append("', '");
 	insert_cmd.append(le_year.text());
 	insert_cmd.append("', '");
@@ -276,7 +276,7 @@ void AddEntryDlg::OnButtonInsertPressed() // depricated ?
 	insert_cmd.append("', '");
 	insert_cmd.append(md5sum.toHex().data());
 	insert_cmd.append("', '");
-	insert_cmd.append(le_source.text());
+	insert_cmd.append(corr(le_source.text()));
 	insert_cmd.append("');");
 	
 	printf("Query command: %s\n", insert_cmd.toAscii().data());
@@ -287,19 +287,26 @@ void AddEntryDlg::OnButtonInsertPressed() // depricated ?
 	close();
 }
 
+QString AddEntryDlg::corr(const QString& originalString)
+{
+	QString result = originalString;
+	result.replace('\'', "''");
+	return result;
+}
+
 void AddEntryDlg::OnButtonEditInsertPressed()
 {
 	//QString insert_cmd("UPDATE 'musicdb'.'main' SET 'titel' = '");
 	QString insert_cmd("UPDATE 'main' SET 'titel' = '");
-	insert_cmd.append(le_title.text());
+	insert_cmd.append(corr(le_title.text()));
 	insert_cmd.append("', 'kuenstler' = '");
-	insert_cmd.append(le_artist.text());
+	insert_cmd.append(corr(le_artist.text()));
 	insert_cmd.append("', 'album' = '");
-	insert_cmd.append(le_album.text());
+	insert_cmd.append(corr(le_album.text()));
 	insert_cmd.append("', 'tag' = '");
-	insert_cmd.append(le_tag.text());
+	insert_cmd.append(corr(le_tag.text()));
 	insert_cmd.append("', 'genre' = '");
-	insert_cmd.append(le_genre.text());
+	insert_cmd.append(corr(le_genre.text()));
 	insert_cmd.append("', 'jahr' = '");
 	insert_cmd.append(le_year.text());
 	insert_cmd.append("', 'others' = '");
@@ -327,7 +334,7 @@ void AddEntryDlg::OnButtonEditInsertPressed()
 	insert_cmd.append("', 'pfad' = '");
 	insert_cmd.append(le_path.text());
 	insert_cmd.append("', 'url' = '");
-	insert_cmd.append(le_source.text());
+	insert_cmd.append(corr(le_source.text()));
 
 	insert_cmd.append("' WHERE 'main'.'id' =");
 	insert_cmd.append(QString::number(editnum));

@@ -38,18 +38,18 @@ class SqlHelper
 		QSqlDatabase db;
 		mutable MPlayerConnection* mPlayerConnection;
 
-		/**
-			replaces all ' to \' in a string which begins and ends on '
-			beginning and end are not replaced.
-		 */
-		static QString corr(const QString& originalString);
-
 		bool main_exists(void) const;
 
 		inline void CREATE_if_main_missing(void) const {
 			if(!main_exists()) CREATE();
 		}
 	public:
+		/**
+			replaces all ' to \' in a string which begins and ends on '
+			beginning and end are not replaced.
+		*/
+		static QString corr(const QString& originalString);
+
 		SqlHelper(const QString &dbname);
 		inline ~SqlHelper() { db.close(); }
 

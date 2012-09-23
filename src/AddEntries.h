@@ -82,7 +82,8 @@ class AddEntryDlg : public QDialog
 	
 		QPushButton pb_cancel;
 		QPushButton pb_insert;
-	
+
+		static QString corr(const QString &originalString);
 	public:
 		void setupUi();
 	
@@ -95,8 +96,7 @@ class AddEntryDlg : public QDialog
 
 			setupUi();
 		}
-	
-	public slots:
+public slots:
 		void onButtonChoosePressed();
 		void OnButtonInsertPressed();
 		void OnButtonEditInsertPressed();
