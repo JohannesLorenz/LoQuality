@@ -23,6 +23,7 @@
 #include <QProgressDialog>
 #include <QDateTime>
 #include <QMessageBox>
+#include <QHeaderView>
 
 // drag drop:
 #include <QMimeData>
@@ -39,7 +40,12 @@ SongTableWidget::SongTableWidget(SqlHelper& _sqlhelper, QWidget *parent) :
 	QTableWidget(parent),
 	sqlhelper(_sqlhelper)
 {
+	verticalHeader()->setVisible(false);
 	setAcceptDrops(true);
+
+	setEditTriggers(QAbstractItemView::NoEditTriggers);
+	setContextMenuPolicy(Qt::CustomContextMenu);
+	setSelectionBehavior(QAbstractItemView::SelectRows);
 }
 
 void SongTableWidget::mousePressEvent(QMouseEvent *event)
@@ -120,7 +126,7 @@ QMimeData* SongTableWidget::mimeData(const QList<QTableWidgetItem *> items) cons
 bool SongTableWidget::dropMimeData(int row, int column, const QMimeData *data, Qt::DropAction action)
 {
 	Q_UNUSED(column);
-	return QTableWidget::dropMimeData(row, 1, data, action);
+	return QTableWidget::dropMimeData(row, 0, data, action);
 }
 
 bool SongTableWidget::slotItemEdit(int row, int column)
@@ -271,7 +277,7 @@ void SongTableWidget::reloadTable()
 		if(rowcount % 250 == 0)
 		 setRowCount(rowcount+250);
 
-		QString id = query.value(0).toString();
+		int id = query.value(0).toInt();
 		QString title = query.value(1).toString();
 		QString artist = query.value(2).toString();
 		QString album = query.value(3).toString();
@@ -287,6 +293,11 @@ void SongTableWidget::reloadTable()
 		QString path = query.value(13).toString();
 		QString source = query.value(16).toString();
 
+		/*{
+			QString fileEnding = path.right(path.length() - path.lastIndexOf('/'));
+
+		}*/
+
 		QDateTime _last_change = QDateTime::fromTime_t(query.value(14).toInt());
 		QString last_change = (_last_change.isValid() && _last_change <= QDateTime::currentDateTime())?
 			_last_change.toString("yyyy-MM-dd") : "(incorrect)";
@@ -295,7 +306,7 @@ void SongTableWidget::reloadTable()
 		//if(! artistRef.contains(artist) )
 		// artistRef.push_back(album);
 
-		QTableWidgetItem* item_id = new QTableWidgetItem(id);
+		QTableWidgetItem* item_id = new QTableWidgetItem();
 		QTableWidgetItem* item_title = new QTableWidgetItem(title);
 		QTableWidgetItem* item_artist = new QTableWidgetItem(artist);
 		QTableWidgetItem* item_album = new QTableWidgetItem(album);
@@ -350,7 +361,7 @@ void SongTableWidget::reloadTable()
 	}
 	setRowCount(rowcount);
 
-	hideColumn(0);
+	//hideColumn(0);
 	hideColumn(7);
 	hideColumn(8);
 	hideColumn(12);
@@ -361,7 +372,8 @@ void SongTableWidget::reloadTable()
 	resizeRowsToContents ();
 
 	setSortingEnabled(true);
-	sortByColumn(14, Qt::AscendingOrder);
+	//sortByColumn(14, Qt::AscendingOrder);
+	sortByColumn(0, Qt::AscendingOrder);
 }
 
 

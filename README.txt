@@ -42,8 +42,12 @@ sudo zypper in libqt4-devel (on SuSE)
 Also, make sure you have the package installed containing "qdbusxml2cpp" (should
 also be available in the Qt4 development package).
 
-For running LoQuality, you will need mplayer, and, if you like, mplayer2, too.
-For the Flash Downloader, please install ffmpeg.
+For running LoQuality, you will need:
+* mplayer or mplayer2
+* ffmpeg for the flash downloader
+* youtube-dl and wget for the playlist downloader
+  (youtube-dl must be the newest possible version)
+* ssh for the file syncher
 
 4 Installation
 ::::::::::::::

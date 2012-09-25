@@ -75,7 +75,7 @@ void MainWindow::retranslateUi()
 	labelRatingFilter.setText("Rating");
 	playUnratedFilter.setText("spiele unbewertete");
 
-	infoActionDownload.setText("Falls ein Song laeuft kann man hier ein Cover laden...");
+	infoActionDownload.setText("Load current album's cover.");
 	//x1Filter.setText("Person 1");
 	//x2Filter.setText("Person 2");
 }
@@ -460,10 +460,10 @@ void MainWindow::layoutWidgets(bool mobile)
 	//	toolBox->adjustSize();
 		toolBox->addItem(newWidget, "SpecialFilters"); // TODO: Icons :)
 
-		informationBox.addWidget(&imageLabel);
+		informationBox.addWidget(&imageLabel, 1);
 		//infoOptionsMenu.append();
 
-		optionsButton.setText("...");
+		//optionsButton.setText("");
 		optionsButton.setMenu(&infoOptionsMenu);
 		infoOptionsMenu.addAction(&infoActionDownload);
 		informationBox.addWidget(&optionsButton);
@@ -474,7 +474,7 @@ void MainWindow::layoutWidgets(bool mobile)
 
 		toolBox->setCurrentIndex(1);
 
-		verticalLayout.addWidget(&mainSplitter);
+		verticalLayout.addWidget(&mainSplitter, 1);
 		mainSplitter.addWidget(toolBox);
 		mainSplitter.addWidget(&tableWidget);
 	}
@@ -632,17 +632,12 @@ MainWindow::MainWindow (MainWindowContainer* _mwContainer, const QString& dbname
 	/*
 		TABLE WIDGET
 		*/
-	tableWidget.setSortingEnabled(true);
 	tableWidget.reloadTable();
 	player.setFilterCount(tableWidget.rowCount());
 
 	/*
 		CONNECT SIGNALS TO SLOTS
 		*/
-	tableWidget.sortByColumn(14, Qt::AscendingOrder);
-	tableWidget.setEditTriggers(QAbstractItemView::NoEditTriggers);
-	tableWidget.setContextMenuPolicy(Qt::CustomContextMenu);
-	tableWidget.setSelectionBehavior(QAbstractItemView::SelectRows);
 	//connect(&tableWidget, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(slotItemEdit(int, int)));
 
 	connect(&tableWidget, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(slotForward(int, int)));
