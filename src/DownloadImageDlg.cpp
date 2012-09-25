@@ -54,7 +54,7 @@ void DownloadImageDlg::startDownload()
 	outfile.open(QFile::WriteOnly);
 
 	http.setHost(url.host());
-	http.get(url.path(), &outfile);
+	http.get(QUrl::toPercentEncoding(url.path()), &outfile);
 	QObject::connect(&http, SIGNAL(done(bool)), this, SLOT(stopDownload(bool)));
 }
 

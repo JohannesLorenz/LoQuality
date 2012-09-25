@@ -63,8 +63,8 @@ void AddEntryDlg::setupUi()
 	lbl_vote_yours.setGeometry(5, 355, 320, 30);
 	lbl_vote_yours.setText("Deine Bewertung:");
 	
-//	lbl_vote_others.setGeometry(5, 390, 320, 30);
-//	lbl_vote_others.setText("Bewertung Philipp:");
+	lbl_vote_others.setGeometry(5, 390, 320, 30);
+	lbl_vote_others.setText("Externe Bewertung:");
 	
 	lbl_path.setGeometry(5, 425, 355, 30);
 	lbl_path.setText("Pfad:");

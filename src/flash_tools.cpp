@@ -21,6 +21,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <QDir>
+#include <QUrl>
 #include "globals.h"
 #include "flash_tools.h"
 
@@ -122,6 +123,45 @@ bool YouTubeDlSession::download(const char *url, const char *dest, const char* a
 		return begin(_youtubedls_pid);
 }
 
+bool WgetSession::download(const char *url, const char *dest)
+{
+	//youtube-dl -w -cit --max-quality 60 --extract-audio --audio-format vorbis --audio-quality 320k <url>
+	const pid_t _wgets_pid=fork();
+	if(_wgets_pid == 0)
+	{
+		if( -1 == execlp("/usr/bin/wget", "wget", "-O", dest, "-c", url, NULL) )
+		 perror("Could not start wget");
+		exit(0);
+	}
+	else
+		return begin(_wgets_pid);
+}
 
+void FileDownloadSession::download(const char *_url, const char* dest)
+{
+	/*const pid_t _new_pid=fork();
+	if(_new_pid == 0)
+	{
+		printf("downloading: %s to %s\n", _url, dest);
+		{*/
+			printf("downloading: %s to %s\n", _url, dest);
+			QUrl url(_url);
+			delete outfile;
+			outfile = new QFile();
+			outfile->setFileName(dest);
+			outfile->open(QFile::WriteOnly);
+			if(!outfile->isOpen())
+			 exit(99);
+			setHost(url.host());
+			get(QUrl::toPercentEncoding(url.path()), outfile);
+			printf("error?? %s\n",errorString().toAscii().data()	);
+			//QObject::connect(this, SIGNAL(done(bool)), this, SLOT(slotTimerTimeout()));
+/*		}
+		puts("EXIT!");
+		exit(0);
+	}
+	else
+		return begin(_new_pid);*/
+}
 
 

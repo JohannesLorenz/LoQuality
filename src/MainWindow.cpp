@@ -297,8 +297,8 @@ void MainWindow::slotToolBoxChanged(int newIndex)
 		if(player.getCurSongItem())
 		{
 			QDir currentDir(QFileInfo(player.getCurSongItem()->text()).dir());
-			QStringList imgs = currentDir.entryList(QStringList() << "*.jpg" << "*.png" << "*.xpm" << "*.gif", QDir::Files);
-			printf("dir: %s, imgs: %d\n",player.getCurSongItem()->text().toAscii().data(), imgs.size() );
+			QStringList imgs = currentDir.entryList(QStringList() << "*.jpg" << "*.jpeg" << "*.png" << "*.xpm" << "*.gif", QDir::Files);
+			printf("dir: %s, imgs: %d\n",currentDir.absolutePath().toAscii().data(), imgs.size() );
 			if(imgs.empty())
 			{
 				tmpImage.load("media/graphics/lq.png");
@@ -430,7 +430,7 @@ void MainWindow::layoutWidgets(bool mobile)
 		verticalLayout.addLayout(&hbox_buttons1);
 
 		insertButtonMenu.addAction( "File Chooser", this, SLOT(slotAddFileChooser()) /*, const QKeySequence & shortcut = 0 TODO*/);
-		insertButtonMenu.addAction( "Per Dialog", this, SLOT(slotAddFile()));
+		insertButtonMenu.addAction( "Per Dialog", this, SLOT(slotAddFile()), QKeySequence(Qt::CTRL + Qt::Key_A));
 		buttons2[BTN2_ADD].setMenu(&insertButtonMenu);
 		hbox_buttons2.addWidget(& filter);
 		for(unsigned int i = 0; i < BTN2_SIZE; i++)

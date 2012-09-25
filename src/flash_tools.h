@@ -26,6 +26,7 @@
 #include <QString>
 #include <QFileInfo>
 #include <QTimer>
+#include <QHttp>
 #include <sys/wait.h>
 
 //! adds all flash file infos from @a basedir to @a allFiles
@@ -82,9 +83,18 @@ public:
 	bool download(const char* url, const char* dest, const char *audio_format = "best");
 };
 
-inline void unpack_playlist()
+class WgetSession : public ForkedProcess
 {
+public:
+	bool download(const char* url, const char* dest);
+};
 
-}
+class FileDownloadSession : public QHttp
+{
+	QFile* outfile;
+public:
+	void download(const char *_url, const char* dest);
+	FileDownloadSession() : outfile(NULL) {}
+};
 
 #endif // FLASH_TOOLS_H

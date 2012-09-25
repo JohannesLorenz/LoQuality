@@ -28,6 +28,7 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QProgressDialog>
+#include <QCheckBox>
 class SqlHelper;
 
 #include "flash_tools.h"
@@ -39,6 +40,9 @@ class PlaylistDownloader : public QDialog
 
 //	const SqlHelper& sqlhelper;
 	QVBoxLayout boxMain;
+
+	QCheckBox cbEnumerate;
+	QCheckBox cbOverwrite;
 
 	QLabel lblFormat;
 	QComboBox cbFormat;
@@ -52,7 +56,9 @@ class PlaylistDownloader : public QDialog
 	QPushButton okBtn, abortBtn;
 	QHBoxLayout boxButtons;
 
-	YouTubeDlSession convertion;
+	YouTubeDlSession youtubedl;
+	//FileDownloadSession httpget;
+	WgetSession wget;
 	SongTableWidget* table;
 	int currentDownloadRow;
 	QProgressDialog* progressDlg;

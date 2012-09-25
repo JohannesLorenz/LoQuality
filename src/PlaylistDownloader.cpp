@@ -21,6 +21,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QDir>
+#include <QUrl>
 
 #include "globals.h"
 #include "flash_tools.h"
@@ -31,6 +32,7 @@
 PlaylistDownloader::PlaylistDownloader(SongTableWidget *_table, const SqlHelper& _sqlhelper, QWidget *parent) :
 	QDialog(parent),
 	boxMain(this),
+	cbEnumerate(),
 	table(_table),
 	progressDlg(NULL),
 	sqlhelper(_sqlhelper),
@@ -42,6 +44,8 @@ PlaylistDownloader::PlaylistDownloader(SongTableWidget *_table, const SqlHelper&
 
 void PlaylistDownloader::retranslateUi(void)
 {
+	cbEnumerate.setText("Enumerate Filenames");
+	cbOverwrite.setText("Overwrite Files");
 	lblFormat.setText("File Format");
 	lblFolder.setText("Destination Folder");
 	btnFolder.setText("Choose");
@@ -58,6 +62,9 @@ void PlaylistDownloader::setupUi(void)
 	cbFormat.addItem("m4a");
 	cbFormat.addItem("wav");
 
+	cbEnumerate.setChecked(true);
+	cbOverwrite.setChecked(true);
+
 	boxFormat.addWidget(&lblFormat);
 	boxFormat.addWidget(&cbFormat);
 
@@ -68,6 +75,8 @@ void PlaylistDownloader::setupUi(void)
 	boxButtons.addWidget(&abortBtn);
 	boxButtons.addWidget(&okBtn);
 
+	boxMain.addWidget(&cbEnumerate);
+	boxMain.addWidget(&cbOverwrite);
 	boxMain.addLayout(&boxFormat);
 	boxMain.addLayout(&boxFolder);
 	boxMain.addLayout(&boxButtons);
@@ -75,7 +84,9 @@ void PlaylistDownloader::setupUi(void)
 	QObject::connect(&btnFolder, SIGNAL(clicked()), this, SLOT(btnFolderClicked()));
 	QObject::connect(&okBtn, SIGNAL(clicked()), this, SLOT(slotBtnOk()));
 	QObject::connect(&abortBtn, SIGNAL(clicked()), this, SLOT(reject()));
-	QObject::connect(&convertion, SIGNAL(finished()), this, SLOT(slotTimerTimeout()));
+	QObject::connect(&youtubedl, SIGNAL(finished()), this, SLOT(slotTimerTimeout()));
+	QObject::connect(&wget, SIGNAL(finished()), this, SLOT(slotTimerTimeout()));
+	//QObject::connect(&httpget, SIGNAL(done(bool)), this, SLOT(slotTimerTimeout()));
 }
 
 bool PlaylistDownloader::shallDownloadFile(int row) {
@@ -113,7 +124,21 @@ void PlaylistDownloader::slotBtnOk()
 		0, numDownloads, this);
 	progressDlg->show();
 	currentDownloadRow = -1;
-	QDir("/tmp").mkdir(TMP_DIRECTORY);
+
+	QDir tmp("/tmp");
+
+	if(tmp.exists(TMP_DIRECTORY))
+	{
+		tmp.cd(TMP_DIRECTORY);
+		QStringList tmpFiles = tmp.entryList();
+		QStringListIterator itr(tmpFiles);
+		while (itr.hasNext())
+		{
+			tmp.remove(itr.next());
+		}
+	}
+	else
+	 tmp.mkdir(TMP_DIRECTORY);
 
 	nextDownload();
 	//...
@@ -164,6 +189,8 @@ void PlaylistDownloader::slotBtnOk()
 
 void PlaylistDownloader::nextDownload()
 {
+#if 0
+	// move latest song from a temporary to right place, update table and sql
 	if(currentDownloadRow != -1)
 	{
 		QDir dir("/tmp");
@@ -187,6 +214,7 @@ void PlaylistDownloader::nextDownload()
 		sqlhelper.exec(insert_cmd);
 	}
 
+	// get next downloadable file
 	currentDownloadRow++;
 	for( ; currentDownloadRow < table->rowCount(); currentDownloadRow++)
 	 if(shallDownloadFile(currentDownloadRow))
@@ -198,6 +226,7 @@ void PlaylistDownloader::nextDownload()
 		QMessageBox::information(this, "Finished.", "Number of files that could not be downloaded: " + QString::number(countDownloads()));
 	}
 	else {
+		// initiate download
 		QString destName = "/tmp/";
 		destName += TMP_DIRECTORY;
 		destName += QDir::separator();
@@ -207,6 +236,104 @@ void PlaylistDownloader::nextDownload()
 		convertion.download(table->item(currentDownloadRow, 15)->text().toAscii().data(),
 			destName.toAscii().data(),
 			cbFormat.currentText().toAscii().data());
+	}
+#endif
+	// move latest song from a temporary to right place, update table and sql
+	if(currentDownloadRow != -1)
+	{
+		QFileInfoList dirList;
+		{
+			QDir dir("/tmp");
+			dir.cd(TMP_DIRECTORY);
+			dirList = dir.entryInfoList();
+		}
+
+		if(dirList.empty()) // this means the download failed
+		{
+
+		}
+		else
+		{
+			QString latestFile = dirList.last().absoluteFilePath();
+			QString path = leFolder.text();
+			path += QDir::separator();
+			char num_prefix[4];
+			if(cbEnumerate.isChecked()) {
+				printf("Text: %s\n",table->item(currentDownloadRow, 0)->text().toAscii().data());
+				snprintf(num_prefix, 4, "%02d_", table->item(currentDownloadRow, 0)->text().toInt());
+				path += num_prefix;
+			}
+			path += dirList.last().fileName(); // keep the file name
+
+			bool can_write_to_file = true;
+			if(QFile::exists(path))
+			{
+				if(cbOverwrite.isChecked())
+				 QFile::remove(path);
+				else
+				 can_write_to_file = false;
+			}
+
+			if(can_write_to_file)
+			{
+				if(! QFile::rename(latestFile, path))
+				 QFile::remove(latestFile); // keep /tmp clean!
+
+				table->item(currentDownloadRow, 13)->setText(path);
+
+				QString insert_cmd("UPDATE 'main' SET 'pfad' = '");
+				insert_cmd.append(path);
+				insert_cmd.append("' WHERE 'main'.'id' =");
+				insert_cmd.append(QString::number(table->row2id(currentDownloadRow)));
+
+				printf("Query command: %s\n", insert_cmd.toAscii().data());
+				sqlhelper.exec(insert_cmd);
+			}
+		}
+	}
+
+	// get next downloadable file
+	currentDownloadRow++;
+	for( ; currentDownloadRow < table->rowCount(); currentDownloadRow++)
+	 if(shallDownloadFile(currentDownloadRow))
+	  break;
+
+	if(currentDownloadRow == table->rowCount()) {
+		delete progressDlg;
+		QDir("/tmp").rmdir(TMP_DIRECTORY);
+		QMessageBox::information(this, "Finished.", "Number of files that could not be downloaded: " + QString::number(countDownloads()));
+	}
+	else // initiate download
+	{
+		//QString urlString = table->item(currentDownloadRow, 15)->text();
+		QUrl url(table->item(currentDownloadRow, 15)->text());
+		QString destName = "/tmp/";
+		destName += TMP_DIRECTORY;
+		destName += QDir::separator();
+
+		if(url.scheme() == "res")
+		{
+			destName += url.path().remove(0,url.path().lastIndexOf('/')+1);
+			url.setScheme("http");
+			wget.download(url.toString().toAscii().data(), destName.toAscii().data());
+		}
+		else // must be a song
+		{
+			destName += table->item(currentDownloadRow, 1)->text().toLower().replace(' ', '_');
+
+			if(url.scheme()=="mp3") {
+				destName += ".mp3";
+				url.setScheme("http");
+				wget.download(url.toString().toAscii().data(), destName.toAscii().data());
+			}
+			else {
+				destName += ".%%(ext)";
+				youtubedl.download(url.toString().toAscii().data(),
+					destName.toAscii().data(),
+					cbFormat.currentText().toAscii().data());
+			}
+		}
+
 	}
 }
 

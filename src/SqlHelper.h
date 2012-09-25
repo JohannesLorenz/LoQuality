@@ -38,11 +38,8 @@ class SqlHelper
 		QSqlDatabase db;
 		mutable MPlayerConnection* mPlayerConnection;
 
-		bool main_exists(void) const;
+		bool table_exists(const char* table_name) const;
 
-		inline void CREATE_if_main_missing(void) const {
-			if(!main_exists()) CREATE();
-		}
 	public:
 		/**
 			replaces all ' to \' in a string which begins and ends on '
@@ -67,7 +64,8 @@ class SqlHelper
 		//! @param argumentList list of values, each in single quotes (except NULL) and seperated by comma. e.g.: "'a', NULL , 'c'"
 		void INSERT(const char* filepath, const char* url = "") const;
 
-		void CREATE(void) const;
+		void CREATE_main(void) const;
+		void CREATE_images(void) const;
 
 		inline bool start_insert_sequence(void) const {
 			return ( mPlayerConnection = new MPlayerConnection(_MPLAYER_META_PIPE, true) ) != NULL;

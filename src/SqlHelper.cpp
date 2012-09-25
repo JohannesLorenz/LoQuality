@@ -82,7 +82,10 @@ SqlHelper::SqlHelper(const QString& dbname)
 	QStringList tables = db.tables();
 	printf("tables: %d\n",tables.size());
 
-	CREATE_if_main_missing();
+	if(!table_exists("main"))
+	 CREATE_main();
+	if(!table_exists("images"))
+	 CREATE_images();
 #endif
 }
 
@@ -210,7 +213,7 @@ void SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 
 }
 
-void SqlHelper::CREATE(void) const
+void SqlHelper::CREATE_main(void) const
 {
 	db.exec(
 		"CREATE TABLE main ("
@@ -235,19 +238,24 @@ void SqlHelper::CREATE(void) const
 	);
 }
 
-bool SqlHelper::main_exists(void) const
+void SqlHelper::CREATE_images(void) const
 {
-	bool main_exists = false;
+	db.exec("CREATE TABLE images ('url' varchar(255));");
+}
+
+bool SqlHelper::table_exists(const char* table_name) const
+{
+	bool table_exists = false;
 	QSqlQuery query = db.exec("SELECT name FROM  sqlite_master WHERE type='table' ORDER BY name;");
 	printf("size: %d\n", query.size());
 	//printf("last error: %s\n", query.lastError().text().toAscii().data());
-	while (query.next() && !main_exists) {
+	while (query.next() && !table_exists) {
 		printf("tables: %s\n",query.value(0).toString().toAscii().data());
-		if( query.value(0).toString() == "main" )
-			main_exists = true;
+		if( query.value(0).toString() == table_name )
+			table_exists = true;
 	}
 
-	printf("Main exists? %d\n",(int)main_exists);
-	return main_exists;
+	printf("Table exists? %d\n",(int)table_exists);
+	return table_exists;
 }
 
