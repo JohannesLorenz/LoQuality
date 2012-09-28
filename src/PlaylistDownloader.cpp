@@ -319,7 +319,7 @@ void PlaylistDownloader::nextDownload()
 		}
 		else // must be a song
 		{
-			destName += table->item(currentDownloadRow, 1)->text().toLower().replace(' ', '_');
+			destName += table->item(currentDownloadRow, 1)->text().toLower().replace(' ', '_').replace(".","");
 
 			if(url.scheme()=="mp3") {
 				destName += ".mp3";

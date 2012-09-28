@@ -32,9 +32,14 @@ MainWindowContainer::MainWindowContainer() : visible(true)
 	connect(&tray_icon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(switch_tray(QSystemTrayIcon::ActivationReason)));
 }
 
-MainWindowContainer::~MainWindowContainer()
+void MainWindowContainer::deleteAll()
 {
 	QListIterator<MainWindow*> itr(mainWindows);
+	while (itr.hasNext())
+	{
+		delete(itr.next());
+	}
+	itr = oldMainWindows;
 	while (itr.hasNext())
 	{
 		delete(itr.next());
@@ -75,6 +80,15 @@ bool MainWindowContainer::removeFrom(MainWindow *me)
 		oldMainWindows.append(me);
 	}
 	return doRemove;
+}
+
+void MainWindowContainer::closeAllWindows()
+{
+	QListIterator<MainWindow*> itr(mainWindows);
+	while (itr.hasNext())
+	{
+		itr.next()->close();
+	}
 }
 
 void MainWindowContainer::switch_tray(QSystemTrayIcon::ActivationReason reason)

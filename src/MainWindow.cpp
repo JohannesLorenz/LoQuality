@@ -34,8 +34,6 @@
 #include "SynchWizard.h"
 #include "FileManager.h"
 
-#define _MPLAYER_REMOTE_PIPE "/tmp/lq_remote_pipe"
-
 void MainWindow::retranslateUi()
 {
 	topMenus[MENU_FILE].setTitle(tr("Datei"));
@@ -45,7 +43,8 @@ void MainWindow::retranslateUi()
 
 	Actions[ACTION_FILE_OPEN]->setText(tr("Open Database in new Window"));
 	Actions[ACTION_FILE_UPDATE]->setText(tr("Update"));
-	Actions[ACTION_FILE_QUIT]->setText(tr("Beenden"));
+	Actions[ACTION_FILE_CLOSE]->setText(tr("Close"));
+	Actions[ACTION_FILE_QUIT]->setText(tr("Quit"));
 	Actions[ACTION_VIEW_SCROLL_TO_SONG]->setText(tr("Scroll zum aktuellen Song"));
 	Actions[ACTION_VIEW_FULLSCREEN]->setText(tr("Vollbild"));
 	Actions[ACTION_VIEW_SWITCH_ALIGN]->setText(tr("Ausrichtung ändern"));
@@ -244,6 +243,11 @@ void MainWindow::slotSynch()
 	MENU BAR SLOTS
 */
 void MainWindow::slotFileQuitAction () {
+	quitProgram = true;
+	mwContainer->closeAllWindows();
+}
+
+void MainWindow::slotFileCloseAction () {
 	quitProgram = true;
 	close();
 }
@@ -585,6 +589,8 @@ MainWindow::MainWindow (MainWindowContainer* _mwContainer, const QString& dbname
 
 	initAction(MENU_FILE, ACTION_FILE_OPEN, SLOT(slotOpenNewMainWindow()), QKeySequence(Qt::CTRL + Qt::Key_O));
 	initAction(MENU_FILE, ACTION_FILE_UPDATE, SLOT(slotFileUpdateAction()), QKeySequence(Qt::CTRL + Qt::Key_U));
+	topMenus[MENU_FILE].addSeparator();
+	initAction(MENU_FILE, ACTION_FILE_CLOSE, SLOT(slotFileCloseAction()), QKeySequence(Qt::CTRL + Qt::Key_C));
 	initAction(MENU_FILE, ACTION_FILE_QUIT, SLOT(slotFileQuitAction()), QKeySequence(Qt::CTRL + Qt::Key_Q), application_exit_xpm);
 
 	initAction(MENU_EDIT, ACTION_EDIT_EDITTITLE, SLOT(slotItemEdit()), QKeySequence(Qt::CTRL + Qt::Key_E));

@@ -34,17 +34,19 @@ class MainWindowContainer : public QObject
 	QSystemTrayIcon tray_icon;
 	bool visible; // for the tray icon
 	bool quitProgram; // only set to true if the program is exited with the menu bar
+	void deleteAll();
 private slots:
 	void switch_tray(QSystemTrayIcon::ActivationReason reason);
 
 public:
 	MainWindowContainer();
-	~MainWindowContainer();
+	inline ~MainWindowContainer() { deleteAll(); }
 
 public slots:
 	MainWindow* openNewWindow();
 	MainWindow* openNewWindow(const QString& filename);
 	bool removeFrom(MainWindow* me);
+	void closeAllWindows();
 };
 
 #endif // MAINWINDOWCONTAINER_H
