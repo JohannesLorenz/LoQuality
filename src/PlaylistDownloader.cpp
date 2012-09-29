@@ -259,7 +259,6 @@ void PlaylistDownloader::nextDownload()
 			path += QDir::separator();
 			char num_prefix[4];
 			if(cbEnumerate.isChecked()) {
-				printf("Text: %s\n",table->item(currentDownloadRow, 0)->text().toAscii().data());
 				snprintf(num_prefix, 4, "%02d_", table->item(currentDownloadRow, 0)->text().toInt());
 				path += num_prefix;
 			}

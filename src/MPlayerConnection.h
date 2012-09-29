@@ -27,8 +27,9 @@ class MPlayerConnection
 {
 	private:
 		pid_t mplayers_pid;
-		const char* REMOTE_PIPE_NAME;
+		char REMOTE_PIPE_NAME[32];
 		int mplayer_output;
+		static int connection_count;
 
 	public:
 		//! passes a remote command to MPlayer
@@ -37,7 +38,7 @@ class MPlayerConnection
 		bool pass_remote_command(const char* command) const;
 		QString fetchValue(const char* remoteCommand, const char* ansStr, bool msgBoxOnErr = false);
 
-		MPlayerConnection(const char* _REMOTE_PIPE_NAME, bool nulldevice = false);
+		MPlayerConnection(bool nulldevice = false);
 		~MPlayerConnection();
 };
 

@@ -29,8 +29,6 @@
 class QSqlQuery;
 class QString;
 
-#define _MPLAYER_META_PIPE "/tmp/lq_edit_pipe"
-
 class SqlHelper
 {
 	private:
@@ -68,7 +66,7 @@ class SqlHelper
 		void CREATE_images(void) const;
 
 		inline bool start_insert_sequence(void) const {
-			return ( mPlayerConnection = new MPlayerConnection(_MPLAYER_META_PIPE, true) ) != NULL;
+			return ( mPlayerConnection = new MPlayerConnection(true) ) != NULL;
 		}
 
 		inline void stop_insert_sequence(void) const {

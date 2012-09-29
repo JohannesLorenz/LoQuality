@@ -33,7 +33,6 @@
 #include "PlayerEngine.h"
 
 #define _MPLAYER_REMOTE_PIPE "/tmp/lq_remote_pipe"
-#define _MPLAYER_OUTPUT_PIPE "/tmp/lq_output_pipe"
 
 inline void exit_illegal_state() {
 	fputs("ERROR: illegal button input in current state\n", stderr);
@@ -216,7 +215,7 @@ void PlayerEngine::slotTimerTimeout() {
 #include <sys/stat.h>
 #include <fcntl.h>
 
-PlayerEngine::PlayerEngine (QTableWidget* _table) : table(_table), curSong(NULL), mPlayerConnection(_MPLAYER_REMOTE_PIPE)
+PlayerEngine::PlayerEngine (QTableWidget* _table) : table(_table), curSong(NULL)
 {
 	setStatus(STATUS_STOPPED);
 

@@ -32,6 +32,8 @@
 #include "globals.h"
 #include "MPlayerConnection.h"
 
+int MPlayerConnection::connection_count = 0;
+
 bool MPlayerConnection::pass_remote_command(const char* command) const
 {
 	// NOTE: mplayer -input cmdlist
@@ -91,9 +93,12 @@ QString MPlayerConnection::fetchValue(const char* remoteCommand, const char* ans
 	return QString("''");
 }
 
-MPlayerConnection::MPlayerConnection(const char* _REMOTE_PIPE_NAME, bool nulldevice)
-	: REMOTE_PIPE_NAME(_REMOTE_PIPE_NAME)
+MPlayerConnection::MPlayerConnection(bool nulldevice)
 {
+
+	strcpy(REMOTE_PIPE_NAME, "/tmp/lq_remote_pipe_");
+	snprintf(REMOTE_PIPE_NAME + strlen(REMOTE_PIPE_NAME), 16, "%d", ++connection_count);
+
 	if( access( REMOTE_PIPE_NAME, F_OK ) != -1 )
 	 remove(REMOTE_PIPE_NAME);
 	mkfifo(REMOTE_PIPE_NAME, 0600);

@@ -84,8 +84,6 @@ SqlHelper::SqlHelper(const QString& dbname)
 
 	if(!table_exists("main"))
 	 CREATE_main();
-	if(!table_exists("images"))
-	 CREATE_images();
 #endif
 }
 
