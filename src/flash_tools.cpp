@@ -125,7 +125,6 @@ bool YouTubeDlSession::download(const char *url, const char *dest, const char* a
 
 bool WgetSession::download(const char *url, const char *dest)
 {
-	//youtube-dl -w -cit --max-quality 60 --extract-audio --audio-format vorbis --audio-quality 320k <url>
 	const pid_t _wgets_pid=fork();
 	if(_wgets_pid == 0)
 	{
@@ -135,6 +134,19 @@ bool WgetSession::download(const char *url, const char *dest)
 	}
 	else
 		return begin(_wgets_pid);
+}
+
+bool MySpaceSession::download(const char *song_id, const char *destdir)
+{
+	const pid_t _myspace_pid=fork();
+	if(_myspace_pid == 0)
+	{
+		if( -1 == execlp("./getmyspace.sh", "getmyspace.sh", song_id, destdir, NULL) )
+		 perror("Could not start getmyspace.sh");
+		exit(0);
+	}
+	else
+		return begin(_myspace_pid);
 }
 
 void FileDownloadSession::download(const char *_url, const char* dest)
@@ -163,5 +175,4 @@ void FileDownloadSession::download(const char *_url, const char* dest)
 	else
 		return begin(_new_pid);*/
 }
-
 

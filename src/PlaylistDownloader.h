@@ -59,6 +59,7 @@ class PlaylistDownloader : public QDialog
 	YouTubeDlSession youtubedl;
 	//FileDownloadSession httpget;
 	WgetSession wget;
+	MySpaceSession myspace;
 	SongTableWidget* table;
 	int currentDownloadRow;
 	QProgressDialog* progressDlg;
@@ -68,6 +69,10 @@ class PlaylistDownloader : public QDialog
 	bool shallDownloadFile(int row);
 	void nextDownload();
 	int countDownloads();
+
+	// this might be put elsewhere
+	static QString makeFilename(const QString& title);
+
 public:
 	void setupUi();
 	void retranslateUi();

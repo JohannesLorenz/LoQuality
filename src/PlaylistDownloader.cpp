@@ -86,6 +86,7 @@ void PlaylistDownloader::setupUi(void)
 	QObject::connect(&abortBtn, SIGNAL(clicked()), this, SLOT(reject()));
 	QObject::connect(&youtubedl, SIGNAL(finished()), this, SLOT(slotTimerTimeout()));
 	QObject::connect(&wget, SIGNAL(finished()), this, SLOT(slotTimerTimeout()));
+	QObject::connect(&myspace, SIGNAL(finished()), this, SLOT(slotTimerTimeout()));
 	//QObject::connect(&httpget, SIGNAL(done(bool)), this, SLOT(slotTimerTimeout()));
 }
 
@@ -117,7 +118,13 @@ void PlaylistDownloader::slotBtnOk()
 	}
 
 	int numDownloads = countDownloads();
-	QMessageBox::information(this, "Starting Download", "Number of tracks to download: " + QString::number(numDownloads));
+
+	if(QMessageBox::No == QMessageBox::question(this, "Starting Download",
+		"Number of tracks to download: "
+		+ QString::number(numDownloads)
+		+ ". Do you want to proceed?",
+		QMessageBox::Yes | QMessageBox::No, QMessageBox::No) )
+	 return;
 
 
 	progressDlg = new QProgressDialog("Downloading all Tracks...", "Stop after current track",
@@ -187,57 +194,67 @@ void PlaylistDownloader::slotBtnOk()
 	sqlhelper.exec(insert_cmd);
 }*/
 
+QString PlaylistDownloader::makeFilename(const QString& title)
+{
+	QString result;
+
+	QString::const_iterator itr = title.begin();
+	QString::const_iterator end = title.end();
+	bool underscoreBefore = false;
+
+	while (itr != end)
+	{
+		if (!itr->isHighSurrogate())
+		{
+			if (itr->isLetterOrNumber())
+			{
+				result.push_back(itr->toLower());
+				underscoreBefore = false;
+				++itr;
+				continue;
+			}
+		}
+		else
+		{
+			++itr;
+			if (itr == end)
+			break; // error - missing low surrogate
+
+			if (!itr->isLowSurrogate())
+			break; // error - not a low surrogate
+
+			/*
+			letters/numbers should not need to be surrogated,
+			but if you want to check for that then you can use
+			QChar::surrogateToUcs4() and QChar::category() to
+			check if the surrogate pair represents a Unicode
+			letter/number codepoint...*/
+
+			uint ch = QChar::surrogateToUcs4(*(itr-1), *itr);
+			QChar::Category cat = QChar::category(ch);
+			if (
+			((cat >= QChar::Number_DecimalDigit) && (cat <= QChar::Number_Other)) ||
+			((cat >= QChar::Letter_Uppercase) && (cat <= QChar::Letter_Other))
+			)
+			{
+				result.push_back(QChar(ch).toLower());
+				++itr;
+				continue;
+			}
+		}
+
+		if(!underscoreBefore) {
+			underscoreBefore = true;
+			result.push_back('_');
+		}
+		++itr;
+	}
+
+	return result;
+}
+
 void PlaylistDownloader::nextDownload()
 {
-#if 0
-	// move latest song from a temporary to right place, update table and sql
-	if(currentDownloadRow != -1)
-	{
-		QDir dir("/tmp");
-		dir.cd(TMP_DIRECTORY);
-		QString latestFile = dir.entryInfoList().last().absoluteFilePath();
-		QString path = leFolder.text();
-		path += QDir::separator();
-		path += dir.entryInfoList().last().fileName();
-
-		if(! QFile::rename(latestFile, path))
-		 QFile::remove(latestFile); // keep /tmp clean!
-
-		table->item(currentDownloadRow, 13)->setText(path);
-
-		QString insert_cmd("UPDATE 'main' SET 'pfad' = '");
-		insert_cmd.append(path);
-		insert_cmd.append("' WHERE 'main'.'id' =");
-		insert_cmd.append(QString::number(table->row2id(currentDownloadRow)));
-
-		printf("Query command: %s\n", insert_cmd.toAscii().data());
-		sqlhelper.exec(insert_cmd);
-	}
-
-	// get next downloadable file
-	currentDownloadRow++;
-	for( ; currentDownloadRow < table->rowCount(); currentDownloadRow++)
-	 if(shallDownloadFile(currentDownloadRow))
-	  break;
-
-	if(currentDownloadRow == table->rowCount()) {
-		delete progressDlg;
-		QDir("/tmp").rmdir(TMP_DIRECTORY);
-		QMessageBox::information(this, "Finished.", "Number of files that could not be downloaded: " + QString::number(countDownloads()));
-	}
-	else {
-		// initiate download
-		QString destName = "/tmp/";
-		destName += TMP_DIRECTORY;
-		destName += QDir::separator();
-		destName += table->item(currentDownloadRow, 1)->text().toLower().replace(' ', '_');
-		destName += ".%%(ext)";
-
-		convertion.download(table->item(currentDownloadRow, 15)->text().toAscii().data(),
-			destName.toAscii().data(),
-			cbFormat.currentText().toAscii().data());
-	}
-#endif
 	// move latest song from a temporary to right place, update table and sql
 	if(currentDownloadRow != -1)
 	{
@@ -316,9 +333,15 @@ void PlaylistDownloader::nextDownload()
 			url.setScheme("http");
 			wget.download(url.toString().toAscii().data(), destName.toAscii().data());
 		}
+		else if(url.scheme() == "myspace")
+		{
+			destName += makeFilename(table->item(currentDownloadRow, 1)->text());
+			destName += ".mp3";
+			myspace.download(url.host().toAscii().data(), destName.toAscii().data());
+		}
 		else // must be a song
 		{
-			destName += table->item(currentDownloadRow, 1)->text().toLower().replace(' ', '_').replace(".","");
+			destName += makeFilename(table->item(currentDownloadRow, 1)->text());
 
 			if(url.scheme()=="mp3") {
 				destName += ".mp3";

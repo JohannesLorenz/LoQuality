@@ -51,6 +51,7 @@ class SettingsReader // todo: extra file?
 		shouldBe("do_updates", true, first_start);
 		shouldBe("target", "pc", first_start);
 		shouldBe("equalizer","0:0:0:0:0:0:0:0:0:0", first_start);
+		shouldBe("restrict_to_ascii",true, first_start);
 	}
 
 public:

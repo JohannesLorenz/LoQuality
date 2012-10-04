@@ -89,6 +89,14 @@ public:
 	bool download(const char* url, const char* dest);
 };
 
+class MySpaceSession : public ForkedProcess
+{
+public:
+	bool download(const char* song_id, const char* destdir);
+};
+
+
+//! This class is not used...
 class FileDownloadSession : public QHttp
 {
 	QFile* outfile;
