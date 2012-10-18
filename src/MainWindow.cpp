@@ -294,6 +294,14 @@ void MainWindow::slotSelectionChanged(int a, int b)
 }
 #endif
 
+bool loadImageSafely(QImage* img, const char* path)
+{
+	return (img->load(path, "PNG")) ||
+		(img->load(path, "JPG")) ||
+		(img->load(path, "JPEG")) ||
+		(img->load(path));
+}
+
 void MainWindow::slotToolBoxChanged(int newIndex)
 {
 	if(newIndex == TOOLBOX_METAINFO)
@@ -302,20 +310,25 @@ void MainWindow::slotToolBoxChanged(int newIndex)
 		{
 			QDir currentDir(QFileInfo(player.getCurSongItem()->text()).dir());
 			QStringList imgs = currentDir.entryList(QStringList() << "*.jpg" << "*.jpeg" << "*.png" << "*.xpm" << "*.gif", QDir::Files);
-			printf("dir: %s, imgs: %d\n",currentDir.absolutePath().toAscii().data(), imgs.size() );
+			printf("Scanning Dir: %s, imgs: %d\n",currentDir.absolutePath().toAscii().data(), imgs.size() );
 			if(imgs.empty())
 			{
-				tmpImage.load("media/graphics/lq.png");
+				loadImageSafely(&tmpImage, "media/graphics/lq.png");
 				imageLabel.setPixmap(QPixmap::fromImage(tmpImage.scaledToHeight(300)));
-
+				imageLabel.resize(tmpImage.size());
 				//imageLabel.clear();
 			}
 			else
 			{
 				int imgNumber = (int) (imgs.size()*1.0*rand()/(RAND_MAX+1.0));
-				printf("chosen: %s\n",imgs.at(imgNumber).toAscii().data());
-				tmpImage.load(currentDir.absoluteFilePath(imgs.at(imgNumber)));
+
+				QString chosen_image = currentDir.absoluteFilePath(imgs.at(imgNumber));
+				printf("... chosen image: %s\n",chosen_image.toAscii().data());
+				loadImageSafely(&tmpImage,chosen_image.toAscii().data());
+				printf("size: %d\n",tmpImage.height());
 				imageLabel.setPixmap(QPixmap::fromImage(tmpImage.scaledToHeight(300)));
+				imageLabel.resize(tmpImage.size());
+				printf("size: %d\n",tmpImage.height());
 				/*imageLabel.adjustSize();
 				imageLabel.show();
 				toolBox->update();
