@@ -25,6 +25,8 @@
 #include <QVariantMap>
 #include <QDBusArgument>
 
+#include "../MainWindowContainer.h"
+
 class PlayerEngine;
 
 namespace Mpris1
@@ -56,9 +58,9 @@ namespace Mpris1
 	{
 	Q_OBJECT
 	private:
-		PlayerEngine* player; // here, we can exchange stuff with LoQuality's Player!
+		MainWindowContainer* container; // here, we can exchange stuff with LoQuality's Player!
 	public:
-		PlayerHandler(PlayerEngine* _player);
+		PlayerHandler(MainWindowContainer* _container);
 
 		enum DBusCaps {
 			NONE                  = 0,

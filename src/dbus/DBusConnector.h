@@ -24,6 +24,7 @@
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 
+#include "../MainWindowContainer.h"
 #include "RootHandler.h"
 #include "TrackListHandler.h"
 #include "PlayerHandler.h"
@@ -38,7 +39,7 @@ class DBusConnector
 	//PlayerEngine* player;
 public:
 
-	void start(PlayerEngine* _player)
+	void start(MainWindowContainer* _container)
 	{
 		QDBusConnection::sessionBus().registerService("org.mpris.LoQuality");
 		QDBusConnection::sessionBus().registerService("org.kde.amarok");
@@ -47,7 +48,7 @@ public:
 		// looks ugly, but I don't know any fix
 		root_handler = new Mpris1::RootHandler;
 		tracklist_handler = new Mpris1::TrackListHandler;
-		player_handler = new Mpris1::PlayerHandler(_player);
+		player_handler = new Mpris1::PlayerHandler(_container);
 	}
 
 	void stop()

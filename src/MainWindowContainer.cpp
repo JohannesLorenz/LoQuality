@@ -32,6 +32,19 @@ MainWindowContainer::MainWindowContainer() : visible(true)
 	connect(&tray_icon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(switch_tray(QSystemTrayIcon::ActivationReason)));
 }
 
+PlayerEngine* MainWindowContainer :: getActivePlayer()
+{
+	for (int i = 0; i < mainWindows.size(); ++i)
+	{
+		if (mainWindows[i]->get_player()->getPlayerStatus() == PlayerEngine::STATUS_PLAYING)
+		{
+			return mainWindows[i]->get_player();
+		}
+	}
+
+	return mainWindows[0]->get_player();
+}
+
 void MainWindowContainer::deleteAll()
 {
 	QListIterator<MainWindow*> itr(mainWindows);

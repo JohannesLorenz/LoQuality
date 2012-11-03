@@ -107,10 +107,10 @@ int main(int argc, char** argv)
 		const QString main_database = (globals::settings->value("main_database", "musicdb").toString());
 
 		MainWindowContainer mwContainer;
-		MainWindow* firstMainWindow = mwContainer.openNewWindow(main_database);
+		mwContainer.openNewWindow(main_database);
 
 		// dbus_connector shall for now only be connected to the first main window
-		dbus_connector.start(firstMainWindow->get_player());
+		dbus_connector.start(&mwContainer);
 
 		return_value = app.exec();
 		delete globals::settings;

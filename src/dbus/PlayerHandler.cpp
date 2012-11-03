@@ -95,7 +95,7 @@ namespace Mpris1
 
 
 
-	PlayerHandler::PlayerHandler(PlayerEngine* _player) : player(_player)
+	PlayerHandler::PlayerHandler(MainWindowContainer* _container) : container(_container)
 	{
 		qDBusRegisterMetaType<Status>();
 
@@ -158,24 +158,30 @@ namespace Mpris1
 	}
 
 	void PlayerHandler::Pause() {
+
+		PlayerEngine* player = container->getActivePlayer();
 		player->slotPause();
 	}
 
 	void PlayerHandler::Play() {
 		puts("TODO: keep random here!");
+		PlayerEngine* player = container->getActivePlayer();
 		player->slotPlay();
 	}
 
 	void PlayerHandler::PlayPause() {
+		PlayerEngine* player = container->getActivePlayer();
 		player->slotPause();
 	}
 
 	void PlayerHandler::Next() {
 		puts("TODO: keep random here!");
+		PlayerEngine* player = container->getActivePlayer();
 		player->slotForward(false, NULL);
 	}
 
 	void PlayerHandler::Prev() {
+		PlayerEngine* player = container->getActivePlayer();
 		player->slotBackward();
 	}
 
@@ -207,6 +213,7 @@ namespace Mpris1
 	int PlayerHandler::PositionGet()
 	{
 		// return position in milliseconds
+		PlayerEngine* player = container->getActivePlayer();
 		return player->getCurrentTime() * 1000.0f; // TODO: more precise?
 	}
 
@@ -220,6 +227,7 @@ namespace Mpris1
 
 	void PlayerHandler::Stop()
 	{
+		PlayerEngine* player = container->getActivePlayer();
 		player->slotStop();
 //	The::engineController()->stop();
 	}
@@ -299,6 +307,8 @@ namespace Mpris1
 
     //note: track does not support first_played yet
 		QVariantMap map;
+
+		PlayerEngine* player = container->getActivePlayer();
 
 		if( ! player->getCurSongItem() ) {
 			puts("Play a song man!");

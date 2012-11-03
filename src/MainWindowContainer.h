@@ -25,6 +25,7 @@
 #include <QList>
 #include <QSystemTrayIcon>
 class MainWindow;
+class PlayerEngine;
 
 class MainWindowContainer : public QObject
 {
@@ -41,6 +42,8 @@ private slots:
 public:
 	MainWindowContainer();
 	inline ~MainWindowContainer() { deleteAll(); }
+
+	PlayerEngine* getActivePlayer();
 
 public slots:
 	MainWindow* openNewWindow();
