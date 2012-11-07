@@ -62,7 +62,7 @@ void MainWindowContainer::deleteAll()
 MainWindow* MainWindowContainer::openNewWindow()
 {
 	const QString fileName = QFileDialog::getOpenFileName(NULL, "Choose database to open");
-	return openNewWindow(fileName);
+	return fileName.isEmpty() ? NULL : openNewWindow(fileName);
 }
 
 MainWindow* MainWindowContainer::openNewWindow(const QString& fileName)

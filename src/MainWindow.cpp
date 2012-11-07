@@ -123,23 +123,47 @@ void MainWindow::initButton2 (enum BTN2 btn2No, const char* slotName /*, const c
 
 void MainWindow::onSetStatus(STATUS_FLAGS new_status)
 {
+	printf("New Status: %d\n", (int)new_status);
 	switch(new_status)
 	{
 		case PlayerEngine::STATUS_PLAYING:
 			buttons1[BTN1_PLAY].setDisabled(true);
 			buttons1[BTN1_STOP].setEnabled(true);
 			buttons1[BTN1_PAUSE].setEnabled(true);
-			if(toolBox->currentIndex() == TOOLBOX_METAINFO) {
-				slotToolBoxChanged(TOOLBOX_METAINFO);
-			}
 			break;
 		case PlayerEngine::STATUS_SONGOVER:
-			if(time_to_stop == 0 || time_to_stop > time(NULL))
-			 slotForward();
-			else
-			 slotStop();
+			buttons1[BTN1_STOP].setDisabled(true);
+			buttons1[BTN1_PLAY].setEnabled(true);
+			buttons1[BTN1_PAUSE].setDisabled(true);
+			slotForward(); // load next song (but do not play it, maybe)
 			break;
+		case PlayerEngine::STATUS_SONGLOADED:
+			/*if( stopButtonMenu.actions().at(1)->isChecked() )
+			{
+				if(time_to_stop != 0 && time_to_stop <= time(NULL))
+				 { time_to_stop = 0; }
+				else
+				 time_to_stop =
+			}*/
+			printf("tts: %d\n",time_to_stop);
+			if(time_to_stop != 0 && time_to_stop <= time(NULL))
+			{
+				player.slotStop();
+			}
+			else
+			{
+				if( stopButtonMenu.actions().at(1)->isChecked() )
+				 time_to_stop = time(NULL);
+
+				if(toolBox->currentIndex() == TOOLBOX_METAINFO) {
+					slotToolBoxChanged(TOOLBOX_METAINFO);
+				}
+				player.slotStartPlayback();
+			}
+			break; // this break is important against concurrency...
 		case PlayerEngine::STATUS_STOPPED:
+			if(time_to_stop != 0 && time_to_stop <= time(NULL))
+			 time_to_stop = 0; // do nothing, but allow next song to be played
 			buttons1[BTN1_STOP].setDisabled(true);
 		case PlayerEngine::STATUS_PAUSED:
 			buttons1[BTN1_PLAY].setEnabled(true);
@@ -252,7 +276,8 @@ void MainWindow::slotFileCloseAction () {
 	close();
 }
 
-void MainWindow::slotHelpAboutAction () {
+void MainWindow::slotHelpAboutAction ()
+{
 	QMessageBox::about ( NULL, "About - LoQuality",
 				"<h1>LoQuality</h1>"
 				"<i>(c) 2010-2012</i><br/>"
@@ -265,7 +290,8 @@ void MainWindow::slotHelpAboutQtAction () {
 	QMessageBox::aboutQt ( NULL, tr("About - Qt") );
 }
 
-void MainWindow::slotFilterChanged ( const QString & text ) {
+void MainWindow::slotFilterChanged ( const QString & text )
+{
 	QList<QTableWidgetItem*> visItems = tableWidget.findItems(text, Qt::MatchContains);
 	QBitArray hiddenArray(tableWidget.rowCount(), true);
 	int filterCount = 0;
@@ -327,7 +353,7 @@ void MainWindow::slotToolBoxChanged(int newIndex)
 				loadImageSafely(&tmpImage,chosen_image.toAscii().data());
 				printf("size: %d\n",tmpImage.height());
 				imageLabel.setPixmap(QPixmap::fromImage(tmpImage.scaledToHeight(300)));
-				imageLabel.resize(tmpImage.size());
+				//imageLabel.resize(tmpImage.height()+1, tmpImage.width()+1);
 				printf("size: %d\n",tmpImage.height());
 				/*imageLabel.adjustSize();
 				imageLabel.show();
@@ -335,6 +361,8 @@ void MainWindow::slotToolBoxChanged(int newIndex)
 				informationBox.update();*/
 
 			}
+
+			mainSplitter.setSizes(mainSplitter.sizes()); // update splitter
 		}
 		else
 		 imageLabel.clear();
@@ -494,6 +522,8 @@ void MainWindow::layoutWidgets(bool mobile)
 		verticalLayout.addWidget(&mainSplitter, 1);
 		mainSplitter.addWidget(toolBox);
 		mainSplitter.addWidget(&tableWidget);
+		//mainSplitter.setStretchFactor(0, 1);
+		//mainSplitter.setStretchFactor(1, 0);
 	}
 
 	/*
@@ -578,7 +608,7 @@ MainWindow::MainWindow (MainWindowContainer* _mwContainer, const QString& dbname
 	verticalLayout(&centralWidget),
 	mobileTab(NULL),
 
-	mainSplitter(Qt::Vertical, (mobile)?(NULL):&centralWidget),
+	mainSplitter(Qt::Horizontal, (mobile)?(NULL):&centralWidget),
 
 	toolBox(new QToolBox(&mainSplitter)),
 	infoActionDownload(this),
@@ -594,6 +624,18 @@ MainWindow::MainWindow (MainWindowContainer* _mwContainer, const QString& dbname
 	statusBar(this)
 
 {
+	{
+		QString windowTitle = dbname;
+		windowTitle.replace('_', ' ');
+		bool lastWasSpace = true;
+		for(int i = 0; i<windowTitle.size(); i++)
+		{
+			if( lastWasSpace )
+			 windowTitle[i] = windowTitle[i].toUpper();
+			lastWasSpace = (windowTitle[i] == ' ');
+		}
+		setWindowTitle(windowTitle);
+	}
 	layoutWidgets(mobile);
 	/*
 		MENU BAR

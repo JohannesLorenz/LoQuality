@@ -46,25 +46,39 @@ class PlayerEngine : public QObject
 			STATUS_STOPPED,
 			STATUS_PLAYING,
 			STATUS_SONGOVER,
+			STATUS_SONGLOADED,
 			STATUS_PAUSED
 		};
 	private:
 		void switchPause();
+		void exit_illegal_state(const char* action);
+	private slots:
+		void slotTimerTimeout();
 
 	public slots:
-		//! @param item the table widget item containing the full path
+		//! Loads (but does not play) a song
 		void slotPlay(/*bool random, const QTableWidgetItem* item*/);
+		//! Pauses or unpauses a song
 		void slotPause();
+		//! Stops a song, forgetting its position
 		void slotStop();
+		//! Plays previously played song
 		void slotBackward();
-
-		//! @param item the table widget item containing the full path
+		/**
+			Loads (but does not play) the "next" song.
+			@param random Whether playlist is in random mode.
+			@param item The table widget item containing the full path
+			 of the song the user wants to play (or NULL).
+			@param forcePlay Play even if we are in STATUS_STOPPED.
+		*/
 		void slotForward(bool random, const QTableWidgetItem* item, bool forcePlay=false);
 
-		void slotAddFile();
-		void slotRemoveSong();
+		//! Finally, plays a loaded song. Internal only: continues a paused song
+		void slotStartPlayback();
+
+		void slotAddFile(); //!< unimplemented
+		void slotRemoveSong(); //!< unimplemented
 		
-		void slotTimerTimeout();
 		/**
 		 * Asks MPlayer to set the volume to a specified value
 		 * @param newValue Volume percentage (range 0 to 100) for new value
@@ -86,10 +100,6 @@ class PlayerEngine : public QObject
 
 		//! (de)activates buttons depending on player_status variable
 		void setStatus(STATUS_FLAGS new_status);
-
-		//! finally, really starts the song! (does all the MPlayer communication, independent of our song playlist)
-		//! note that you need to set curSong to the song you want to play next before calling this function
-		void startSong();
 		
 	signals:
 		//! is emitted when the status of the player has changed. see STATUS_FLAGS enum.

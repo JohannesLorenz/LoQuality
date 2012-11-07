@@ -36,13 +36,16 @@ bool UpdateDlg::readOutputToItems(int output)
 	char data[2];
 	data[1] = 0;
 	bool space_read = false;
-	while(read(output, data, 1)>0) {
-		if(data[0] == '\n') {
+	while(read(output, data, 1)>0)
+	{
+		if(data[0] == '\n')
+		{
 			commitOverview.addItem(cur_line);
 			cur_line.clear();
 			space_read = false;
 		}
-		else {
+		else
+		{
 			if(space_read)
 			 cur_line.append(data[0]);
 			if(data[0] == ' ')
@@ -57,8 +60,8 @@ bool UpdateDlg::readOutputToItems(int output)
 	return (commitOverview.count() != 0);
 }
 
-void UpdateDlg::fetchHeader() {
-
+void UpdateDlg::fetchHeader()
+{
 	gits_pid=fork();
 	if(gits_pid < 0) {
 		QMessageBox::information(NULL, "Sorry...", "... fork() ging nicht, kein git!");
@@ -82,7 +85,8 @@ void UpdateDlg::fetchHeader() {
 //	system("git fetch origin");
 }
 
-int UpdateDlg::getDiffLogs() {
+int UpdateDlg::getDiffLogs()
+{
 	int pipefd[2];
 	int output;
 	if (pipe(pipefd) == -1) {
@@ -96,8 +100,8 @@ int UpdateDlg::getDiffLogs() {
 		QMessageBox::information(NULL, "Sorry...", "... fork() ging nicht, kein git!");
 		return -1;
 	}
-	else if(gits_pid == 0) {
-
+	else if(gits_pid == 0)
+	{
 		::close(pipefd[0]); /* Close unused read end */
 		dup2(pipefd[1], STDOUT_FILENO);
 
@@ -106,7 +110,8 @@ int UpdateDlg::getDiffLogs() {
 		::close(pipefd[1]); /* Reader will see EOF */
 		exit(0);
 	}
-	else {
+	else
+	{
 		::close(pipefd[1]); /* Close unused write end */
 		output = pipefd[0];
 
@@ -127,7 +132,8 @@ void UpdateDlg::fetchItems()
 	fetchHeader();
 }
 
-void UpdateDlg::buttonYesPressed() {
+void UpdateDlg::buttonYesPressed()
+{
 	QMessageBox::warning(this, "Starting update",
 		"I will start downloading the updates now. Please "
 		"do not do anything meanwhile - wait until I'll come up with "
@@ -146,7 +152,8 @@ void UpdateDlg::buttonYesPressed() {
 		QMessageBox::information(NULL, "Sorry...", "... fork() ging nicht, kein update!");
 		return;
 	}
-	else if(sh_pid == 0) {
+	else if(sh_pid == 0)
+	{
 		char ppid_str[16];
 		snprintf(ppid_str, 16, "%d", getppid());
 		execlp("xterm", "xterm", "-title", "LoQuality updater","-e",
@@ -162,8 +169,8 @@ void UpdateDlg::retranslateUi()
 	noButton.setText("Close this window");
 }
 
-void UpdateDlg::setupUi() {
-
+void UpdateDlg::setupUi()
+{
 //	resize(600, 425);
 
 	/*
@@ -190,7 +197,8 @@ void UpdateDlg::setupUi() {
 
 void UpdateDlg::slotTimerTimeout()
 {
-	if( 0 != waitpid(gits_pid, NULL, WNOHANG) ) { // wait for ffmpeg to finish
+	if( 0 != waitpid(gits_pid, NULL, WNOHANG) )
+	{ // wait for git to finish
 		timer.stop();
 		progressDlg->cancel();
 		progressDlg=NULL;
@@ -206,7 +214,8 @@ void UpdateDlg::slotTimerTimeout()
 			{
 				const bool updatesFound = readOutputToItems(output_fd);
 				::close(output_fd);
-				if(!updatesFound) {
+				if(!updatesFound)
+				{
 					QMessageBox::information(NULL, "No updates found", "LoQuality is up to date :) "
 						"Thank you for keeping an eye on it, still!");
 					yesButton.setDisabled(true);
@@ -245,7 +254,8 @@ UpdateDlg::UpdateDlg() :
 
 }
 
-void UpdateDlg::autoCheckForUpdates() {
+void UpdateDlg::autoCheckForUpdates()
+{
 	QDateTime time_now = QDateTime::currentDateTime();
 	QDateTime last_start =
 	globals::settings->value("last_start", QDateTime(QDate(0,0,0))).toDateTime();
@@ -253,11 +263,11 @@ void UpdateDlg::autoCheckForUpdates() {
 	int update_interval =
 		globals::settings->value("update_interval_days", 1).toInt();
 
-	if(do_updates && last_start.daysTo(time_now) >= update_interval) {
+	if(do_updates && last_start.daysTo(time_now) >= update_interval)
+	{
 		UpdateDlg u;
 		u.show();
 		u.exec();
 	}
-
 }
 

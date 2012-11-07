@@ -34,8 +34,10 @@
 
 #define _MPLAYER_REMOTE_PIPE "/tmp/lq_remote_pipe"
 
-inline void exit_illegal_state() {
+void PlayerEngine::exit_illegal_state(const char* action) {
 	fputs("ERROR: illegal button input in current state\n", stderr);
+	fprintf(stderr, "Current state: %d, action: %s\n",
+		(int)player_status, action);
 	exit(1);
 }
 
@@ -49,37 +51,50 @@ void PlayerEngine::setStatus(STATUS_FLAGS new_status) {
 */
 void PlayerEngine::slotPlay(/*bool random, const QTableWidgetItem* item*/)
 {
+	puts("slotPlay()");
 	if(!curSong) {
 		slotForward(0,0, true);
 	}
 	else
 	{
 		// error: STATUS_PLAYING here after songover
-		switch(player_status) {
+		switch(player_status)
+		{
 			case STATUS_PAUSED:
-				mPlayerConnection.pass_remote_command("pause\n"); break;
+				slotStartPlayback();
+				break;
 			case STATUS_STOPPED:
-			case STATUS_SONGOVER:
-				startSong(); break;
-			default: exit_illegal_state();
+				// => we assume that LQ is stopped at the track you want to play next
+			case STATUS_SONGOVER: // => this seams buggy to me...
+				setStatus(STATUS_SONGLOADED); break;
+			default: exit_illegal_state("slotPlay()");
 		}
-		songTimer.start();
-		setStatus(STATUS_PLAYING);
+		//songTimer.start();
+		//setStatus(STATUS_SONGLOADED);
 	}
 }
 
-void PlayerEngine::slotPause() {
-	switch(player_status) {
+void PlayerEngine::slotPause()
+{
+	puts("slotPause()");
+	switch(player_status)
+	{
 		case STATUS_PAUSED:
-			songTimer.start(); setStatus(STATUS_PLAYING); break;
+			slotStartPlayback();
+			break;
 		case STATUS_PLAYING:
-			songTimer.stop(); setStatus(STATUS_PAUSED); break;
-		default: exit_illegal_state();
+			songTimer.stop();
+			setStatus(STATUS_PAUSED);
+			mPlayerConnection.pass_remote_command("pause\n");
+			break;
+		default: exit_illegal_state("slotPause()");
 	}
-	mPlayerConnection.pass_remote_command("pause\n");
 }
 
-void PlayerEngine::slotStop() {
+void PlayerEngine::slotStop()
+{
+	puts("slotStop()");
+	printf("status: %d\n",(int)player_status);
 	if(player_status == STATUS_PAUSED)
 	 mPlayerConnection.pass_remote_command("pause\n");
 	mPlayerConnection.pass_remote_command("stop\n");
@@ -89,20 +104,29 @@ void PlayerEngine::slotStop() {
 	emit signalUpdatePlaytime(100);
 }
 
-void PlayerEngine::startSong()
+void PlayerEngine::slotStartPlayback()
 {
-	mPlayerConnection.pass_remote_command((QString("loadfile \"%1\"\n").arg(curSong->text()).toAscii().data()));
+	puts("slotStartPlayback()");
+	switch(player_status)
+	{
+		case STATUS_SONGLOADED:
+			mPlayerConnection.pass_remote_command((QString("loadfile \"%1\"\n").arg(curSong->text()).toAscii().data()));
+			playTime = mPlayerConnection.fetchValue("get_time_length\n", "ANS_LENGTH=", true).toFloat();
+			curTime = 0.0f;
+			break;
+		case STATUS_PAUSED:
+			mPlayerConnection.pass_remote_command("pause\n");
+			break;
+		default:
+			exit_illegal_state("slotStartPlayback()");
+	}
 	setStatus(STATUS_PLAYING);
-
-	playTime = 0.0f;
-	playTime = mPlayerConnection.fetchValue("get_time_length\n", "ANS_LENGTH=", true).toFloat();
-	curTime = 0.0f;
 	songTimer.start();
 }
 
 void PlayerEngine::slotForward(bool random, const QTableWidgetItem* item, bool forcePlay)
 {
-
+	puts("slotForward()");
 	if(player_status == STATUS_PAUSED)
 	 mPlayerConnection.pass_remote_command("pause\n"); // unpause song
 	mPlayerConnection.pass_remote_command("stop\n");
@@ -162,7 +186,7 @@ void PlayerEngine::slotForward(bool random, const QTableWidgetItem* item, bool f
 	table->selectRow(curSong->row());
 
 	if(forcePlay || player_status != STATUS_STOPPED)
-	 startSong();
+	 setStatus(STATUS_SONGLOADED);
 }
 
 void PlayerEngine::slotBackward()
@@ -182,7 +206,7 @@ void PlayerEngine::slotBackward()
 		table->selectRow(curSong->row());
 
 		if(player_status != STATUS_STOPPED)
-		 startSong();
+		 setStatus(STATUS_SONGLOADED);
 	}
 }
 
@@ -194,13 +218,15 @@ void PlayerEngine::slotRemoveSong() {
 
 }
 
-void PlayerEngine::slotChangeVolume (int newValue) {
+void PlayerEngine::slotChangeVolume (int newValue)
+{
 	char remote_command[32];
 	sprintf(remote_command, "volume %f 100\n", (float)newValue);
 	mPlayerConnection.pass_remote_command(remote_command);
 }
 
-void PlayerEngine::slotTimerTimeout() {
+void PlayerEngine::slotTimerTimeout()
+{
 	curTime += 1.0f;
 	printf("playTime: %f, curTime: %f\n",playTime, curTime);
 	emit signalUpdatePlaytime((int)(100.0f * curTime/playTime));
