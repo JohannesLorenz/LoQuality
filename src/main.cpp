@@ -100,19 +100,34 @@ int main(int argc, char** argv)
 	try {
 		DBusConnector dbus_connector;
 
-		// start program
+		/*
+			Initialize Options
+		*/
 		globals::settings = new QSettings();
-		SettingsReader settingsReader;
+		SettingsReader settingsReader; // checks integrity of globals::settings
+
+		globals::private_db = new SqlHelper("privatedb"); // TODO: filename!!!
 
 		const QString main_database = (globals::settings->value("main_database", "musicdb").toString());
 
+		/*
+			Initialize MainWindows
+		*/
 		MainWindowContainer mwContainer;
 		mwContainer.openNewWindow(main_database);
 
 		// dbus_connector shall for now only be connected to the first main window
 		dbus_connector.start(&mwContainer);
 
+		/*
+			Run
+		*/
 		return_value = app.exec();
+
+		/*
+			Cleanups
+		*/
+		delete globals::private_db;
 		delete globals::settings;
 
 	} catch (std::exception e) {

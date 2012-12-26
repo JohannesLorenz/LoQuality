@@ -29,12 +29,13 @@
 class QSqlQuery;
 class QString;
 
-class SqlHelper
+//! Generic helper class for sql commands
+class SqlHelperBase
 {
 	private:
 		static int dbs_open;
-		QSqlDatabase db;
-		mutable MPlayerConnection* mPlayerConnection;
+	protected:
+		QSqlDatabase db; // todo: should be private...
 
 		bool table_exists(const char* table_name) const;
 
@@ -45,14 +46,29 @@ class SqlHelper
 		*/
 		static QString corr(const QString& originalString);
 
-		SqlHelper(const QString &dbname);
-		inline ~SqlHelper() { db.close(); }
+		SqlHelperBase(const QString &dbname);
+		inline ~SqlHelperBase() { db.close(); }
 
-		void inform(QSqlQuery* new_query)
+	/*	void inform(QSqlQuery* new_query)
 		{
 			Q_UNUSED( new_query );
 		//	queries.push_back( new_query );
+		}*/
+
+		inline QSqlQuery exec(const QString & query ) const {
+			return db.exec(query);
 		}
+};
+
+//! Helper class for song databases
+class SqlHelper : public SqlHelperBase
+{
+	private:
+		mutable MPlayerConnection* mPlayerConnection;
+
+	public:
+		SqlHelper(const QString &dbname);
+		inline ~SqlHelper() {}
 
 		//! execute the delete command on the whole database to remove
 		//! @param id id of the song which shall be deleted
@@ -63,7 +79,6 @@ class SqlHelper
 		void INSERT(const char* filepath, const char* url = "") const;
 
 		void CREATE_main(void) const;
-		void CREATE_images(void) const;
 
 		inline bool start_insert_sequence(void) const {
 			return ( mPlayerConnection = new MPlayerConnection(true) ) != NULL;
@@ -73,14 +88,30 @@ class SqlHelper
 			delete mPlayerConnection;
 		}
 
-		inline QSqlQuery exec(const QString & query ) const {
-			return db.exec(query);
-		}
-
 		MPlayerConnection* getMPlayerConnection() const {
 			return mPlayerConnection;
 		}
 
+};
+
+//! Helper class for private options
+class SqlHelperPrivateOptions : public SqlHelperBase
+{
+	public:
+		SqlHelperPrivateOptions(const QString &dbname);
+		inline ~SqlHelperPrivateOptions() {}
+
+		//! inserts url of opened file to database
+		//! @param url url to opened file
+		//! @param time_opened time the file was recently opened
+		//! (which is now if not given)
+		void INSERT(const char* url, time_t time_opened = time(NULL)) const;
+
+		//void CREATE_images(void) const;
+		void CREATE_opened_files(void) const
+		{
+			db.exec("CREATE TABLE opened_files ('url' varchar(255), 'last_opened' int);");
+		}
 };
 
 /*

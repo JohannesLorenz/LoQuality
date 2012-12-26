@@ -145,7 +145,7 @@ void MainWindow::onSetStatus(STATUS_FLAGS new_status)
 				else
 				 time_to_stop =
 			}*/
-			printf("tts: %d\n",time_to_stop);
+			printf("time to stop: %d\n", (int)time_to_stop);
 			if(time_to_stop != 0 && time_to_stop <= time(NULL))
 			{
 				player.slotStop();

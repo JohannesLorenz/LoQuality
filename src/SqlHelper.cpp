@@ -28,11 +28,13 @@
 #include "md5sum.h"
 #include "SqlHelper.h"
 
-int SqlHelper::dbs_open = 0;
+int SqlHelperBase::dbs_open = 0;
 
-SqlHelper::SqlHelper(const QString& dbname)
+SqlHelperBase::SqlHelperBase(const QString& dbname)
 {
 #ifdef USE_MYSQL
+	puts("NOT IMPLEMENTED YET!")
+	exit(99);
 	db = QSqlDatabase::addDatabase("QMYSQL");
 	db.setUserName("music");
 	db.setPassword("opensource");
@@ -75,7 +77,11 @@ SqlHelper::SqlHelper(const QString& dbname)
 		return;
 	}
 	dbs_open++;
+}
 
+SqlHelper::SqlHelper(const QString& dbname)
+	: SqlHelperBase(dbname)
+{
 #ifndef USE_MYSQL
 	// might need to create sqlite table...
 
@@ -87,7 +93,7 @@ SqlHelper::SqlHelper(const QString& dbname)
 #endif
 }
 
-QString SqlHelper::corr(const QString& originalString)
+QString SqlHelperBase::corr(const QString& originalString)
 {
 	QString result = originalString;
 	if(!result.isEmpty())
@@ -236,12 +242,12 @@ void SqlHelper::CREATE_main(void) const
 	);
 }
 
-void SqlHelper::CREATE_images(void) const
+/*void SqlHelper::CREATE_images(void) const
 {
 	db.exec("CREATE TABLE images ('url' varchar(255));");
-}
+}*/
 
-bool SqlHelper::table_exists(const char* table_name) const
+bool SqlHelperBase::table_exists(const char* table_name) const
 {
 	bool table_exists = false;
 	QSqlQuery query = db.exec("SELECT name FROM  sqlite_master WHERE type='table' ORDER BY name;");
@@ -255,5 +261,11 @@ bool SqlHelper::table_exists(const char* table_name) const
 
 	printf("Table exists? %d\n",(int)table_exists);
 	return table_exists;
+}
+
+void SqlHelperPrivateOptions::INSERT(const char* url, time_t time_opened) const
+{
+
+
 }
 

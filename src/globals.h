@@ -22,6 +22,7 @@
 #define GLOBALS_H
 
 #include <QSettings>
+class SqlHelper;
 
 namespace globals
 {
@@ -29,6 +30,7 @@ namespace globals
 	extern QString MPLAYER_EXE;
 	extern const char* LQ_VERSION;
 	extern QSettings* settings;
+	extern SqlHelper* private_db;
 }
 
 #endif // GLOBALS_H
