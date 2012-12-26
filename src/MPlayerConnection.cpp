@@ -134,7 +134,7 @@ MPlayerConnection::MPlayerConnection(bool nulldevice)
 		if(nulldevice)
 		 execlp(_MPLAYER_EXE, _MPLAYER_EXE, "-input", file_param, "-idle", "-msglevel", "all=-1:global=5", "-ao", "null", "-vo", "null", "-af", ("equalizer="+eq).toAscii().data(), NULL);
 		else
-		 execlp("mplayer2", "mplayer2", "-input", file_param, "-idle", "-msglevel", "all=-1:global=5", "-af", ("equalizer="+eq).toAscii().data(), NULL);
+		 execlp(_MPLAYER_EXE, _MPLAYER_EXE, "-input", file_param, "-idle", "-msglevel", "all=-1:global=5", "-vo", "null", "-af", ("equalizer="+eq).toAscii().data(), NULL);
 		delete[] file_param;
 
 		close(pipefd[1]); /* Reader will see EOF */
