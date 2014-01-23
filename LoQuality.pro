@@ -10,6 +10,7 @@ DEPENDPATH += . \
     QSQL
 INCLUDEPATH += . \
     QSQL
+LIBS += -ltag
 
 # Input
 HEADERS += src/AddEntries.h \
@@ -73,4 +74,5 @@ SOURCES += src/AddEntries.cpp \
     src/MainWindowContainer.cpp \
     src/PlaylistDownloader.cpp
 OTHER_FILES += TODO.txt \
-    TODO_LIST.txt
+    TODO_LIST.txt \
+    README.txt

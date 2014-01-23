@@ -28,6 +28,10 @@
 #include "md5sum.h"
 #include "SqlHelper.h"
 
+#include "taglib/tag.h"
+#include "taglib/fileref.h"
+#include "taglib/audioproperties.h"
+
 int SqlHelperBase::dbs_open = 0;
 
 SqlHelperBase::SqlHelperBase(const QString& dbname)
@@ -113,8 +117,8 @@ QString SqlHelperBase::corr(const QString& originalString)
 			result[result.length()-1] = '\'';
 		}
 	}
-	else
-	 result = "''";
+//	else
+//	 result = "''";
 	return result;
 }
 
@@ -125,8 +129,14 @@ void SqlHelper::DELETE(const int id) const
 	db.exec( QString("DELETE FROM 'main' WHERE `id`='%1'").arg(id) );
 }
 
-void SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NULL allowed?
+QString get_year(TagLib::Tag* t) {
+	unsigned int internal_year = t->year();
+	return internal_year ? QString::number(internal_year) : QString();
+}
+
+bool SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NULL allowed?
 {
+#if 0
 	if(mPlayerConnection == NULL)
 		return;
 
@@ -214,6 +224,104 @@ void SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 	if(!query.isValid()) {
 		fputs(query.lastError().text().toAscii().data(),stderr);
 	}
+#else
+	TagLib::FileRef fp(filepath);
+	if(fp.isNull()) {
+		printf("Warning: File not found.");
+		return false;
+	}
+	TagLib::Tag* tag = fp.tag();
+	TagLib::AudioProperties* audio_props = fp.audioProperties();
+
+	QString filename = filepath; // filename as SQL wants it
+	filename.replace('\'', "''");
+
+	QString metaTitle = corr( TStringToQString(tag->title()) );
+	printf("metaTitle: %s\n",metaTitle.toAscii().data());
+	if(metaTitle.isEmpty())
+	{
+		metaTitle = strrchr(filepath, QDir::separator().toAscii()) + 1;
+		metaTitle.resize(metaTitle.lastIndexOf('.')); // get rid of ending
+
+		/*
+			handle spaces
+		*/
+		metaTitle.replace('_', ' ');
+		bool lastWasSpace = true;
+		for(int i = 0; i<metaTitle.size(); i++)
+		{
+			if( lastWasSpace )
+			 metaTitle[i] = metaTitle[i].toUpper();
+			lastWasSpace = (metaTitle[i] == ' ');
+		}
+//		metaTitle.prepend('\'');
+//		metaTitle.append('\'');
+
+		metaTitle = corr(metaTitle);
+		printf("metaTitle now: %s\n",metaTitle.toAscii().data());
+	}
+
+	QByteArray md5sum;
+	calculate_md5sum(filepath, &md5sum);
+	QDateTime last_changed = QFileInfo(filepath).lastModified();
+
+	QString audio_codec = filename;
+	audio_codec.remove(0, audio_codec.lastIndexOf('.')+1);
+
+	printf("str: %s\n",QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad', 'last_changed', 'md5sum', 'url') "
+					  "VALUES ( NULL, '%1', '%2', '%3', '', '%4', '%5', '0', '0', '%6', '%7', '0', '0', '%8', '%9', '%10', '%11');")
+				 .arg(
+					metaTitle,
+					corr( TStringToQString(tag->artist()) ),
+					corr( TStringToQString(tag->album()) ),
+
+					corr( TStringToQString(tag->genre()) ),
+					get_year(tag),
+					// TODO: interest
+
+					audio_codec,
+					QString::number(audio_props->bitrate()),
+
+					filename,
+					md5sum.toHex().data()
+				).arg(
+					last_changed.toTime_t()
+				).arg(
+					url
+				).toAscii().data());
+
+	const QSqlQuery query = db.exec(
+	/*QString str =*/	QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad', 'last_changed', 'md5sum', 'url') "
+					  "VALUES ( NULL, '%1', '%2', '%3', '', '%4', '%5', '0', '0', '%6', '%7', '0', '0', '%8', '%9', '%10', '%11');")
+					.arg(
+						metaTitle,
+						corr( TStringToQString(tag->artist()) ),
+						corr( TStringToQString(tag->album()) ),
+
+						corr( TStringToQString(tag->genre()) ),
+						get_year(tag),
+						// TODO: interest
+
+						audio_codec,
+						QString::number(audio_props->bitrate()),
+
+						filename)
+					.arg(
+						last_changed.toTime_t()
+						)
+					.arg (
+						md5sum.toHex().data()
+					)
+					.arg (
+						corr(url)
+					)
+			);
+	if(!query.isValid()) {
+		fputs(query.lastError().text().toAscii().data(),stderr);
+	}
+
+	return true;
+#endif
 
 }
 

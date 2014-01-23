@@ -42,7 +42,8 @@ class SqlHelperBase
 	public:
 		/**
 			replaces all ' to \' in a string which begins and ends on '
-			beginning and end are not replaced.
+			beginning and end are not replaced, if they exist
+			there are no characters added or removed
 		*/
 		static QString corr(const QString& originalString);
 
@@ -76,7 +77,7 @@ class SqlHelper : public SqlHelperBase
 
 		//! executes the insert command on the whole database
 		//! @param argumentList list of values, each in single quotes (except NULL) and seperated by comma. e.g.: "'a', NULL , 'c'"
-		void INSERT(const char* filepath, const char* url = "") const;
+		bool INSERT(const char* filepath, const char* url = "") const;
 
 		void CREATE_main(void) const;
 

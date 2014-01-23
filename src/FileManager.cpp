@@ -42,10 +42,12 @@ bool FileManager::appendToItem(QTreeWidgetItem* parentItem, QDir* currentDir, QL
 	bool somethingNewHere = false;
 	QTreeWidgetItem* curItem = new QTreeWidgetItem( parentItem, QStringList() << currentDir->dirName() );
 	parentItem->addChild( curItem );
-	QList<QFileInfo> files = currentDir->entryInfoList(QDir::NoFilter, QDir::Name);
+	QList<QFileInfo> files = currentDir->entryInfoList((QDir::Filters)QDir::NoFilter ^ (QDir::Filters)QDir::NoSymLinks, QDir::Name);
 	for(QList<QFileInfo>::const_iterator itr = files.begin(); itr != files.end(); itr++)
 	{
 		if(itr->isDir()) {
+			printf("Dir: %s\n",itr->fileName().toAscii().data());
+
 			QString fileName = itr->fileName();
 			if( fileName != "." && fileName != ".." )
 			{
@@ -64,7 +66,7 @@ bool FileManager::appendToItem(QTreeWidgetItem* parentItem, QDir* currentDir, QL
 			if(suffix=="mp3" || suffix=="ogg" || suffix=="flac" || suffix=="wav" || suffix=="m4a" || suffix == "wma")
 			{
 
-				const QString absPath = itr->absoluteFilePath();
+				const QString absPath = itr->absolutePath();
 
 				// skip to next itr item >= this file, or the end
 				for(; dbItr.hasNext() && dbItr.peekNext() < absPath; dbItr.next()) ;

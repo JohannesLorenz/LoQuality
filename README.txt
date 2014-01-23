@@ -45,6 +45,7 @@ also be available in the Qt4 development package).
 For running LoQuality, you will need:
 * mplayer or mplayer2
 * ffmpeg for the flash downloader
+* taglib and its headers
 * youtube-dl and wget for the playlist downloader
   (youtube-dl must be the newest possible version)
 * ssh for the file syncher
