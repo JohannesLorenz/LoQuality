@@ -22,6 +22,7 @@
 #define _FILE_MANAGER_H_ _FILE_MANAGER_H_
 
 #include <QDialog>
+class QFileInfo;
 
 /*#include <QMap>
 #include <QToolBar>
@@ -39,7 +40,13 @@ class FileManager : public QDialog
 	private:
 		SqlHelper sqlhelper;
 		FileAddBase fileAddBase;
-		bool appendToItem(QTreeWidgetItem* parentItem, QDir* currentDir, QListIterator<QString> dbItr);
+
+	//	bool appendSingle(QTreeWidgetItem *curItem, QDir *currentDir, QList<QFileInfo>::const_iterator& itr, QListIterator<QString> &dbItr);
+
+		void sortOutUseless(QTreeWidgetItem *parentItem, QDir *currentDir, QListIterator<QString> dbItr, bool removeTokenDirs);
+		void appendAllDirectories(QTreeWidgetItem* parentItem, QDir* currentDir); // TODO: make currentDir const and copy each time (
+		void removeUnusedDirs(QTreeWidgetItem* parentItem, QDir* currentDir, QListIterator<QString> dbItr, bool removeTokenDirs);
+		bool appendToItem(QTreeWidgetItem* parentItem, QDir* currentDir, QListIterator<QString> dbItr, bool removeTokenDirs);
 	private slots:
 		void proceed();
 	public:
