@@ -43,10 +43,10 @@ class FileManager : public QDialog
 
 	//	bool appendSingle(QTreeWidgetItem *curItem, QDir *currentDir, QList<QFileInfo>::const_iterator& itr, QListIterator<QString> &dbItr);
 
-		void sortOutUseless(QTreeWidgetItem *parentItem, QDir *currentDir, QListIterator<QString> dbItr, bool removeTokenDirs);
+		void sortOutUseless(QTreeWidgetItem *parentItem, QDir *currentDir, QListIterator<QString> &dbItr, bool removeTokenDirs);
 		void appendAllDirectories(QTreeWidgetItem* parentItem, QDir* currentDir); // TODO: make currentDir const and copy each time (
-		void removeUnusedDirs(QTreeWidgetItem* parentItem, QDir* currentDir, QListIterator<QString> dbItr, bool removeTokenDirs);
-		bool appendToItem(QTreeWidgetItem* parentItem, QDir* currentDir, QListIterator<QString> dbItr, bool removeTokenDirs);
+		void removeUnusedDirs(QTreeWidgetItem* parentItem, QDir* currentDir, QListIterator<QString> &dbItr, bool removeTokenDirs);
+		bool appendToItem(QTreeWidgetItem* parentItem, QDir* currentDir, QListIterator<QString>& dbItr, bool removeTokenDirs);
 	private slots:
 		void proceed();
 	public:

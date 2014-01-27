@@ -92,22 +92,34 @@ bool FileManager::appendSingle(QTreeWidgetItem* curItem, QDir* currentDir, QList
  * file is useful <=> correct file ending
  * file is new <=> useful + time
  */
-void FileManager::sortOutUseless(QTreeWidgetItem *parentItem, QDir *currentDir, QListIterator<QString> dbItr, bool removeTokenDirs)
+void FileManager::sortOutUseless(QTreeWidgetItem *parentItem, QDir *currentDir, QListIterator<QString>& dbItr, bool removeTokenDirs)
 {
 	int useful_subdirs = 0, new_subdirs = 0, useful_files = 0, new_files = 0;
 
-	int nchilds = parentItem->childCount();
-	for(int i = 0; i < nchilds; i++)
+/*	for(int i = 0; i < nchilds; i++)
 	{
-		QTreeWidgetItem* curChild = parentItem->child(i);
+		QTreeWidgetItem* curChild = parentItem->child(i);*/
+		QTreeWidgetItem* curChild = parentItem;
 
+		int nchildren = parentItem->childCount();
+		printf("children: %d\n", nchildren);
+		for(int i = 0; i < nchildren; i++)
+		{
+			// directory exists => useful
+			useful_subdirs++;
+		//	if(curChild->data(0, Qt::UserRole).toBool() == true) // marked as new
+		//	 new_subdirs++;
+			if(!curChild->isDisabled())
+			 new_subdirs++;
+		}
+#if 0
 		// directory exists => useful
 		useful_subdirs++;
 	//	if(curChild->data(0, Qt::UserRole).toBool() == true) // marked as new
 	//	 new_subdirs++;
 		if(!curChild->isDisabled())
 		 new_subdirs++;
-
+#endif
 		// scan directory for files
 //		currentDir.cd(curChild->text());
 
@@ -124,12 +136,17 @@ void FileManager::sortOutUseless(QTreeWidgetItem *parentItem, QDir *currentDir, 
 			if(suffix=="mp3" || suffix=="ogg" || suffix=="flac" || suffix=="wav" || suffix=="m4a" || suffix == "wma")
 			{
 				useful_files++;
-				const QString absPath = itr->absolutePath();
+				const QString canPath = itr->canonicalFilePath();
 
 				// skip to next itr item >= this file, or the end
-				for(; dbItr.hasNext() && dbItr.peekNext() < absPath; dbItr.next()) ;
+				for(; dbItr.hasNext() && dbItr.peekNext() < canPath; dbItr.next()) {
+					printf("peek: %s\n", dbItr.peekNext().toAscii().data());
+				}
 
-				if( ! dbItr.hasNext() || dbItr.peekNext() > absPath ) {
+				if(dbItr.hasNext())
+				 printf("a: %s, b:%s\n", dbItr.peekNext().toAscii().data(), canPath.toAscii().data());
+
+				if( ! dbItr.hasNext() || dbItr.peekNext() > canPath ) {
 					new_files++;
 				}
 			}
@@ -137,7 +154,7 @@ void FileManager::sortOutUseless(QTreeWidgetItem *parentItem, QDir *currentDir, 
 
 //		currentDir->cdUp();
 
-	}
+//	}
 
 	printf("Dir %s=> usef files: %d, new files: %d, usef dirs: %d, new dirs: %d\n",
 		parentItem->text(0).toAscii().data(),
@@ -153,8 +170,9 @@ void FileManager::sortOutUseless(QTreeWidgetItem *parentItem, QDir *currentDir, 
 		printf("deleting: %s...\n", parentItem->text(0).toAscii().data());
 		// destructor will remove child automatically
 		// (src: Qt Docs, stackoverflow)
-		delete parentItem;
-		printf("deleting done.");
+	//	delete parentItem;
+		parentItem->setHidden(true);
+		printf("deleting done.\n");
 	}
 	else {
 		// not removed, but also no new files
@@ -190,7 +208,7 @@ void FileManager::appendAllDirectories(QTreeWidgetItem *parentItem, QDir *curren
 
 }
 
-void FileManager::removeUnusedDirs(QTreeWidgetItem *parentItem, QDir *currentDir, QListIterator<QString> dbItr, bool removeTokenDirs)
+void FileManager::removeUnusedDirs(QTreeWidgetItem *parentItem, QDir *currentDir, QListIterator<QString>& dbItr, bool removeTokenDirs)
 {
 	int nchilds = parentItem->childCount();
 	bool somethingImportant = false;
@@ -199,6 +217,7 @@ void FileManager::removeUnusedDirs(QTreeWidgetItem *parentItem, QDir *currentDir
 	for(int i = 0; i < nchilds; i++)
 	{
 		QTreeWidgetItem* curChild = parentItem->child(i);
+		printf("parent: %s, i: %d\n",parentItem->text(0).toAscii().data(),i);
 
 		currentDir->cd(curChild->text(0));
 
@@ -220,7 +239,7 @@ void FileManager::removeUnusedDirs(QTreeWidgetItem *parentItem, QDir *currentDir
 
 
 
-bool FileManager::appendToItem(QTreeWidgetItem* parentItem, QDir* currentDir, QListIterator<QString> dbItr, bool removeTokenDirs = true)
+bool FileManager::appendToItem(QTreeWidgetItem* parentItem, QDir* currentDir, QListIterator<QString> &dbItr, bool removeTokenDirs = true)
 {
 	appendAllDirectories(parentItem, currentDir);
 	removeUnusedDirs(parentItem, currentDir, dbItr, removeTokenDirs);

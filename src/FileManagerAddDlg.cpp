@@ -29,16 +29,18 @@
 
 void FileManagerAddDlg::grepNewFiles(const QTreeWidgetItem* parentItem, QDir* currentDir, QListWidget* listView, const QList<QString>* filesInDb)
 {
+	// files in this directory
 	if( parentItem->isSelected() ) {
 		QList<QFileInfo> files = currentDir->entryInfoList(QStringList() << "*.mp3" << "*.ogg" << "*.flac" << "*.wav" << "*.m4a" << "*.wma", QDir::Files);
 		QListIterator<QFileInfo> i(files);
 		while (i.hasNext()) {
 			QFileInfo curFileInfo = i.next();
-			if(! filesInDb->contains( curFileInfo.absoluteFilePath() ) )
-			 listView->addItem( curFileInfo.absoluteFilePath() );
+			if(! filesInDb->contains( curFileInfo.canonicalFilePath() ) )
+			 listView->addItem( curFileInfo.canonicalFilePath() );
 		}
 	}
 
+	// recurse
 	for(int i=0; i<parentItem->childCount(); i++)
 	{
 		currentDir->cd(parentItem->child(i)->text(0));
@@ -93,7 +95,7 @@ void FileManagerAddDlg::setupUi(void)
 void FileManagerAddDlg::slotBtnOk()
 {
 	const QList<QListWidgetItem *> itemsToAdd = listWidget.selectedItems();
-	QProgressDialog progressDlg("Frage Meta-Daten von MPlayer ab...", "Abbrechen", 0, listWidget.selectedItems().size(), this);
+	QProgressDialog progressDlg("Reading file tags...", "Abbrechen", 0, listWidget.selectedItems().size(), this);
 	progressDlg.setWindowModality(Qt::WindowModal);
 
 	sqlhelper.start_insert_sequence();
