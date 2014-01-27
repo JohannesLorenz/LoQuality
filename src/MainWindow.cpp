@@ -232,7 +232,7 @@ void MainWindow::slotBackward() {
 
 void MainWindow::slotAddFileChooser()
 {
-	FileManager fileManager(sqlhelper);
+	FileManagerWizard fileManager(sqlhelper);
 	fileManager.show();
 	fileManager.exec();
 	if(fileManager.isAnythingChanged())

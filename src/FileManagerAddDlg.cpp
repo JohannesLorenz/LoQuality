@@ -31,6 +31,7 @@ void FileManagerAddDlg::grepNewFiles(const QTreeWidgetItem* parentItem, QDir* cu
 {
 	// files in this directory
 	if( parentItem->isSelected() ) {
+		// TODO: make this a global function?
 		QList<QFileInfo> files = currentDir->entryInfoList(QStringList() << "*.mp3" << "*.ogg" << "*.flac" << "*.wav" << "*.m4a" << "*.wma", QDir::Files);
 		QListIterator<QFileInfo> i(files);
 		while (i.hasNext()) {

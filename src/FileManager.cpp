@@ -23,65 +23,22 @@
 #include <QListWidgetItem>
 #include <QLabel>
 
-/*#include <QDebug>
-
-#include <QString>
-#include <QSizePolicy>
 #include <QFileDialog>
-#include <QTextBrowser>
-*/
-
 #include <QSqlQuery>
 
 #include "globals.h"
 #include "FileManager.h"
 #include "SqlHelper.h"
 
-#if 0
-bool FileManager::appendSingle(QTreeWidgetItem* curItem, QDir* currentDir, QList<QFileInfo>::const_iterator& itr, QListIterator<QString>& dbItr)
+void WelcomePage::browse()
 {
-	bool somethingNewHere = false;
-	if(itr->isDir()) {
-		printf("Dir: %s\n",itr->fileName().toAscii().data());
+	QString directory = QFileDialog::getExistingDirectory(this,
+		tr("Select Music Root"), QDir::currentPath());
 
-		QString fileName = itr->fileName();
-		if( fileName != "." && fileName != ".." )
-		{
-			printf("cd %s\n",itr->fileName().toAscii().data());
-			currentDir->cd(fileName);
-			if( appendToItem(curItem, currentDir, dbItr) ) // <-- RECURSION HERE !
-			 somethingNewHere = true;
-			currentDir->cdUp();
-		}
+	if (!directory.isEmpty()) {
+		custom_path.setText(directory);
 	}
-	else {
-		/*
-		 * Note: this is not effective
-		 * Reason: Useless dirs are not, but dirs with "useless" subdirs are still added.
-		 * For the future, remove this, and search the tree upwards
-		 *  in order to remove useless items
-		 */
-
-		printf("File: %s\n",itr->fileName().toAscii().data());
-
-		const QString suffix = itr->suffix();
-		if(suffix=="mp3" || suffix=="ogg" || suffix=="flac" || suffix=="wav" || suffix=="m4a" || suffix == "wma")
-		{
-
-			const QString absPath = itr->absolutePath();
-
-			// skip to next itr item >= this file, or the end
-			for(; dbItr.hasNext() && dbItr.peekNext() < absPath; dbItr.next()) ;
-
-			if( ! dbItr.hasNext() || dbItr.peekNext() > absPath ) {
-				puts("->NEW!");
-				somethingNewHere = true;
-			}
-		}
-	}
-	return somethingNewHere;
 }
-#endif
 
 /*
  * item is useless <=> all subdirs useless and no useful files
@@ -92,95 +49,104 @@ bool FileManager::appendSingle(QTreeWidgetItem* curItem, QDir* currentDir, QList
  * file is useful <=> correct file ending
  * file is new <=> useful + time
  */
-void FileManager::sortOutUseless(QTreeWidgetItem *parentItem, QDir *currentDir, QListIterator<QString>& dbItr, bool removeTokenDirs)
+bool FileManager::suffix_is_music(const QString& suffix)
+{
+	// TODO: in these 2 functions, use QStringList::contains, it is faster and case sensitive
+	// get the QStringlist from a global function, together with: FileManagerAddDlg, line 34
+	return (suffix=="mp3" || suffix=="ogg" || suffix=="flac" || suffix=="wav" || suffix=="m4a" || suffix == "wma");
+}
+
+bool FileManager::suffix_is_video(const QString &suffix)
+{
+	return (suffix=="mp4" || suffix=="wma" || suffix=="flv" || suffix=="avi" || suffix=="mpg" || suffix == "mpeg");
+}
+
+bool FileManager::suffix_matches(const QString& suffix)
+{
+	const bool type_is_music = field("type_is_music").toBool();
+	return type_is_music ? suffix_is_music(suffix) : suffix_is_video(suffix);
+}
+
+void FileManager::sortOutUseless(QTreeWidgetItem *parentItem, QDir *currentDir, QListIterator<QString>& dbItr)
 {
 	int useful_subdirs = 0, new_subdirs = 0, useful_files = 0, new_files = 0;
+	const bool removeTokenDirs = !(field("show_token_dirs").toBool());
 
-/*	for(int i = 0; i < nchilds; i++)
+	// scan subdirs
+	int nchildren = parentItem->childCount();
+	for(int i = 0; i < nchildren; i++)
 	{
-		QTreeWidgetItem* curChild = parentItem->child(i);*/
-		QTreeWidgetItem* curChild = parentItem;
-
-		int nchildren = parentItem->childCount();
-		printf("children: %d\n", nchildren);
-		for(int i = 0; i < nchildren; i++)
-		{
-			// directory exists => useful
-			useful_subdirs++;
-		//	if(curChild->data(0, Qt::UserRole).toBool() == true) // marked as new
-		//	 new_subdirs++;
-			if(!curChild->isDisabled())
-			 new_subdirs++;
-		}
-#if 0
 		// directory exists => useful
+		QTreeWidgetItem* curChild = parentItem->child(i);
+
 		useful_subdirs++;
-	//	if(curChild->data(0, Qt::UserRole).toBool() == true) // marked as new
-	//	 new_subdirs++;
 		if(!curChild->isDisabled())
 		 new_subdirs++;
-#endif
-		// scan directory for files
-//		currentDir.cd(curChild->text());
+	}
 
-//		printf("current Dir: %s, current child: %s\n", currentDir->canonicalPath().toAscii().data(), curChild->text(0).toAscii().data());
-//		currentDir->cd(curChild->text(0));
-		printf("current Dir now: %s\n", currentDir->canonicalPath().toAscii().data());
-		QList<QFileInfo> files = currentDir->entryInfoList((QDir::Filters)QDir::NoFilter ^ (QDir::Filters)QDir::NoSymLinks, QDir::Name);
-		for(QList<QFileInfo>::const_iterator itr = files.begin(); itr != files.end(); itr++)
-		if(!itr->isDir())
+	// scan contained files
+	QList<QFileInfo> files = currentDir->entryInfoList((QDir::Filters)QDir::NoFilter ^ (QDir::Filters)QDir::NoSymLinks, QDir::Name);
+	for(QList<QFileInfo>::const_iterator itr = files.begin(); itr != files.end(); itr++)
+	if(!itr->isDir())
+	{
+		printf("File: %s\n",itr->fileName().toAscii().data());
+
+		const QString suffix = itr->suffix();
+		if(suffix_matches(suffix))
 		{
-			printf("File: %s\n",itr->fileName().toAscii().data());
+			useful_files++;
+			const QString canPath = itr->canonicalFilePath();
 
-			const QString suffix = itr->suffix();
-			if(suffix=="mp3" || suffix=="ogg" || suffix=="flac" || suffix=="wav" || suffix=="m4a" || suffix == "wma")
-			{
-				useful_files++;
-				const QString canPath = itr->canonicalFilePath();
+			// skip to next itr item >= this file, or the end
+			for(; dbItr.hasNext() && dbItr.peekNext() < canPath; dbItr.next()) {
+				printf("peek: %s\n", dbItr.peekNext().toAscii().data());
+			}
 
-				// skip to next itr item >= this file, or the end
-				for(; dbItr.hasNext() && dbItr.peekNext() < canPath; dbItr.next()) {
-					printf("peek: %s\n", dbItr.peekNext().toAscii().data());
-				}
+			if(dbItr.hasNext())
+			 printf("a: %s, b:%s\n", dbItr.peekNext().toAscii().data(), canPath.toAscii().data());
 
-				if(dbItr.hasNext())
-				 printf("a: %s, b:%s\n", dbItr.peekNext().toAscii().data(), canPath.toAscii().data());
-
-				if( ! dbItr.hasNext() || dbItr.peekNext() > canPath ) {
-					new_files++;
-				}
+			if( ! dbItr.hasNext() || dbItr.peekNext() > canPath ) {
+				new_files++;
 			}
 		}
+	}
 
-//		currentDir->cdUp();
-
-//	}
 
 	printf("Dir %s=> usef files: %d, new files: %d, usef dirs: %d, new dirs: %d\n",
 		parentItem->text(0).toAscii().data(),
 		useful_files, new_files, useful_subdirs, new_subdirs);
 
+	// mark this directory correctly
 	if(new_files || new_subdirs) {
-		parentItem->setForeground(0, QColor("blue")); // TODO: colors only to decide between (in db) and (not in db)
-	//	parentItem->setData(0, Qt::UserRole, QVariant(true)); // marked as new
+		// contains new files
+		parentItem->setForeground(0, QColor("blue"));
 	}
 	else if(removeTokenDirs || !useful_files) {
-	//	parentItem->treeWidget()->removeItemWidget(parentItem);
-//		parentItem->parent()->removeChild(parentItem); // this looks crazy...
-		printf("deleting: %s...\n", parentItem->text(0).toAscii().data());
-		// destructor will remove child automatically
-		// (src: Qt Docs, stackoverflow)
-	//	delete parentItem;
+		// should be hidden
+		parentItem->setDisabled(true);
 		parentItem->setHidden(true);
-		printf("deleting done.\n");
 	}
 	else {
 		// not removed, but also no new files
-		printf("Dir %s: disabled!\n",currentDir->dirName().toAscii().data());
 		parentItem->setDisabled(true);
-	//	parentItem->setData(1, Qt::UserRole, QVariant(true)); // marked as new
 	}
 
+	const int& displayed_dirs = removeTokenDirs ? new_subdirs : useful_subdirs;
+	const int& imaginary_files = removeTokenDirs ? new_files : useful_files;
+	if(!imaginary_files && displayed_dirs == 1)
+	{
+		QTreeWidgetItem* only_displayed = NULL;
+
+		for(int i = 0; i < nchildren && (only_displayed == NULL); i++)
+		 if(!parentItem->child(i)->isHidden())
+		  only_displayed = parentItem->child(i);
+
+		if(!only_displayed)
+		 exit(98); // TODO... use catch/throw or at least assert
+
+		parentItem->setText(0, parentItem->text(0) + QDir::separator() + only_displayed->text(0));
+		only_displayed->setHidden(true);
+	}
 }
 
 void FileManager::appendAllDirectories(QTreeWidgetItem *parentItem, QDir *currentDir)
@@ -193,96 +159,40 @@ void FileManager::appendAllDirectories(QTreeWidgetItem *parentItem, QDir *curren
 		if(itr->isDir())
 		{
 			QString fileName = itr->fileName();
-		//	if( fileName != "." && fileName != ".." )
-			{
-				printf("cd %s\n",itr->fileName().toAscii().data());
-				currentDir->cd(fileName);
-				appendAllDirectories(curItem, currentDir); // recursion
-				//if( appendAllDirectories(curItem, currentDir, dbItr) ) // <-- RECURSION HERE !
-				// somethingNewHere = true;
-				currentDir->cdUp();
-			}
-		}
 
+			currentDir->cd(fileName);
+			appendAllDirectories(curItem, currentDir); // recursion
+			currentDir->cdUp();
+		}
 	}
 
 }
 
-void FileManager::removeUnusedDirs(QTreeWidgetItem *parentItem, QDir *currentDir, QListIterator<QString>& dbItr, bool removeTokenDirs)
+void FileManager::removeUnusedDirs(QTreeWidgetItem *parentItem, QDir *currentDir, QListIterator<QString>& dbItr)
 {
 	int nchilds = parentItem->childCount();
-	bool somethingImportant = false;
-	printf("parent: %s\n", parentItem->text(0).toAscii().data());
-	// first traverse the children
+
+	// recursion loop
 	for(int i = 0; i < nchilds; i++)
 	{
 		QTreeWidgetItem* curChild = parentItem->child(i);
-		printf("parent: %s, i: %d\n",parentItem->text(0).toAscii().data(),i);
-
+		printf("before recursion: %s\n", currentDir->canonicalPath().toAscii().data());
 		currentDir->cd(curChild->text(0));
-
-		removeUnusedDirs(curChild, currentDir, dbItr, removeTokenDirs); // recursion
-		printf("child: %s\n", curChild->text(0).toAscii().data());
-		sortOutUseless(curChild, currentDir, dbItr, removeTokenDirs);
-
+		printf("recursion: %s\n", currentDir->canonicalPath().toAscii().data());
+		removeUnusedDirs(curChild, currentDir, dbItr); // recursion
 		currentDir->cdUp();
-
-		/*if(itemIsUseless(curChild, removeTokenDirs))
-		{
-			parentItem->removeChild(curChild); // TODO: call delete?
-			delete curChild;
-		}*/
-		//removeUnusedDirs(curChild); // recursion
 	}
-
+	printf("recursion: end: %s\n", currentDir->canonicalPath().toAscii().data());
+	sortOutUseless(parentItem, currentDir, dbItr);
 }
 
 
 
-bool FileManager::appendToItem(QTreeWidgetItem* parentItem, QDir* currentDir, QListIterator<QString> &dbItr, bool removeTokenDirs = true)
+bool FileManager::appendToItem(QTreeWidgetItem* parentItem, QDir* currentDir, QListIterator<QString> &dbItr)
 {
 	appendAllDirectories(parentItem, currentDir);
-	removeUnusedDirs(parentItem, currentDir, dbItr, removeTokenDirs);
-
-#if 0
-	bool somethingNewHere = false;
-	QTreeWidgetItem* curItem = new QTreeWidgetItem( parentItem, QStringList() << currentDir->dirName() );
-	parentItem->addChild( curItem );
-	QList<QFileInfo> files = currentDir->entryInfoList((QDir::Filters)QDir::NoFilter ^ (QDir::Filters)QDir::NoSymLinks, QDir::Name);
-
-/*	int nSubDirs = 0;
-	for(QList<QFileInfo>::const_iterator itr = files.begin(); itr != files.end() && (nSubDirs < 2); itr++)
-	 if(itr->isDir())
-	  nSubDirs++;*/
-
-	/*switch(nSubDirs)
-	{
-		case 0: break; // nothing to add here
-		case 1: // edit current item
-
-			break;
-		case 0:
-		case 2: // make sub items
-			for(QList<QFileInfo>::const_iterator itr = files.begin(); itr != files.end(); itr++)
-			{
-				bool newItems = appendSingle(curItem, currentDir, itr, dbItr);
-				if(!somethingNewHere && newItems)
-				 somethingNewHere = true;
-			}
-			break;
-	}*/
-	
-	if(somethingNewHere) {
-		curItem->setForeground(0, QColor("blue")); // TODO: colors only to decide between (in db) and (not in db)
-		return true;
-	}
-	else {
-		printf("Dir %s: disabled!\n",currentDir->dirName().toAscii().data());
-		curItem->setDisabled(true);
-		return false;
-	}
-#endif
-	return true;
+	removeUnusedDirs(parentItem, currentDir, dbItr);
+	return true; // TODO: useless
 }
 
 /*
@@ -303,7 +213,10 @@ FileManager::FileManager (const SqlHelper& _sqlhelper) :
 	sqlhelper(_sqlhelper),
 	fileAddBase(_sqlhelper, this)
 {
+}
 
+void FileManager::grepFiles()
+{
 	QSqlQuery query = sqlhelper.exec("SELECT * FROM main;");
 	QList<QString> dbNameList;
 
@@ -314,7 +227,12 @@ FileManager::FileManager (const SqlHelper& _sqlhelper) :
 	qSort( dbNameList );
 	QListIterator<QString> dbItr(dbNameList);
 
-	QDir parseDir(globals::MUSIC_ROOT); // see above in this file!
+	const bool loc_is_default = field("loc_is_default").toBool(),
+		type_is_music = field("type_is_music").toBool();
+	QDir parseDir(
+		loc_is_default ?
+			(type_is_music ? globals::MUSIC_ROOT : globals::VIDEO_ROOT)
+			: field("custom_path").toString()); // see above in this file!
 
 	appendToItem(fileAddBase.fileView.topLevelItem(0), &parseDir, dbItr);
 
@@ -333,4 +251,24 @@ void FileManager::proceed()
 	}
 }
 
+
+
+
+FileManagerWizard::FileManagerWizard(const SqlHelper& _sqlhelper)
+ : filePage(_sqlhelper)
+{
+	setupUi();
+	retranslateUi();
+}
+
+void FileManagerWizard::retranslateUi()
+{
+	setWindowTitle("File Manager");
+}
+
+void FileManagerWizard::setupUi()
+{
+	setPage(PAGE_INTRO, &introPage);
+	setPage(PAGE_FILES, &filePage);
+}
 

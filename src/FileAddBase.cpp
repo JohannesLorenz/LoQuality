@@ -50,10 +50,10 @@ void FileProceedDlg::setupUi(void)
 
 void FileAddBase::retranslateUi()
 {
-	fileView.setHeaderLabel("MusikSammlung");
+	fileView.setHeaderLabel("Files Collection");
 //	btnAdd.setText("Hinzufügen"); // TODO: add cool + and - icons...
 //	btnErase.setText("Herausnehmen");
-	btnDoIt.setText("Rein in die Datenbank!");
+	btnDoIt.setText("Insert into database...");
 //	btnDone.setText("Fertig!");
 }
 
@@ -126,7 +126,7 @@ void FileAddBase::setupUi()
 		*/
 	fileView.setSelectionMode(QAbstractItemView::MultiSelection);
 	addWidget(&fileView);
-	new QTreeWidgetItem( &fileView, QStringList() << "musik" );
+	new QTreeWidgetItem( &fileView, QStringList() << "Music" );
 
 	buttonLayout.addWidget(&btnDoIt);
 	//buttonLayout.addWidget(&btnDone);

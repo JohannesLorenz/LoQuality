@@ -27,6 +27,7 @@ namespace globals
 	QSettings* settings;
 	SqlHelper* private_db;
 	QString MUSIC_ROOT;
+	QString VIDEO_ROOT;
 	QString MPLAYER_EXE;
 	const char* LQ_VERSION = "0.10";
 }

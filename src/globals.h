@@ -27,6 +27,7 @@ class SqlHelper;
 namespace globals
 {
 	extern QString MUSIC_ROOT;
+	extern QString VIDEO_ROOT;
 	extern QString MPLAYER_EXE;
 	extern const char* LQ_VERSION;
 	extern QSettings* settings;
