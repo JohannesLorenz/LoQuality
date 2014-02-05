@@ -56,7 +56,9 @@ class WelcomePage : public QWizardPage
 private slots:
 	void set_custom_path(int bool_value)
 	{
-		custom_path.setReadOnly(!bool_value);
+	//	custom_path.setReadOnly(!bool_value);
+		custom_path.setEnabled(bool_value);
+		btn_browse.setEnabled(bool_value);
 	}
 
 	void browse();
@@ -66,7 +68,7 @@ public:
 		vbox(this)
 	{
 		setTitle("Welcome");
-		setSubTitle("Please choose one of the options below.");
+		setSubTitle("Please choose of the options below.");
 
 		btn_music.setText("Add Music");
 		btn_video.setText("Add Video");
@@ -74,7 +76,7 @@ public:
 		type_choice.addButton(&btn_video, 1);
 		btn_music.setChecked(true);
 
-		btn_default.setText("Music Collection");
+		btn_default.setText("Media Collection");
 		btn_custom.setText("Custom Path");
 		loc_choice.addButton(&btn_default, 0);
 		loc_choice.addButton(&btn_custom, 1);
@@ -82,7 +84,7 @@ public:
 
 		set_custom_path(0);
 		btn_browse.setText("Browse"); // TODO: needs a folder icon
-		showDirsWithTokenFiles.setText("Show Directories where all music is already added.");
+		showDirsWithTokenFiles.setText("Show Directories where all media is already added.");
 
 		vbox.addWidget(&btn_music);
 		vbox.addWidget(&btn_video);

@@ -58,12 +58,14 @@ bool FileManager::suffix_is_music(const QString& suffix)
 
 bool FileManager::suffix_is_video(const QString &suffix)
 {
+	exit(99);
 	return (suffix=="mp4" || suffix=="wma" || suffix=="flv" || suffix=="avi" || suffix=="mpg" || suffix == "mpeg");
 }
 
 bool FileManager::suffix_matches(const QString& suffix)
 {
 	const bool type_is_music = field("type_is_music").toBool();
+	printf("typeis: %d\n",type_is_music);
 	return type_is_music ? suffix_is_music(suffix) : suffix_is_video(suffix);
 }
 
@@ -137,15 +139,23 @@ void FileManager::sortOutUseless(QTreeWidgetItem *parentItem, QDir *currentDir, 
 	{
 		QTreeWidgetItem* only_displayed = NULL;
 
-		for(int i = 0; i < nchildren && (only_displayed == NULL); i++)
+		for(int i = 0; i < nchildren && (only_displayed == NULL); i++){
+		printf("problem: %s\n",parentItem->child(i)->text(0).toAscii().data());
 		 if(!parentItem->child(i)->isHidden())
 		  only_displayed = parentItem->child(i);
-
+}
 		if(!only_displayed)
 		 exit(98); // TODO... use catch/throw or at least assert
 
-		parentItem->setText(0, parentItem->text(0) + QDir::separator() + only_displayed->text(0));
-		only_displayed->setHidden(true);
+	//		parentItem->setText(0, parentItem->text(0) + QDir::separator() + only_displayed->text(0));
+	//	only_displayed->setHidden(true);
+		only_displayed->setText(0, parentItem->text(0) + QDir::separator() + only_displayed->text(0));
+
+	//	parentItem->removeChild(only_displayed);
+	//	parentItem->addChild(only_displayed);
+		QTreeWidgetItem* the_parent = parentItem->parent();
+		the_parent->removeChild(parentItem);
+		the_parent->addChild(only_displayed);
 	}
 }
 
@@ -177,13 +187,14 @@ void FileManager::removeUnusedDirs(QTreeWidgetItem *parentItem, QDir *currentDir
 	{
 		QTreeWidgetItem* curChild = parentItem->child(i);
 		printf("before recursion: %s\n", currentDir->canonicalPath().toAscii().data());
+		printf("aborting: %s\n", parentItem->text(0).toAscii().data());
 		currentDir->cd(curChild->text(0));
 		printf("recursion: %s\n", currentDir->canonicalPath().toAscii().data());
 		removeUnusedDirs(curChild, currentDir, dbItr); // recursion
 		currentDir->cdUp();
 	}
 	printf("recursion: end: %s\n", currentDir->canonicalPath().toAscii().data());
-	sortOutUseless(parentItem, currentDir, dbItr);
+	Useless(parentItem, currentDir, dbItr);
 }
 
 
@@ -234,6 +245,8 @@ void FileManager::grepFiles()
 			(type_is_music ? globals::MUSIC_ROOT : globals::VIDEO_ROOT)
 			: field("custom_path").toString()); // see above in this file!
 
+	new QTreeWidgetItem( &fileAddBase.fileView, QStringList() << (type_is_music ? "Music" : "Video") );
+	printf("typeis: %d\n",type_is_music);
 	appendToItem(fileAddBase.fileView.topLevelItem(0), &parseDir, dbItr);
 
 	fileAddBase.setProceedCallback(this, SLOT(proceed()));
