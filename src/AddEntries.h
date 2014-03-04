@@ -30,6 +30,8 @@
 #include <QSpinBox>
 #include <QVariant>
 #include <QCompleter>
+#include <QDialogButtonBox>
+#include <QGridLayout>
 
 //sql
 #include <QSqlDatabase>
@@ -37,69 +39,83 @@ class SqlHelper;
 
 class AddEntryDlg : public QDialog
 {
-	Q_OBJECT
+Q_OBJECT
 
-	private:
-		bool edit;
-		int editnum;
-		const SqlHelper& sqlhelper;
+private:
+	bool edit; //!< whether we edit a file or add one
+	int editnum;
+	const SqlHelper& sqlhelper;
 
-		QLabel lbl_title;
-		QLabel lbl_artist;
-		QLabel lbl_album;
-		QLabel lbl_tag;
-		QLabel lbl_genre;
-		QLabel lbl_year;
-		QLabel lbl_interest_others;
-		QLabel lbl_interest_yours;
-		QLabel lbl_filetype;
-		QLabel lbl_quality;
-		QLabel lbl_vote_yours;
-		QLabel lbl_vote_others;
-		QLabel lbl_path;
-		QLabel lbl_source;
-		
-		QLineEdit le_title;
-		QLineEdit le_artist;
-		QLineEdit le_album;
-		QLineEdit le_tag;
-		QLineEdit le_genre;
-		QLineEdit le_year;
+	QLabel lbl_title;
+	QLabel lbl_artist;
+	QLabel lbl_album;
+	QLabel lbl_tag;
+	QLabel lbl_genre;
+	QLabel lbl_year;
+	QLabel lbl_interest_others;
+	QLabel lbl_interest_yours;
+	QLabel lbl_filetype;
+	QLabel lbl_quality;
+	QLabel lbl_vote_yours;
+	QLabel lbl_vote_others;
+	QLabel lbl_path;
+	QLabel lbl_source;
 
-		QCheckBox cb_interest_others;
-		QCheckBox cb_interest_yours;
+	QLineEdit le_title;
+	QLineEdit le_artist;
+	QLineEdit le_album;
+	QLineEdit le_tag;
+	QLineEdit le_genre;
+	QLineEdit le_year;
 
-		QLineEdit le_filetype;
-		QLineEdit le_quality;
-		
-		QSpinBox sb_vote_yours;
-		QSpinBox sb_vote_others;
-		
-		QLineEdit le_path;
-		QPushButton pb_choose_path;
+	QCheckBox cb_interest_others;
+	QCheckBox cb_interest_yours;
 
-		QLineEdit le_source;
-	
-		QPushButton pb_cancel;
-		QPushButton pb_insert;
+	QLineEdit le_filetype;
+	QLineEdit le_quality;
 
-		static QString corr(const QString &originalString);
-	public:
-		void setupUi();
-	
-		AddEntryDlg(const SqlHelper& _sqlhelper, bool _edit=false, QList<int>* _editnums = NULL)
-			: sqlhelper(_sqlhelper), lbl_title(this), lbl_artist(this), lbl_album(this), lbl_tag(this), lbl_genre(this), lbl_year(this), lbl_interest_others(this), lbl_interest_yours(this), lbl_filetype(this), lbl_quality(this), lbl_vote_yours(this), lbl_vote_others(this), lbl_path(this), lbl_source(this), le_title(this), le_artist(this), le_album(this), le_tag(this), le_genre(this), le_year(this), cb_interest_others(this), cb_interest_yours(this), le_filetype(this), le_quality(this), sb_vote_yours(this), sb_vote_others(this), le_path(this), pb_choose_path(this), le_source(this), pb_cancel(this), pb_insert(this)
-		{
-			edit = _edit;
-			if(_edit)
-			 editnum=_editnums->front();
+	QSpinBox sb_vote_yours;
+	QSpinBox sb_vote_others;
 
-			setupUi();
-		}
-public slots:
-		void onButtonChoosePressed();
-		void OnButtonInsertPressed();
-		void OnButtonEditInsertPressed();
+	QLineEdit le_path;
+	QPushButton pb_choose_path;
+
+	QLineEdit le_source;
+
+	QDialogButtonBox button_box;
+
+	QGridLayout grid;
+
+	static QString corr(const QString &originalString);
+public:
+	void setupUi();
+
+	AddEntryDlg(const SqlHelper& _sqlhelper, bool _edit=false, QList<int>* _editnums = NULL)
+		: sqlhelper(_sqlhelper), lbl_title(this), lbl_artist(this),
+			// TODO: this should be replaced by an array of lbls?
+		lbl_album(this), lbl_tag(this), lbl_genre(this),
+		lbl_year(this), lbl_interest_others(this),
+		lbl_interest_yours(this), lbl_filetype(this),
+		lbl_quality(this), lbl_vote_yours(this),
+		lbl_vote_others(this), lbl_path(this), lbl_source(this),
+		le_title(this), le_artist(this), le_album(this),
+		le_tag(this), le_genre(this), le_year(this),
+		cb_interest_others(this), cb_interest_yours(this),
+		le_filetype(this), le_quality(this), sb_vote_yours(this),
+		sb_vote_others(this), le_path(this), pb_choose_path(this),
+		le_source(this), button_box(QDialogButtonBox::Ok
+		| QDialogButtonBox::Cancel, Qt::Horizontal, this)
+	{
+		edit = _edit;
+		if(_edit)
+		 editnum=_editnums->front();
+
+		setupUi();
+	}
+private slots:
+	void onButtonChoosePressed(); //!< choose file
+	void OnButtonInsertPressed(); //!< accept, if adding a file
+	void OnButtonEditInsertPressed(); //!< accept if only edit
 };
 
 #endif // ADD_ENTRIES_H

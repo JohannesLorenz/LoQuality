@@ -6,9 +6,9 @@ QT += sql \
     network
 TEMPLATE = app
 TARGET = 
-DEPENDPATH += . \
+DEPENDPATH += src \
     QSQL
-INCLUDEPATH += . \
+INCLUDEPATH += src \
     QSQL
 LIBS += -ltag
 
@@ -43,7 +43,8 @@ HEADERS += src/AddEntries.h \
     src/flash_tools.h \
     src/SongTableWidget.h \
     src/MainWindowContainer.h \
-    src/PlaylistDownloader.h
+    src/PlaylistDownloader.h \
+    src/core/SettingsReader.h
 SOURCES += src/AddEntries.cpp \
     src/FileManager.cpp \
     src/FlashDlg.cpp \
@@ -72,7 +73,8 @@ SOURCES += src/AddEntries.cpp \
     src/flash_tools.cpp \
     src/SongTableWidget.cpp \
     src/MainWindowContainer.cpp \
-    src/PlaylistDownloader.cpp
+    src/PlaylistDownloader.cpp \
+    src/core/SettingsReader.cpp
 OTHER_FILES += TODO.txt \
     TODO_LIST.txt \
     README.txt

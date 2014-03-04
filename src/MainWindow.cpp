@@ -243,8 +243,8 @@ void MainWindow::slotAddFile()
 {
 	AddEntryDlg dlg(sqlhelper);
 	dlg.show();
-	dlg.exec();
-	tableWidget.reloadTable();
+	if( dlg.exec() == QDialog::Accepted )
+	 tableWidget.reloadTable();
 }
 
 void MainWindow::slotStoreFlash()

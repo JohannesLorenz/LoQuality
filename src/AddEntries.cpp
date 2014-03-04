@@ -30,88 +30,92 @@ void AddEntryDlg::setupUi()
 {
 	resize(600, 530);
 
-	lbl_title.setGeometry(5, 5, 290, 30);
 	lbl_title.setText("Titel:");
+	grid.addWidget(&lbl_title, 0, 0);
 	
-	lbl_artist.setGeometry(5, 40, 290, 30);
 	lbl_artist.setText("Künstler:");
+	grid.addWidget(&lbl_artist, 1, 0);
 	
-	lbl_album.setGeometry(5, 75, 290, 30);
 	lbl_album.setText("Album:");
+	grid.addWidget(&lbl_album, 2, 0);
 	
-	lbl_tag.setGeometry(5, 110, 290, 30);
 	lbl_tag.setText("Tags:");
+	grid.addWidget(&lbl_tag, 3, 0);
 	
-	lbl_genre.setGeometry(5, 145, 290, 30);
 	lbl_genre.setText("Genre:");
+	grid.addWidget(&lbl_genre, 4, 0);
 	
-	lbl_year.setGeometry(5, 180, 290, 30);
 	lbl_year.setText("Jahr:");
+	grid.addWidget(&lbl_year, 5, 0);
 	
-	lbl_interest_others.setGeometry(5, 215, 290, 30);
 	lbl_interest_others.setText("Interessiert Andere?");
+	grid.addWidget(&lbl_interest_others, 6, 0);
 	
-	lbl_interest_yours.setGeometry(5, 250, 290, 30);
 	lbl_interest_yours.setText("Interessiert Dich?");
+	grid.addWidget(&lbl_interest_yours, 7, 0);
 	
-	lbl_filetype.setGeometry(5, 285, 290, 30);
 	lbl_filetype.setText("Dateityp:");
+	grid.addWidget(&lbl_filetype, 8, 0);
 	
-	lbl_quality.setGeometry(5, 320, 290, 30);
 	lbl_quality.setText("Qualität:");
+	grid.addWidget(&lbl_quality, 9, 0);
 	
-	lbl_vote_yours.setGeometry(5, 355, 320, 30);
 	lbl_vote_yours.setText("Deine Bewertung:");
+	grid.addWidget(&lbl_vote_yours, 10, 0);
 	
-	lbl_vote_others.setGeometry(5, 390, 320, 30);
 	lbl_vote_others.setText("Externe Bewertung:");
+	grid.addWidget(&lbl_vote_others, 11, 0);
 	
-	lbl_path.setGeometry(5, 425, 355, 30);
 	lbl_path.setText("Pfad:");
+	grid.addWidget(&lbl_path, 12, 0);
 	
-	lbl_source.setGeometry(5, 460, 290, 30);
 	lbl_source.setText("Source:");
+	grid.addWidget(&lbl_source, 13, 0);
 
-	le_title.setGeometry(305, 5, 290, 30);
+	grid.addWidget(&le_title, 0, 1, 1, 2);
 	
-	le_artist.setGeometry(305, 40, 290, 30);
+	grid.addWidget(&le_artist, 1, 1, 1, 2);
 	
-	le_album.setGeometry(305, 75, 290, 30);
+	grid.addWidget(&le_album, 2, 1, 1, 2);
+
+	grid.addWidget(&le_tag, 3, 1, 1, 2);
 	
-	le_tag.setGeometry(305, 110, 290, 30);
-	
-	le_genre.setGeometry(305, 145, 290, 30);
-	
-	le_year.setGeometry(305, 180, 290, 30);
-	
-	cb_interest_others.setGeometry(305, 215, 290, 30);
-	cb_interest_yours.setGeometry(305, 250, 290, 30);
-	
-	le_filetype.setGeometry(305, 285, 290, 30);
-	
-	le_quality.setGeometry(305, 320, 290, 30);
-	
-	sb_vote_yours.setGeometry(305, 355, 290, 30);
+	grid.addWidget(&le_genre, 4, 1, 1, 2);
+
+	grid.addWidget(&le_year, 5, 1, 1, 2);
+
+	grid.addWidget(&cb_interest_others, 6, 1, 1, 2);
+	grid.addWidget(&cb_interest_yours, 7, 1, 1, 2);
+
+	grid.addWidget(&le_filetype, 8, 1, 1, 2);
+
+	grid.addWidget(&le_quality, 9, 1, 1, 2);
+
 	sb_vote_yours.setMinimum(0);
 	sb_vote_yours.setMaximum(10);
-	
-	sb_vote_others.setGeometry(305, 390, 290, 30);
+	grid.addWidget(&sb_vote_yours, 10, 1, 1, 2);
+
 	sb_vote_others.setMinimum(0);
 	sb_vote_others.setMaximum(10);
-	
-	le_path.setGeometry(305, 425, 140, 30);
-	
-	pb_choose_path.setGeometry(450, 425, 145, 30);
-	pb_choose_path.setText("Durchsuchen...");
-	
-	le_source.setGeometry(305, 460, 290, 30);
+	grid.addWidget(&sb_vote_others, 11, 1, 1, 2);
 
-	pb_cancel.setGeometry(5, 495, 290, 30);
+	grid.addWidget(&le_path, 12, 1);
+
+	pb_choose_path.setText("Durchsuchen...");
+	grid.addWidget(&pb_choose_path, 12, 2);
+
+	grid.addWidget(&le_source, 13, 1, 1, 2);
+
+/*	pb_cancel.setGeometry(5, 495, 290, 30);
 	pb_cancel.setText("Abbrechen");
 	
 	pb_insert.setGeometry(305, 495, 290, 30);
 	pb_insert.setText("Übernehmen");
-	
+*/
+	grid.addWidget(&button_box, 14, 0, 1, 3);
+
+	setLayout(&grid);
+
 	if(edit)
 	{
 		//++editnum; // increase row number // NOT ANYMORE - MainWindow must fix it!
@@ -201,14 +205,23 @@ void AddEntryDlg::setupUi()
 	QCompleter *completerAlbum = new QCompleter(completitionListAlbum, this);
 	completerAlbum->setCaseSensitivity(Qt::CaseInsensitive);
 	le_artist.setCompleter(completerAlbum);
-	
+
+	/*
+	 * signals
+	 */
+
 	QObject::connect(&pb_choose_path, SIGNAL(clicked()), this, SLOT(onButtonChoosePressed()));
-	QObject::connect(&pb_cancel, SIGNAL(clicked()), this, SLOT(close()));
+
+	// for button boxes, see also:
+	// http://qt-project.org/doc/qt-5.0/qtwidgets/dialogs-tabdialog.html
+
+	QObject::connect(&button_box, SIGNAL(rejected()), this, SLOT(reject()));
+	//QObject::connect(&pb_cancel, SIGNAL(clicked()), this, SLOT(onButtonCancelPressed()));
 	
 	if(!edit)
-	 QObject::connect(&pb_insert, SIGNAL(clicked()), this, SLOT(OnButtonInsertPressed()));
+	 QObject::connect(&button_box, SIGNAL(accepted()), this, SLOT(OnButtonInsertPressed()));
 	else
-	 QObject::connect(&pb_insert, SIGNAL(clicked()), this, SLOT(OnButtonEditInsertPressed()));
+	 QObject::connect(&button_box, SIGNAL(accepted()), this, SLOT(OnButtonEditInsertPressed()));
 }
 
 void AddEntryDlg::onButtonChoosePressed()
@@ -284,7 +297,7 @@ void AddEntryDlg::OnButtonInsertPressed() // depricated ?
 	sqlhelper.exec(insert_cmd);
 	// sqlhelper.INSERT(insert_cmd);
 
-	close();
+	accept();
 }
 
 QString AddEntryDlg::corr(const QString& originalString)

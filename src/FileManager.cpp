@@ -194,7 +194,7 @@ void FileManager::removeUnusedDirs(QTreeWidgetItem *parentItem, QDir *currentDir
 		currentDir->cdUp();
 	}
 	printf("recursion: end: %s\n", currentDir->canonicalPath().toAscii().data());
-	Useless(parentItem, currentDir, dbItr);
+//	sortOutUseless(parentItem, currentDir, dbItr);
 }
 
 

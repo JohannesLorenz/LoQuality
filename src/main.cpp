@@ -18,82 +18,39 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
-#include "MainWindow.h"
-#include "params.h"
+#include <csignal>
 
 #include <QApplication>
 #include <QMessageBox>
 
-class SettingsReader // todo: extra file?
+#include "params.h" // -> core
+#include "core/SettingsReader.h"
+#include "dbus/DBusConnector.h"
+#include "SqlHelper.h"
+
+void int_callback(int s){
+	printf("Caught signal %d.\n",s);
+	printf("Ignoring. Please close LQ correctly.\n");
+	printf("You need to kill mplayer now!\n");
+}
+
+void init_signals()
 {
-	inline void shouldBe(const char* option_name, QVariant initial_value, bool first_start = false)
-	{
-		if(globals::settings->value(option_name) == QVariant())
-		{
-			// on first start, do not inform user about updates.
-			if(!first_start)
-			QMessageBox::information(NULL, "Updated value",
-				QString("Inserted option \"%1\" due to update. "
-					"Default value \"%2\" will be used.").arg(option_name, initial_value.toString()));
-			globals::settings->setValue(option_name, initial_value);
-		}
-	}
+	struct sigaction sig_handler;
 
-	QString getHomePath(bool type_is_music) {
-		return QString(getenv("HOME")) + (type_is_music ? "/Music/" : "/Video/");
-	}
+	sig_handler.sa_handler = int_callback;
+	sigemptyset(&sig_handler.sa_mask);
+	sig_handler.sa_flags = 0;
 
-	void checkIntegrity(bool first_start = false)
-	{
-		shouldBe("ffmpeg_fullpath", "/usr/bin/ffmpeg", first_start);
-		shouldBe("youtubedl_fullpath", "/usr/bin/youtube-dl", first_start);
-		shouldBe("mplayer_name", "mplayer2", first_start);
-		shouldBe("music_root", getHomePath(true), first_start);
-		shouldBe("video_root", getHomePath(false), first_start);
-		shouldBe("main_database", "musicdb", first_start);
-		shouldBe("number_of_cores", 2, first_start);
-		shouldBe("update_interval_days", 1, first_start);
-		shouldBe("do_updates", true, first_start);
-		shouldBe("target", "pc", first_start);
-		shouldBe("equalizer","0:0:0:0:0:0:0:0:0:0", first_start);
-		shouldBe("restrict_to_ascii",true, first_start);
-	}
-
-public:
-	SettingsReader()
-	{
-		const bool first_start = globals::settings->value("first_start", true).toBool();
-		if(first_start) {
-			globals::settings->setValue("first_start", false);
-			QMessageBox::information(NULL, "Please close LQ and then edit:", globals::settings->fileName().toAscii().data());
-		}
-		if(globals::settings->value("update_applied").toBool()) {
-			UpdateInfoDlg u;
-			u.show();
-			u.exec();
-			globals::settings->setValue("update_applied", false);
-		}
-		printf("Writing options to %s\n",
-			globals::settings->fileName().toAscii().data());
-		checkIntegrity(first_start);
-
-		if(first_start) {
-			const bool mobile = question("Is this a mobile?",
-			"Are you running this on your mobile phone?");
-			globals::settings->setValue("target",
-				(mobile)?"mobile":"pc");
-		}
-
-		globals::MUSIC_ROOT = globals::settings->value("music_root").toString();
-		globals::VIDEO_ROOT = globals::settings->value("video_root").toString();
-		globals::MPLAYER_EXE = globals::settings->value("mplayer_name").toString();
-	}
-};
+	sigaction(SIGINT, &sig_handler, NULL);
+}
 
 int main(int argc, char** argv)
 {
 	if (read_params(argc, argv) == -1)
 	 return 0;
+
+	init_signals();
 
 	int return_value = 0;
 
@@ -110,11 +67,13 @@ int main(int argc, char** argv)
 			Initialize Options
 		*/
 		globals::settings = new QSettings();
-		SettingsReader settingsReader; // checks integrity of globals::settings
+		SettingsReader settingsReader; // checks integrity
 
-		globals::private_db = new SqlHelper("privatedb"); // TODO: filename!!!
+		// TODO: filename!!!
+		globals::private_db = new SqlHelper("privatedb");
 
-		const QString main_database = (globals::settings->value("main_database", "musicdb").toString());
+		const QString main_database = (globals::settings->
+			value("main_database", "musicdb").toString());
 
 		/*
 			Initialize MainWindows
@@ -122,7 +81,8 @@ int main(int argc, char** argv)
 		MainWindowContainer mwContainer;
 		mwContainer.openNewWindow(main_database);
 
-		// dbus_connector shall for now only be connected to the first main window
+		// dbus_connector shall for now only be connected to
+		// the first main window
 		dbus_connector.start(&mwContainer);
 
 		/*
@@ -139,7 +99,8 @@ int main(int argc, char** argv)
 	} catch (std::exception e) {
 		QMessageBox::warning(NULL, "Error", e.what());
 	} catch(...) {
-		QMessageBox::warning(NULL, "Error", "*** TODO: unknown exception");
+		QMessageBox::warning(NULL, "Error",
+			"*** TODO: unknown exception");
 	}
 
 	return return_value;

@@ -1,6 +1,6 @@
 /*************************************************************************/
 /* LoQuality - A music player for Linux/UNIX.                            */
-/* Copyright (C) 2010-2012                                               */
+/* Copyright (C) 2010-2014                                               */
 /* Johannes Lorenz, Philipp Lorenz                                       */
 /* https://github.com/JohannesLorenz/LoQuality                           */
 /*                                                                       */
@@ -18,39 +18,20 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
-#ifndef MAINWINDOWCONTAINER_H
-#define MAINWINDOWCONTAINER_H
+#ifndef SETTINGSREADER_H
+#define SETTINGSREADER_H
 
-#include <QObject>
-#include <QList>
-#include <QSystemTrayIcon>
-class MainWindow;
-class PlayerEngine;
+class QVariant;
+class QString;
 
-class MainWindowContainer : public QObject
+class SettingsReader
 {
-	Q_OBJECT
-	QList<MainWindow*> mainWindows, oldMainWindows;
-
-	QSystemTrayIcon tray_icon;
-	bool visible; // for the tray icon
-	bool quitProgram; // only set to true if the program is exited with the menu bar
-	void deleteAll();
-private slots:
-	void switch_tray(QSystemTrayIcon::ActivationReason reason);
-
+	void shouldBe(const char* option_name, QVariant initial_value,
+		bool first_start = false);
+	QString getHomePath(bool type_is_music);
+	void checkIntegrity(bool first_start = false);
 public:
-	MainWindowContainer();
-	inline ~MainWindowContainer() { deleteAll(); }
-
-	PlayerEngine* getActivePlayer();
-
-public slots:
-	MainWindow* openNewWindow();
-	MainWindow* openNewWindow(const QString& filename);
-	bool removeFrom(MainWindow* me);
-	//! This should be called if you want to quit LQ
-	void closeAllWindows();
+	SettingsReader();
 };
 
-#endif // MAINWINDOWCONTAINER_H
+#endif // SETTINGSREADER_H
