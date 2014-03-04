@@ -50,30 +50,33 @@ SongTableWidget::SongTableWidget(SqlHelper& _sqlhelper, QWidget *parent) :
 
 void SongTableWidget::mousePressEvent(QMouseEvent *event)
 {
-	if (event->button() == Qt::RightButton)
+	if (event->button() == Qt::LeftButton)
 	{
 		QList<QTableWidgetItem*> items = selectedItems();
 
-			QListIterator<QTableWidgetItem*> itr(items);
-			QModelIndexList modelIndexes;
-			while (itr.hasNext())
-			{
-				modelIndexes.prepend(indexFromItem(itr.next()));
-			}
+		QListIterator<QTableWidgetItem*> itr(items);
+		QModelIndexList modelIndexes;
+		while (itr.hasNext())
+		{
+			modelIndexes.prepend(indexFromItem(itr.next()));
+		}
 
 
-			QMimeData *mimeDataObj = model()->mimeData(modelIndexes);
+		QMimeData *mimeDataObj = model()->mimeData(modelIndexes);
 
-			if(mimeDataObj)
-			{
-				// Create drag
-				QDrag *drag = new QDrag(this);
-				drag->setMimeData(mimeDataObj);
+		bool crtl_pressed
+		 = QApplication::keyboardModifiers() & Qt::ControlModifier;
 
-				qDebug() << "mousePressEvent before exec";
-				drag->exec(Qt::CopyAction);
-				qDebug() << "mousePressEvent after exec";
-			}
+		if(mimeDataObj && crtl_pressed)
+		{
+			// Create drag
+			QDrag *drag = new QDrag(this);
+			drag->setMimeData(mimeDataObj);
+
+			qDebug() << "mousePressEvent before exec";
+			drag->exec(Qt::CopyAction);
+			qDebug() << "mousePressEvent after exec";
+		}
 	}
 
 	QTableWidget::mousePressEvent(event);

@@ -39,7 +39,7 @@ HEADERS += src/AddEntries.h \
     src/dialogs.h \
     src/FileAddBase.h \
     src/SyncAddManager.h \
-    src/params.h \
+    src/core/params.h \
     src/flash_tools.h \
     src/SongTableWidget.h \
     src/MainWindowContainer.h \
@@ -48,7 +48,7 @@ HEADERS += src/AddEntries.h \
 SOURCES += src/AddEntries.cpp \
     src/FileManager.cpp \
     src/FlashDlg.cpp \
-    src/main.cpp \
+    src/core/main.cpp \
     src/MainWindow.cpp \
     src/PlayerEngine.cpp \
     src/PlayListQueue.cpp \
@@ -69,7 +69,7 @@ SOURCES += src/AddEntries.cpp \
     src/dialogs.cpp \
     src/FileAddBase.cpp \
     src/SyncAddManager.cpp \
-    src/params.cpp \
+    src/core/params.cpp \
     src/flash_tools.cpp \
     src/SongTableWidget.cpp \
     src/MainWindowContainer.cpp \

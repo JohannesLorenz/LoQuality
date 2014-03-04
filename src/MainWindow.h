@@ -98,254 +98,254 @@ private:
 		TOOLBOX_METAINFO
 	};
 
-	private slots:
-		/**
-		 * If no song is currently played, this slot is called to ask the player engine to play a new song.
-		 * If a song is currently played and paused, asks the player engine to continue.
-		 * If a song is currently played and not paused, the next song will be played
-		 * Might apply a new value to the volume sliders.
-		 * @param row the row of the song to be played (if none playing), -1 if no wish for which song shall follow
-		 * @param column will be ignored in this function
-		 */
-		void slotPlay(int row, int column = 0);
+private slots:
+	/**
+	 * If no song is currently played, this slot is called to ask the player engine to play a new song.
+	 * If a song is currently played and paused, asks the player engine to continue.
+	 * If a song is currently played and not paused, the next song will be played
+	 * Might apply a new value to the volume sliders.
+	 * @param row the row of the song to be played (if none playing), -1 if no wish for which song shall follow
+	 * @param column will be ignored in this function
+	 */
+	void slotPlay(int row, int column = 0);
 
-		//! argument-less wrapper to allow slot binding
-		inline void slotPlay() {
-			slotPlay(-1, 0);
-		}
+	//! argument-less wrapper to allow slot binding
+	inline void slotPlay() {
+		slotPlay(-1, 0);
+	}
 
-		void slotPause(); // eng
-		void slotStop(); // eng
-		inline void slotStopAfter() {
-			time_to_stop = stopButtonMenu.actions().at(1)->isChecked() ? time(NULL) : 0;
-		}
+	void slotPause(); // eng
+	void slotStop(); // eng
+	inline void slotStopAfter() {
+		time_to_stop = stopButtonMenu.actions().at(1)->isChecked() ? time(NULL) : 0;
+	}
 
-		void slotBackward();
-		inline void slotForward() { slotForward(-1, -1); }
-		void slotForward(int x, int y);
+	void slotBackward();
+	inline void slotForward() { slotForward(-1, -1); }
+	void slotForward(int x, int y);
 
-		void slotAddFile();
-		void slotAddFileChooser();
-		inline void slotRemoveSong() { tableWidget.slotRemoveSong(); }
+	void slotAddFile();
+	void slotAddFileChooser();
+	inline void slotRemoveSong() { tableWidget.slotRemoveSong(); }
 
-		void slotStoreFlash();
-		void slotSynch();
+	void slotStoreFlash();
+	void slotSynch();
 
-		inline void slotOpenNewMainWindow() { mwContainer->openNewWindow(); }
+	inline void slotOpenNewMainWindow() { mwContainer->openNewWindow(); }
 
-		void slotFileCloseAction();
-		void slotFileQuitAction();
+	void slotFileCloseAction();
+	void slotFileQuitAction();
 
-		inline void slotFileUpdateAction() {
-			UpdateDlg udlg;
-			udlg.show();
-			udlg.exec();
-		}
+	inline void slotFileUpdateAction() {
+		UpdateDlg udlg;
+		udlg.show();
+		udlg.exec();
+	}
 
-		inline void slotViewFullscreenAction() {
-			if( isFullScreen() ) showNormal(); else showFullScreen();
-		}
+	inline void slotViewFullscreenAction() {
+		if( isFullScreen() ) showNormal(); else showFullScreen();
+	}
 
-		inline void slotEditDownload() {
-			PlaylistDownloader downloader(&tableWidget, sqlhelper);
-			downloader.show(); downloader.exec();
-		}
+	inline void slotEditDownload() {
+		PlaylistDownloader downloader(&tableWidget, sqlhelper);
+		downloader.show(); downloader.exec();
+	}
 
-		inline void slotViewSwitchAlignment()
+	inline void slotViewSwitchAlignment()
+	{
+		mainSplitter.setOrientation(
+				(mainSplitter.orientation() == Qt::Horizontal)
+				? Qt::Vertical : Qt::Horizontal
+				);
+	}
+
+	inline void slotScrollToSong() { tableWidget.slotScrollToSong(); }
+
+	inline void slotInfoDownload()
+	{
+		//QString currentDir = player.getCurSongItem()->text();
+		//currentDir.resize();
+		if(player.getCurSongItem() != NULL)
 		{
-			mainSplitter.setOrientation(
-					(mainSplitter.orientation() == Qt::Horizontal)
-					? Qt::Vertical : Qt::Horizontal
-					);
+			DownloadImageDlg idlg(player.getCurSongItem()->text());
+			idlg.show();
+			idlg.exec();
+		//	if( idlg.exec() == QDialog::Accepted && toolBox->currentIndex() == TOOLBOX_METAINFO)
+		//	{
+		//		slotToolBoxChanged(TOOLBOX_METAINFO); // reload image
+		//	}
 		}
+	}
 
-		inline void slotScrollToSong() { tableWidget.slotScrollToSong(); }
+	void slotHelpAboutAction();
+	void slotHelpAboutQtAction();
 
-		inline void slotInfoDownload()
-		{
-			//QString currentDir = player.getCurSongItem()->text();
-			//currentDir.resize();
-			if(player.getCurSongItem() != NULL)
-			{
-				DownloadImageDlg idlg(player.getCurSongItem()->text());
-				idlg.show();
-				idlg.exec();
-			//	if( idlg.exec() == QDialog::Accepted && toolBox->currentIndex() == TOOLBOX_METAINFO)
-			//	{
-			//		slotToolBoxChanged(TOOLBOX_METAINFO); // reload image
-			//	}
-			}
-		}
+	void slotFilterChanged(const QString & text);
 
-		void slotHelpAboutAction();
-		void slotHelpAboutQtAction();
-		
-		void slotFilterChanged(const QString & text);
-		
-		/**
-		 * Asks MPlayer to set the volume to a specified value
-		 * @param newValue Volume percentage (range 0 to 100) for new value
-		 */
-		void slotChangeVolume(int newValue);
-		
-		inline void slotItemEdit() {
-			slotItemEdit(0, 0); // TODO ;)
-		}
+	/**
+	 * Asks MPlayer to set the volume to a specified value
+	 * @param newValue Volume percentage (range 0 to 100) for new value
+	 */
+	void slotChangeVolume(int newValue);
 
-		inline void slotItemEdit(int row, int column)
-		{
-			tableWidget.slotItemEdit(row, column);
-		}
-		
-		//! (de)activates buttons depending on player_status variable
-		void onSetStatus(STATUS_FLAGS new_status);
+	inline void slotItemEdit() {
+		slotItemEdit(0, 0); // TODO ;)
+	}
 
-		void slotToolBoxChanged(int newIndex);
+	inline void slotItemEdit(int row, int column)
+	{
+		tableWidget.slotItemEdit(row, column);
+	}
 
-		inline void showPopupMenu(const QPoint& p) {
-			popupMenu.exec(p);
-		}
+	//! (de)activates buttons depending on player_status variable
+	void onSetStatus(STATUS_FLAGS new_status);
 
-		void slotSplitterMoved(int pos, int idx) {
-			Q_UNUSED(idx);
-			imageLabel.setFixedHeight(pos);
-			//imageLabel.pixmap()->resize(pos,);
-			imageLabel.setPixmap(QPixmap::fromImage(tmpImage.scaledToHeight(pos-150)));
-		}
+	void slotToolBoxChanged(int newIndex);
 
-		void slotOpenOptionsDlg() {
-			QMessageBox::information(NULL, "Not yet implemented! Edit file per text editor:", globals::settings->fileName().toAscii().data());
-		}
+	inline void showPopupMenu(const QPoint& p) {
+		popupMenu.exec(p);
+	}
 
-	private:
-		// MainWindowContainer
-		MainWindowContainer* mwContainer;
+	void slotSplitterMoved(int pos, int idx) {
+		Q_UNUSED(idx);
+		imageLabel.setFixedHeight(pos);
+		//imageLabel.pixmap()->resize(pos,);
+		imageLabel.setPixmap(QPixmap::fromImage(tmpImage.scaledToHeight(pos-150)));
+	}
 
-		//database
-		SqlHelper sqlhelper;
+	void slotOpenOptionsDlg() {
+		QMessageBox::information(NULL, "Not yet implemented! Edit file per text editor:", globals::settings->fileName().toAscii().data());
+	}
 
-		//player engine
-		PlayerEngine player;
+private:
+	// MainWindowContainer
+	MainWindowContainer* mwContainer;
 
-		//QMap<QString, QMap<QString, QTree>> artistAlbumList;
-		
-		//QList<QString> played_songs;
-		
-		// menu bar
-		QMenuBar menubar;
-		QMenu topMenus[MENU_SIZE];
-		
-		// tool bar
-		QToolBar toolBar;
+	//database
+	SqlHelper sqlhelper;
 
-		// central widget
-		QWidget centralWidget;
-		QVBoxLayout verticalLayout;
+	//player engine
+	PlayerEngine player;
 
-		// mobile stuff
-		QTabWidget mobileTab;
-		QWidget mobileTab1;
-		QVBoxLayout mobileButtonsVBox;
-		QWidget mobileTab3;
-		QVBoxLayout mobileTableVBox;
-		QWidget mobileTab4;
-		QHBoxLayout mobileSpecialHBox;
+	//QMap<QString, QMap<QString, QTree>> artistAlbumList;
 
-		QHBoxLayout hbox_buttons1;
-		QLineEdit filter;
-		QPushButton buttons1[BTN1_SIZE];
-		QMenu stopButtonMenu;
+	//QList<QString> played_songs;
 
-		QHBoxLayout hbox_buttons2;
-		QPushButton buttons2[BTN2_SIZE];
-		QMenu insertButtonMenu;
-		QProgressBar progressBar;
-		QDial volumeSlider;
+	// menu bar
+	QMenuBar menubar;
+	QMenu topMenus[MENU_SIZE];
 
-		// splitter between toolBox and tableWidget
-		QSplitter mainSplitter;
-		QToolBox* toolBox;
+	// tool bar
+	QToolBar toolBar;
 
-		// information toolbox item
-		QHBoxLayout informationBox;
-		QLabel imageLabel;
-		QImage tmpImage;
-		QPushButton optionsButton;
-		QMenu infoOptionsMenu;
-		QAction infoActionDownload;
+	// central widget
+	QWidget centralWidget;
+	QVBoxLayout verticalLayout;
 
-		// special filters toolbox item
-		QWidget specialFiltersContainer;
-		QWidget TODO;
-		QHBoxLayout specialFilters;
-		QLabel labelYearFilter, labelRatingFilter;
-		QSpinBox minYearFilter, maxYearFilter;
-		QSpinBox minRatingFilter, maxRatingFilter;
-		QCheckBox playUnratedFilter;
-	//	QCheckBox x1Filter, x2Filter;
+	// mobile stuff
+	QTabWidget mobileTab;
+	QWidget mobileTab1;
+	QVBoxLayout mobileButtonsVBox;
+	QWidget mobileTab3;
+	QVBoxLayout mobileTableVBox;
+	QWidget mobileTab4;
+	QHBoxLayout mobileSpecialHBox;
 
-		// table Widget
-		SongTableWidget tableWidget;
-		
-		// other stuff
-		QVector<QAction*> Actions;
-		QMenu popupMenu;
-		bool quitProgram; // only set to true if the program is exited with the menu bar
-		time_t time_to_stop;
+	QHBoxLayout hbox_buttons1;
+	QLineEdit filter;
+	QPushButton buttons1[BTN1_SIZE];
+	QMenu stopButtonMenu;
 
-		// status bar
-		QStatusBar statusBar;
-		
-		/**
-		 * @brief Helper function to set up an action.
-		 * This function allocates a QAction, sets it up and assigns it
-		 *
-		 * @param menuNo Determines the number in the menubar where the action is appended.
-		 *      Use MENU_SIZE if you do not want to append it.
-		 * @param slotName The slot, as returned by Qt's SLOT() macro, or NULL if none.
-		 * @param shortKeySequence The Qt object for a shortkey or empty QKeySequence for none
-		 * @param xpmStr The 2-dimensional xpm char array, or NULL if no pixmap shall be used.
-		 * @return Pointer to the new allocated object.
-		 */
-		QAction* initAction (enum MENU menuNo, enum ACTION actionNo, const char* slotName,
-			const QKeySequence& shortKeySequence = QKeySequence(), const char* const xpmStr[] = NULL);
-		/**
-		 * Helper function to initialize a button in the first button row (media buttons)
-		 * @param btn1No ID of button
-		 * @param slotName Slot of the MainWindow to be called back
-		 * @param xpmStr C string to the button's XPM icon 
-		 */
-		void initButton1 (enum BTN1 btn1No, const char* slotName, const char* const xpmStr[]);
+	QHBoxLayout hbox_buttons2;
+	QPushButton buttons2[BTN2_SIZE];
+	QMenu insertButtonMenu;
+	QProgressBar progressBar;
+	QDial volumeSlider;
 
-		/**
-		 * Helper function to initialize a button in the second button row (functional buttons)
-		 * @param btn2No ID of button
-		 * @param slotName Slot of the MainWindow to be called back
-		 */
-		void initButton2 (enum BTN2 btn2No, const char* slotName);
+	// splitter between toolBox and tableWidget
+	QSplitter mainSplitter;
+	QToolBox* toolBox;
 
-		//! (re)translates the GUI into another language
-		void retranslateUi();
+	// information toolbox item
+	QHBoxLayout informationBox;
+	QLabel imageLabel;
+	QImage tmpImage;
+	QPushButton optionsButton;
+	QMenu infoOptionsMenu;
+	QAction infoActionDownload;
 
-		//! layout stuff that needs to be redone for other layouts
-		void layoutWidgets(bool mobile = false);
-		void freeLayout();
+	// special filters toolbox item
+	QWidget specialFiltersContainer;
+	QWidget TODO;
+	QHBoxLayout specialFilters;
+	QLabel labelYearFilter, labelRatingFilter;
+	QSpinBox minYearFilter, maxYearFilter;
+	QSpinBox minRatingFilter, maxRatingFilter;
+	QCheckBox playUnratedFilter;
+//	QCheckBox x1Filter, x2Filter;
 
-	signals:
-		
+	// table Widget
+	SongTableWidget tableWidget;
 
-	public:
-		/**
-		 * Constructor. Builds up the whole Main Window and sub widgets, connects all signals
-		 * @param parent parent pointer as it will be passed to QMainWindow. Not used otherwise.
-		 */
-		MainWindow (MainWindowContainer* _mwContainer, const QString& dbname, const bool mobile, QWidget* parent=NULL);
-		~MainWindow();
-		inline PlayerEngine* get_player() { return &player; }
-		//inline void setVisible(bool visible) { setVisible(true); }
+	// other stuff
+	QVector<QAction*> Actions;
+	QMenu popupMenu;
+	bool quitProgram; // only set to true if the program is exited with the menu bar
+	time_t time_to_stop;
 
-	protected:
-		bool event(QEvent *event);
+	// status bar
+	QStatusBar statusBar;
+
+	/**
+	 * @brief Helper function to set up an action.
+	 * This function allocates a QAction, sets it up and assigns it
+	 *
+	 * @param menuNo Determines the number in the menubar where the action is appended.
+	 *      Use MENU_SIZE if you do not want to append it.
+	 * @param slotName The slot, as returned by Qt's SLOT() macro, or NULL if none.
+	 * @param shortKeySequence The Qt object for a shortkey or empty QKeySequence for none
+	 * @param xpmStr The 2-dimensional xpm char array, or NULL if no pixmap shall be used.
+	 * @return Pointer to the new allocated object.
+	 */
+	QAction* initAction (enum MENU menuNo, enum ACTION actionNo, const char* slotName,
+		const QKeySequence& shortKeySequence = QKeySequence(), const char* const xpmStr[] = NULL);
+	/**
+	 * Helper function to initialize a button in the first button row (media buttons)
+	 * @param btn1No ID of button
+	 * @param slotName Slot of the MainWindow to be called back
+	 * @param xpmStr C string to the button's XPM icon
+	 */
+	void initButton1 (enum BTN1 btn1No, const char* slotName, const char* const xpmStr[]);
+
+	/**
+	 * Helper function to initialize a button in the second button row (functional buttons)
+	 * @param btn2No ID of button
+	 * @param slotName Slot of the MainWindow to be called back
+	 */
+	void initButton2 (enum BTN2 btn2No, const char* slotName);
+
+	//! (re)translates the GUI into another language
+	void retranslateUi();
+
+	//! layout stuff that needs to be redone for other layouts
+	void layoutWidgets(bool mobile = false);
+	void freeLayout();
+
+signals:
+
+
+public:
+	/**
+	 * Constructor. Builds up the whole Main Window and sub widgets, connects all signals
+	 * @param parent parent pointer as it will be passed to QMainWindow. Not used otherwise.
+	 */
+	MainWindow (MainWindowContainer* _mwContainer, const QString& dbname, const bool mobile, QWidget* parent=NULL);
+	~MainWindow();
+	inline PlayerEngine* get_player() { return &player; }
+	//inline void setVisible(bool visible) { setVisible(true); }
+
+protected:
+	bool event(QEvent *event);
 };
 
 #endif // _MAIN_WINDOW_H_
