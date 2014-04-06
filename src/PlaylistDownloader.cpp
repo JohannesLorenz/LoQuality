@@ -329,7 +329,10 @@ void PlaylistDownloader::nextDownload()
 
 		if(url.scheme() == "res")
 		{
-			destName += url.path().remove(0,url.path().lastIndexOf('/')+1);
+			if(url.path().lastIndexOf('/') <= url.path().size()-2) // i.e. at least one following character
+			 destName += url.path().remove(0,url.path().lastIndexOf('/')+1);
+			else
+			 destName += "unnamed";
 			url.setScheme("http");
 			wget.download(url.toString().toAscii().data(), destName.toAscii().data());
 		}
