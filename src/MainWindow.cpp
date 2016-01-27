@@ -1,6 +1,6 @@
 /*************************************************************************/
 /* LoQuality - A music player for Linux/UNIX.                            */
-/* Copyright (C) 2010-2012                                               */
+/* Copyright (C) 2010-2016                                               */
 /* Johannes Lorenz, Philipp Lorenz                                       */
 /* https://github.com/JohannesLorenz/LoQuality                           */
 /*                                                                       */
@@ -280,7 +280,7 @@ void MainWindow::slotHelpAboutAction ()
 {
 	QMessageBox::about ( NULL, "About - LoQuality",
 				"<h1>LoQuality</h1>"
-				"<i>(c) 2010-2012</i><br/>"
+				"<i>(c) 2010-2016</i><br/>"
 				"by Philipp Lorenz, Johannes Lorenz<br/><br/>"
 				"<a href=\"https://github.com/JohannesLorenz/LoQuality\">https://github.com/JohannesLorenz/LoQuality</a>");
 				

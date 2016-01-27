@@ -1,6 +1,6 @@
 /*************************************************************************/
 /* LoQuality - A music player for Linux/UNIX.                            */
-/* Copyright (C) 2010-2012                                               */
+/* Copyright (C) 2010-2016                                               */
 /* Johannes Lorenz, Philipp Lorenz                                       */
 /* https://github.com/JohannesLorenz/LoQuality                           */
 /*                                                                       */
