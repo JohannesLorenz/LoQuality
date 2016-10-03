@@ -124,18 +124,14 @@ MPlayerConnection::MPlayerConnection(bool nulldevice)
 
 		dup2(pipefd[1], STDOUT_FILENO);
 
-		char* file_param = new char[strlen(REMOTE_PIPE_NAME)+6];
-		strcpy(file_param, "file=");
-		strcat(file_param, REMOTE_PIPE_NAME);
 		const char* _MPLAYER_EXE = globals::MPLAYER_EXE.toAscii().data();
-		printf("%s -input %s -idle -msglevel all=-1:global=5 -ao null -vo null\n",_MPLAYER_EXE,file_param);
+		printf("%s -input-file %s -idle -msg-level all=no -vo null\n",_MPLAYER_EXE,REMOTE_PIPE_NAME);
 
 		const QString& eq = globals::settings->value("equalizer","0:0:0:0:0:0:0:0:0:0").toString();
 		if(nulldevice)
-		 execlp(_MPLAYER_EXE, _MPLAYER_EXE, "-input", file_param, "-idle", "-msglevel", "all=-1:global=5", "-ao", "null", "-vo", "null", "-af", ("equalizer="+eq).toAscii().data(), NULL);
+		 execlp(_MPLAYER_EXE, _MPLAYER_EXE, "-input-file", REMOTE_PIPE_NAME, "-idle", "-msg-level", "all=no", "-ao", "null", "-vo", "null", "-af", ("equalizer="+eq).toAscii().data(), NULL);
 		else
-		 execlp(_MPLAYER_EXE, _MPLAYER_EXE, "-input", file_param, "-idle", "-msglevel", "all=-1:global=5", "-vo", "null", "-af", ("equalizer="+eq).toAscii().data(), NULL);
-		delete[] file_param;
+		 execlp(_MPLAYER_EXE, _MPLAYER_EXE, "-input-file", REMOTE_PIPE_NAME, "-idle", "-msg-level", "all=no", "-vo", "null", "-af", ("equalizer="+eq).toAscii().data(), NULL);
 
 		close(pipefd[1]); /* Reader will see EOF */
 		exit(0);

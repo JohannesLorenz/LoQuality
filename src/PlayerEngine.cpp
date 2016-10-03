@@ -30,6 +30,10 @@
 #include <QTableWidgetItem>
 #include <QMessageBox>
 
+#include "taglib/tag.h"
+#include "taglib/fileref.h"
+#include "taglib/audioproperties.h"
+
 #include "PlayerEngine.h"
 
 #define _MPLAYER_REMOTE_PIPE "/tmp/lq_remote_pipe"
@@ -111,8 +115,22 @@ void PlayerEngine::slotStartPlayback()
 	{
 		case STATUS_SONGLOADED:
 			mPlayerConnection.pass_remote_command((QString("loadfile \"%1\"\n").arg(curSong->text()).toAscii().data()));
-			playTime = mPlayerConnection.fetchValue("get_time_length\n", "ANS_LENGTH=", true).toFloat();
+
+			{
+				TagLib::FileRef fp(curSong->text().toStdString().c_str());
+
+				if(fp.isNull()) {
+					printf("Warning: File not found.");
+					return;
+				}
+
+				TagLib::AudioProperties* audio_props = fp.audioProperties();
+
+				playTime = audio_props->length();
+			}
+
 			curTime = 0.0f;
+
 			break;
 		case STATUS_PAUSED:
 			mPlayerConnection.pass_remote_command("pause\n");
