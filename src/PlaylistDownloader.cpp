@@ -1,6 +1,6 @@
 /*************************************************************************/
 /* LoQuality - A music player for Linux/UNIX.                            */
-/* Copyright (C) 2010-2016                                               */
+/* Copyright (C) 2010-2018                                               */
 /* Johannes Lorenz, Philipp Lorenz                                       */
 /* https://github.com/JohannesLorenz/LoQuality                           */
 /*                                                                       */
@@ -333,7 +333,7 @@ void PlaylistDownloader::nextDownload()
 			 destName += url.path().remove(0,url.path().lastIndexOf('/')+1);
 			else
 			 destName += "unnamed";
-			url.setScheme("http");
+			url.setScheme("https");
 			wget.download(url.toString().toAscii().data(), destName.toAscii().data());
 		}
 		else if(url.scheme() == "myspace")
