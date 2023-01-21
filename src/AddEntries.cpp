@@ -126,7 +126,7 @@ void AddEntryDlg::setupUi()
 		q.append(QString::number(editnum));
 		q.append("';");
 		
-		printf("Executing: %s\n", q.toAscii().data());
+		printf("Executing: %s\n", q.toLatin1().data());
 		
 		QSqlQuery query = sqlhelper.exec(q);
 		
@@ -155,19 +155,19 @@ void AddEntryDlg::setupUi()
 		le_genre.setText(genre);
 		le_year.setText(year);
 		
-		if(!strncmp(int_others.toAscii().data(), "1", 1))
+		if(!strncmp(int_others.toLatin1().data(), "1", 1))
 		 cb_interest_others.setChecked(true);
 		
-		if(!strncmp(int_yours.toAscii().data(), "1", 1))
+		if(!strncmp(int_yours.toLatin1().data(), "1", 1))
 		 cb_interest_yours.setChecked(true);
 		
 		le_filetype.setText(type);
 		le_quality.setText(quality);
 		
-		int vote_yours_value = atoi(vote_yours.toAscii().data());
+		int vote_yours_value = atoi(vote_yours.toLatin1().data());
 		sb_vote_yours.setValue(vote_yours_value);
 		
-		int vote_others_value = atoi(vote_others.toAscii().data());
+		int vote_others_value = atoi(vote_others.toLatin1().data());
 		sb_vote_others.setValue(vote_others_value);
 		
 		le_path.setText(path);
@@ -244,7 +244,7 @@ void AddEntryDlg::OnButtonInsertPressed() // depricated ?
 		if( QMessageBox::No == QMessageBox::question(this, "Incorrect Filepath", "The File does not exist. Do you really want to continue?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No))
 		 return;
 
-		calculate_md5sum(filepath.toAscii().data(), &md5sum);
+		calculate_md5sum(filepath.toLatin1().data(), &md5sum);
 		last_changed = QFileInfo(filepath).lastModified();
 	}
 	QString insert_cmd("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad', 'last_changed', 'md5sum', 'url') VALUES (NULL , '");
@@ -292,7 +292,7 @@ void AddEntryDlg::OnButtonInsertPressed() // depricated ?
 	insert_cmd.append(corr(le_source.text()));
 	insert_cmd.append("');");
 	
-	printf("Query command: %s\n", insert_cmd.toAscii().data());
+	printf("Query command: %s\n", insert_cmd.toLatin1().data());
 	
 	sqlhelper.exec(insert_cmd);
 	// sqlhelper.INSERT(insert_cmd);
@@ -352,7 +352,7 @@ void AddEntryDlg::OnButtonEditInsertPressed()
 	insert_cmd.append("' WHERE 'main'.'id' =");
 	insert_cmd.append(QString::number(editnum));
 	
-	printf("Query command: %s\n", insert_cmd.toAscii().data());
+	printf("Query command: %s\n", insert_cmd.toLatin1().data());
 	
 	sqlhelper.exec(insert_cmd);
 	

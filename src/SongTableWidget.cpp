@@ -261,7 +261,7 @@ void SongTableWidget::reloadTable()
 
 	QSqlQuery query = sqlhelper.exec("SELECT * FROM main;");
 		printf("size: %d\n", query.size());
-		printf("last error: %s\n", query.lastError().text().toAscii().data());
+		printf("last error: %s\n", query.lastError().text().toLatin1().data());
 
 //	setRowCount(query.size());
 

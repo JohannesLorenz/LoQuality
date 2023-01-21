@@ -50,7 +50,7 @@ void DownloadImageDlg::startDownload()
 {
 	QUrl url(urlInput.text());
 	puts("full Path:");
-	puts(outDir.absoluteFilePath(url.path().remove(0,url.path().lastIndexOf('/')+1)).toAscii().data());
+	puts(outDir.absoluteFilePath(url.path().remove(0,url.path().lastIndexOf('/')+1)).toLatin1().data());
 	outfile.setFileName(outDir.absoluteFilePath(url.path().remove(0,url.path().lastIndexOf('/')+1)));
 
 	reply = http.get(QNetworkRequest(url));

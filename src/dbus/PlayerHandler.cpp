@@ -335,7 +335,7 @@ namespace Mpris1
 		map.insert( Field::ARTIST, _table->item(_row, MainWindow::COL_ARTIST)->text() );
 		map.insert( Field::ALBUM, _table->item(_row, MainWindow::COL_ALBUM)->text() );
 
-		printf("Yes, I am currently playing: %s.\n",curSong.toAscii().data());
+		printf("Yes, I am currently playing: %s.\n",curSong.toLatin1().data());
 
 		return map;
 

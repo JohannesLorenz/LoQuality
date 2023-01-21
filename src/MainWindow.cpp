@@ -188,7 +188,7 @@ void MainWindow::slotPlay(int row, int column)
 	}
 	else {
 		int selectedRow = tableWidget.selectedItems().front()->row();
-		pass_remote_command( QString("loadfile %1\n").arg(tableWidget.item(selectedRow, 13)->text()).toAscii().data() );
+		pass_remote_command( QString("loadfile %1\n").arg(tableWidget.item(selectedRow, 13)->text()).toLatin1().data() );
 	}
 	setStatus(STATUS_PLAYING);*/
 
@@ -197,7 +197,7 @@ void MainWindow::slotPlay(int row, int column)
 	}
 	else {
 		int selectedRow = tableWidget.selectedItems().front()->row();
-		player.slotPlay( tableWidget.item(selectedRow, 13)->text().toAscii().data() );
+		player.slotPlay( tableWidget.item(selectedRow, 13)->text().toLatin1().data() );
 	}*/
 
 	//QList<QTableWidgetItem*> items = tableWidget.selectedItems();
@@ -336,7 +336,7 @@ void MainWindow::slotToolBoxChanged(int newIndex)
 		{
 			QDir currentDir(QFileInfo(player.getCurSongItem()->text()).dir());
 			QStringList imgs = currentDir.entryList(QStringList() << "*.jpg" << "*.jpeg" << "*.png" << "*.xpm" << "*.gif", QDir::Files);
-			printf("Scanning Dir: %s, imgs: %d\n",currentDir.absolutePath().toAscii().data(), imgs.size() );
+			printf("Scanning Dir: %s, imgs: %d\n",currentDir.absolutePath().toLatin1().data(), imgs.size() );
 			if(imgs.empty())
 			{
 				loadImageSafely(&tmpImage, "media/graphics/lq.png");
@@ -349,8 +349,8 @@ void MainWindow::slotToolBoxChanged(int newIndex)
 				int imgNumber = (int) (imgs.size()*1.0*rand()/(RAND_MAX+1.0));
 
 				QString chosen_image = currentDir.absoluteFilePath(imgs.at(imgNumber));
-				printf("... chosen image: %s\n",chosen_image.toAscii().data());
-				loadImageSafely(&tmpImage,chosen_image.toAscii().data());
+				printf("... chosen image: %s\n",chosen_image.toLatin1().data());
+				loadImageSafely(&tmpImage,chosen_image.toLatin1().data());
 				printf("size: %d\n",tmpImage.height());
 				imageLabel.setPixmap(QPixmap::fromImage(tmpImage.scaledToHeight(300)));
 				//imageLabel.resize(tmpImage.height()+1, tmpImage.width()+1);

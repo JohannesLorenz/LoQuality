@@ -157,7 +157,7 @@ void UpdateDlg::buttonYesPressed()
 		char ppid_str[16];
 		snprintf(ppid_str, 16, "%d", getppid());
 		execlp("xterm", "xterm", "-title", "LoQuality updater","-e",
-			"./run.sh", globals::settings->value("number_of_cores",2).toString().toAscii().data(),
+			"./run.sh", globals::settings->value("number_of_cores",2).toString().toLatin1().data(),
 			ppid_str, NULL);
 		exit(0);
 	}

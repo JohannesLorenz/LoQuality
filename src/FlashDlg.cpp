@@ -81,7 +81,7 @@ void StoreHelper::slotTimerTimeout()
 	progressDlg=NULL;
 	if(insertSql) { // cbAddAfterwards.isChecked()
 		sqlhelper.start_insert_sequence();
-		sqlhelper.INSERT(curOutName.toAscii().data());
+		sqlhelper.INSERT(curOutName.toLatin1().data());
 		sqlhelper.stop_insert_sequence();
 	}
 }
@@ -101,7 +101,7 @@ void SelectFlashPage::buttonStorePressed()
 		itr != items.end(); itr++)
 	{
 		storeHelper.askForOutputFilename((*itr)->text());
-		storeHelper.convertToOgg(this, strchr((*itr)->text().toAscii().data(), ':') + 2,
+		storeHelper.convertToOgg(this, strchr((*itr)->text().toLatin1().data(), ':') + 2,
 			cbAddAfterwards.isChecked());
 
 		(*itr)->setSelected(false);
@@ -156,7 +156,7 @@ void StoreHelper::askForOutputFilename(const QString& infile)
 		curOutName = QFileDialog::getSaveFileName(NULL, QString("Bitte Speicherort fuer OGG ueberlegen... (%1)").arg(infile), globals::MUSIC_ROOT, "*.ogg");
 		if(curOutName.isEmpty())
 		 break;
-		if( 0 != strncmp(curOutName.toAscii().data(),globals::MUSIC_ROOT.toAscii().data(), globals::MUSIC_ROOT.length())) {
+		if( 0 != strncmp(curOutName.toLatin1().data(),globals::MUSIC_ROOT.toLatin1().data(), globals::MUSIC_ROOT.length())) {
 			QMessageBox::information(NULL, "Sorry...",QString("Dateien sollen nur in Verzeichnissen ab %1 gespeichert werden!").arg(globals::MUSIC_ROOT));
 			continue;
 		}
@@ -173,7 +173,7 @@ bool StoreHelper::convertToOgg(QWidget* parent, const char *infile, bool _insert
 {
 	insertSql = _insertSql;
 
-	pid_t ffmpegs_pid = startOggConvertion(infile, curOutName.toAscii().data());
+	pid_t ffmpegs_pid = startOggConvertion(infile, curOutName.toLatin1().data());
 	if(ffmpegs_pid < 0) {
 		QMessageBox::information(parent, "Sorry...", "... fork() ging leider nicht, kann ffmpeg nicht starten :(");
 		return false;
@@ -212,7 +212,7 @@ void SelectFilesPage::setupUi()
 void SelectFilesPage::buttonStorePressed()
 {
 	storeHelper.askForOutputFilename(fileName.text());
-	storeHelper.convertToOgg(this, fileName.text().toAscii().data(), cbAddAfterwards.isChecked());
+	storeHelper.convertToOgg(this, fileName.text().toLatin1().data(), cbAddAfterwards.isChecked());
 }
 
 void SelectFilesPage::selectFiles()

@@ -76,7 +76,7 @@ SqlHelperBase::SqlHelperBase(const QString& dbname)
 	 printf("CONNECTION TO DATABASE ESTABLISHED!!\n");
 	else {
 		printf("COULD NOT OPEN OR CREATE DATABASE!\n Error: %s",
-			db.lastError().text().toAscii().data()
+			db.lastError().text().toLatin1().data()
 		);
 		return;
 	}
@@ -102,7 +102,7 @@ QString SqlHelperBase::corr(const QString& originalString)
 	QString result = originalString;
 	if(!result.isEmpty())
 	{
-		printf("result: %s\n",result.toAscii().data());
+		printf("result: %s\n",result.toLatin1().data());
 		// short fix: do not replace first and last 'es!
 		bool isInQuotes = (result[0]=='\'') && (result[result.length()-1]=='\'');
 		if(isInQuotes){
@@ -125,7 +125,7 @@ QString SqlHelperBase::corr(const QString& originalString)
 void SqlHelper::DELETE(const int id) const
 {
 	//QSqlQuery query();
-	//printf("%s\n",QString("DELETE FROM `musicdb`.`main` WHERE `id`='%1'").arg(id).toAscii().data());
+	//printf("%s\n",QString("DELETE FROM `musicdb`.`main` WHERE `id`='%1'").arg(id).toLatin1().data());
 	db.exec( QString("DELETE FROM 'main' WHERE `id`='%1'").arg(id) );
 }
 
@@ -140,16 +140,16 @@ bool SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 	if(mPlayerConnection == NULL)
 		return;
 
-	mPlayerConnection->pass_remote_command((QString("loadfile \"%1\"\n").arg(filepath).toAscii().data()));
+	mPlayerConnection->pass_remote_command((QString("loadfile \"%1\"\n").arg(filepath).toLatin1().data()));
 
 	QString filename = filepath; // filename as SQL wants it
 	filename.replace('\'', "''");
 
 	QString metaTitle = corr( mPlayerConnection->fetchValue("get_meta_title\n", "ANS_META_TITLE=") );
-	printf("metaTitle: %s\n",metaTitle.toAscii().data());
+	printf("metaTitle: %s\n",metaTitle.toLatin1().data());
 	if(metaTitle == "''")
 	{
-		metaTitle = strrchr(filepath, QDir::separator().toAscii()) + 1;
+		metaTitle = strrchr(filepath, QDir::separator().toLatin1()) + 1;
 		metaTitle.resize(metaTitle.lastIndexOf('.')); // get rid of ending
 
 		/*
@@ -167,7 +167,7 @@ bool SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 		metaTitle.append('\'');
 
 		metaTitle = corr(metaTitle);
-		printf("metaTitle now: %s\n",metaTitle.toAscii().data());
+		printf("metaTitle now: %s\n",metaTitle.toLatin1().data());
 	}
 
 	QByteArray md5sum;
@@ -193,7 +193,7 @@ bool SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 					last_changed.toTime_t()
 				).arg(
 					url
-				).toAscii().data());
+				).toLatin1().data());
 
 	const QSqlQuery query = db.exec(
 	/*QString str =*/	QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad', 'last_changed', 'md5sum', 'url') "
@@ -222,7 +222,7 @@ bool SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 					)
 			);
 	if(!query.isValid()) {
-		fputs(query.lastError().text().toAscii().data(),stderr);
+		fputs(query.lastError().text().toLatin1().data(),stderr);
 	}
 #else
 	TagLib::FileRef fp(filepath);
@@ -237,10 +237,10 @@ bool SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 	filename.replace('\'', "''");
 
 	QString metaTitle = corr( TStringToQString(tag->title()) );
-	printf("metaTitle: %s\n",metaTitle.toAscii().data());
+	printf("metaTitle: %s\n",metaTitle.toLatin1().data());
 	if(metaTitle.isEmpty())
 	{
-		metaTitle = strrchr(filepath, QDir::separator().toAscii()) + 1;
+		metaTitle = strrchr(filepath, QDir::separator().toLatin1()) + 1;
 		metaTitle.resize(metaTitle.lastIndexOf('.')); // get rid of ending
 
 		/*
@@ -258,7 +258,7 @@ bool SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 //		metaTitle.append('\'');
 
 		metaTitle = corr(metaTitle);
-		printf("metaTitle now: %s\n",metaTitle.toAscii().data());
+		printf("metaTitle now: %s\n",metaTitle.toLatin1().data());
 	}
 
 	QByteArray md5sum;
@@ -288,7 +288,7 @@ bool SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 					last_changed.toTime_t()
 				).arg(
 					url
-				).toAscii().data());
+				).toLatin1().data());
 
 	const QSqlQuery query = db.exec(
 	/*QString str =*/	QString("INSERT INTO 'main' ('id' ,'titel' ,'kuenstler' ,'album' ,'tag' ,'genre' ,'jahr' ,'others' ,'yours' ,'dateityp' ,'qualitaet' ,'bew_yours' ,'bew_others' ,'pfad', 'last_changed', 'md5sum', 'url') "
@@ -317,7 +317,7 @@ bool SqlHelper::INSERT(const char* filepath, const char* url) const // TODO: NUL
 					)
 			);
 	if(!query.isValid()) {
-		fputs(query.lastError().text().toAscii().data(),stderr);
+		fputs(query.lastError().text().toLatin1().data(),stderr);
 	}
 
 	return true;
@@ -360,9 +360,9 @@ bool SqlHelperBase::table_exists(const char* table_name) const
 	bool table_exists = false;
 	QSqlQuery query = db.exec("SELECT name FROM  sqlite_master WHERE type='table' ORDER BY name;");
 	printf("size: %d\n", query.size());
-	//printf("last error: %s\n", query.lastError().text().toAscii().data());
+	//printf("last error: %s\n", query.lastError().text().toLatin1().data());
 	while (query.next() && !table_exists) {
-		printf("tables: %s\n",query.value(0).toString().toAscii().data());
+		printf("tables: %s\n",query.value(0).toString().toLatin1().data());
 		if( query.value(0).toString() == table_name )
 			table_exists = true;
 	}

@@ -91,7 +91,7 @@ void FileManager::sortOutUseless(QTreeWidgetItem *parentItem, QDir *currentDir, 
 	for(QList<QFileInfo>::const_iterator itr = files.begin(); itr != files.end(); itr++)
 	if(!itr->isDir())
 	{
-		printf("File: %s\n",itr->fileName().toAscii().data());
+		printf("File: %s\n",itr->fileName().toLatin1().data());
 
 		const QString suffix = itr->suffix();
 		if(suffix_matches(suffix))
@@ -101,11 +101,11 @@ void FileManager::sortOutUseless(QTreeWidgetItem *parentItem, QDir *currentDir, 
 
 			// skip to next itr item >= this file, or the end
 			for(; dbItr.hasNext() && dbItr.peekNext() < canPath; dbItr.next()) {
-				printf("peek: %s\n", dbItr.peekNext().toAscii().data());
+				printf("peek: %s\n", dbItr.peekNext().toLatin1().data());
 			}
 
 			if(dbItr.hasNext())
-			 printf("a: %s, b:%s\n", dbItr.peekNext().toAscii().data(), canPath.toAscii().data());
+			 printf("a: %s, b:%s\n", dbItr.peekNext().toLatin1().data(), canPath.toLatin1().data());
 
 			if( ! dbItr.hasNext() || dbItr.peekNext() > canPath ) {
 				new_files++;
@@ -115,7 +115,7 @@ void FileManager::sortOutUseless(QTreeWidgetItem *parentItem, QDir *currentDir, 
 
 
 	printf("Dir %s=> usef files: %d, new files: %d, usef dirs: %d, new dirs: %d\n",
-		parentItem->text(0).toAscii().data(),
+		parentItem->text(0).toLatin1().data(),
 		useful_files, new_files, useful_subdirs, new_subdirs);
 
 	// mark this directory correctly
@@ -140,7 +140,7 @@ void FileManager::sortOutUseless(QTreeWidgetItem *parentItem, QDir *currentDir, 
 		QTreeWidgetItem* only_displayed = NULL;
 
 		for(int i = 0; i < nchildren && (only_displayed == NULL); i++){
-		printf("problem: %s\n",parentItem->child(i)->text(0).toAscii().data());
+		printf("problem: %s\n",parentItem->child(i)->text(0).toLatin1().data());
 		 if(!parentItem->child(i)->isHidden())
 		  only_displayed = parentItem->child(i);
 }
@@ -186,14 +186,14 @@ void FileManager::removeUnusedDirs(QTreeWidgetItem *parentItem, QDir *currentDir
 	for(int i = 0; i < nchilds; i++)
 	{
 		QTreeWidgetItem* curChild = parentItem->child(i);
-		printf("before recursion: %s\n", currentDir->canonicalPath().toAscii().data());
-		printf("aborting: %s\n", parentItem->text(0).toAscii().data());
+		printf("before recursion: %s\n", currentDir->canonicalPath().toLatin1().data());
+		printf("aborting: %s\n", parentItem->text(0).toLatin1().data());
 		currentDir->cd(curChild->text(0));
-		printf("recursion: %s\n", currentDir->canonicalPath().toAscii().data());
+		printf("recursion: %s\n", currentDir->canonicalPath().toLatin1().data());
 		removeUnusedDirs(curChild, currentDir, dbItr); // recursion
 		currentDir->cdUp();
 	}
-	printf("recursion: end: %s\n", currentDir->canonicalPath().toAscii().data());
+	printf("recursion: end: %s\n", currentDir->canonicalPath().toLatin1().data());
 //	sortOutUseless(parentItem, currentDir, dbItr);
 }
 

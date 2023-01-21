@@ -91,7 +91,7 @@ bool SyncAddManager::appendItem(const QString &_artist, const QString &_album, c
 
 	//QModelIndex model = fileAddBase.fileView.rootIndex();
 
-//	printf("%s\n",model.data().toString().toAscii().data());
+//	printf("%s\n",model.data().toString().toLatin1().data());
 
 	QTreeWidgetItem* root = fileAddBase.fileView.topLevelItem(0);
 	QTreeWidgetItem* titleItem = getChild(getChild(getChild(root, artist),album),title);

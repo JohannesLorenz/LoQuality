@@ -91,7 +91,7 @@ void PlaylistDownloader::setupUi(void)
 }
 
 bool PlaylistDownloader::shallDownloadFile(int row) {
-	//printf("File %s exists? %d\n",table->item(row, )->text().toAscii().data(), QFile::exists(table->item(row, )->text()));
+	//printf("File %s exists? %d\n",table->item(row, )->text().toLatin1().data(), QFile::exists(table->item(row, )->text()));
 	return( !QFile::exists(table->item(row, 13)->text()) &&
 	 !table->item(row, 15)->text().isEmpty() );
 }
@@ -169,7 +169,7 @@ void PlaylistDownloader::slotBtnOk()
 	insert_cmd.append("' WHERE 'main'.'id' =");
 	insert_cmd.append(QString::number(row));
 
-	printf("Query command: %s\n", insert_cmd.toAscii().data());
+	printf("Query command: %s\n", insert_cmd.toLatin1().data());
 
 	sqlhelper.exec(insert_cmd);
 }*/
@@ -189,7 +189,7 @@ void PlaylistDownloader::slotBtnOk()
 	insert_cmd.append("' WHERE 'main'.'id' =");
 	insert_cmd.append(QString::number(row));
 
-	printf("Query command: %s\n", insert_cmd.toAscii().data());
+	printf("Query command: %s\n", insert_cmd.toLatin1().data());
 
 	sqlhelper.exec(insert_cmd);
 }*/
@@ -302,7 +302,7 @@ void PlaylistDownloader::nextDownload()
 				insert_cmd.append("' WHERE 'main'.'id' =");
 				insert_cmd.append(QString::number(table->row2id(currentDownloadRow)));
 
-				printf("Query command: %s\n", insert_cmd.toAscii().data());
+				printf("Query command: %s\n", insert_cmd.toLatin1().data());
 				sqlhelper.exec(insert_cmd);
 			}
 		}
@@ -334,13 +334,13 @@ void PlaylistDownloader::nextDownload()
 			else
 			 destName += "unnamed";
 			url.setScheme("https");
-			wget.download(url.toString().toAscii().data(), destName.toAscii().data());
+			wget.download(url.toString().toLatin1().data(), destName.toLatin1().data());
 		}
 		else if(url.scheme() == "myspace")
 		{
 			destName += makeFilename(table->item(currentDownloadRow, 1)->text());
 			destName += ".mp3";
-			myspace.download(url.host().toAscii().data(), destName.toAscii().data());
+			myspace.download(url.host().toLatin1().data(), destName.toLatin1().data());
 		}
 		else // must be a song
 		{
@@ -349,13 +349,13 @@ void PlaylistDownloader::nextDownload()
 			if(url.scheme()=="mp3") {
 				destName += ".mp3";
 				url.setScheme("http");
-				wget.download(url.toString().toAscii().data(), destName.toAscii().data());
+				wget.download(url.toString().toLatin1().data(), destName.toLatin1().data());
 			}
 			else {
 				destName += ".%%(ext)";
-				youtubedl.download(url.toString().toAscii().data(),
-					destName.toAscii().data(),
-					cbFormat.currentText().toAscii().data());
+				youtubedl.download(url.toString().toLatin1().data(),
+					destName.toLatin1().data(),
+					cbFormat.currentText().toLatin1().data());
 			}
 		}
 

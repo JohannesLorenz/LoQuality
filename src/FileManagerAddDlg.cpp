@@ -128,7 +128,7 @@ void FileManagerAddDlg::slotBtnOk()
 		insert_cmd.append(_filename);
 		insert_cmd.append("'");
 		
-		printf("Insert command: %s\n", insert_cmd.toAscii().data());
+		printf("Insert command: %s\n", insert_cmd.toLatin1().data());
 		
 		sqlhelper.INSERT(insert_cmd);
 #else
@@ -137,7 +137,7 @@ void FileManagerAddDlg::slotBtnOk()
 		if (progressDlg.wasCanceled())
 		 break;
 
-		sqlhelper.INSERT(itemsToAdd[cnt]->text().toAscii().data());
+		sqlhelper.INSERT(itemsToAdd[cnt]->text().toLatin1().data());
 #endif
 	}
 	sqlhelper.stop_insert_sequence();

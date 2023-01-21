@@ -114,7 +114,7 @@ void PlayerEngine::slotStartPlayback()
 	switch(player_status)
 	{
 		case STATUS_SONGLOADED:
-			mPlayerConnection.pass_remote_command((QString("loadfile \"%1\"\n").arg(curSong->text()).toAscii().data()));
+			mPlayerConnection.pass_remote_command((QString("loadfile \"%1\"\n").arg(curSong->text()).toLatin1().data()));
 
 			{
 				TagLib::FileRef fp(curSong->text().toStdString().c_str());

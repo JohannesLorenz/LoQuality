@@ -68,7 +68,7 @@ SettingsReader::SettingsReader()
 	const bool first_start = globals::settings->value("first_start", true).toBool();
 	if(first_start) {
 			globals::settings->setValue("first_start", false);
-			QMessageBox::information(NULL, "Please close LQ and then edit:", globals::settings->fileName().toAscii().data());
+			QMessageBox::information(NULL, "Please close LQ and then edit:", globals::settings->fileName().toLatin1().data());
 		}
 	if(globals::settings->value("update_applied").toBool()) {
 			UpdateInfoDlg u;
@@ -77,7 +77,7 @@ SettingsReader::SettingsReader()
 			globals::settings->setValue("update_applied", false);
 		}
 	printf("Writing options to %s\n",
-		globals::settings->fileName().toAscii().data());
+		globals::settings->fileName().toLatin1().data());
 	checkIntegrity(first_start);
 
 	if(first_start) {

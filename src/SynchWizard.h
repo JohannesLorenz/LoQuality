@@ -286,7 +286,7 @@ public:
 
 	void initializePage() {
 		QString base = field("fileBase").toString();
-		printf("base: %s\n", base.toAscii().data());
+		printf("base: %s\n", base.toLatin1().data());
 		scpLogon.setText(QString("SSH user: %1@%2, port %3").arg(field("nameAtHost").toString(),
 			field("ip").toString(),field("port").toString())
 			);

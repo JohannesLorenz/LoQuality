@@ -80,7 +80,7 @@ QString MPlayerConnection::fetchValue(const char* remoteCommand, const char* ans
 		if(ret > strlen(ansStr) && begin) {
 			QString retString(begin+strlen(ansStr));
 			retString.resize(retString.indexOf('\n'));
-			printf("string : %s\n", retString.toAscii().data());
+			printf("string : %s\n", retString.toLatin1().data());
 			return retString;
 		}
 		else {
@@ -112,7 +112,7 @@ MPlayerConnection::MPlayerConnection(bool nulldevice)
 	fcntl(pipefd[0], F_SETFL, O_NONBLOCK);
 
 	// fork MPlayer
-	printf("MPLAYER EXE: %s\n",globals::MPLAYER_EXE.toAscii().data());
+	printf("MPLAYER EXE: %s\n",globals::MPLAYER_EXE.toLatin1().data());
 	mplayers_pid=fork();
 	if(mplayers_pid < 0) {
 		QMessageBox::information(NULL, "Sorry...", "... fork() ging nicht, kein MPlayer!");
@@ -124,14 +124,14 @@ MPlayerConnection::MPlayerConnection(bool nulldevice)
 
 		dup2(pipefd[1], STDOUT_FILENO);
 
-		const char* _MPLAYER_EXE = globals::MPLAYER_EXE.toAscii().data();
+		const char* _MPLAYER_EXE = globals::MPLAYER_EXE.toLatin1().data();
 		printf("%s -input-file %s -idle -msg-level all=no -vo null\n",_MPLAYER_EXE,REMOTE_PIPE_NAME);
 
 		const QString& eq = globals::settings->value("equalizer","0:0:0:0:0:0:0:0:0:0").toString();
 		if(nulldevice)
-		 execlp(_MPLAYER_EXE, _MPLAYER_EXE, "-input-file", REMOTE_PIPE_NAME, "-idle", "-msg-level", "all=no", "-ao", "null", "-vo", "null", "-af", ("equalizer="+eq).toAscii().data(), NULL);
+		 execlp(_MPLAYER_EXE, _MPLAYER_EXE, "-input-file", REMOTE_PIPE_NAME, "-idle", "-msg-level", "all=no", "-ao", "null", "-vo", "null", "-af", ("equalizer="+eq).toLatin1().data(), NULL);
 		else
-		 execlp(_MPLAYER_EXE, _MPLAYER_EXE, "-input-file", REMOTE_PIPE_NAME, "-idle", "-msg-level", "all=no", "-vo", "null", "-af", ("equalizer="+eq).toAscii().data(), NULL);
+		 execlp(_MPLAYER_EXE, _MPLAYER_EXE, "-input-file", REMOTE_PIPE_NAME, "-idle", "-msg-level", "all=no", "-vo", "null", "-af", ("equalizer="+eq).toLatin1().data(), NULL);
 
 		close(pipefd[1]); /* Reader will see EOF */
 		exit(0);

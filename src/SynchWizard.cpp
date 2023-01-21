@@ -67,21 +67,21 @@ bool SelectPage::getSongList()
 	und der folgende befehl gibt dir alle ids und md5sums von meiner datenbank, die in deiner datenbank nicht drin sind:
 	select id,last_changed as lol from main group by id having count(id) > (select count(*) from johannesdb.main where last_changed = lol);
 	*/
-	printf("%s\n",( QString("ATTACH DATABASE \"%1\" AS johannesdb;").arg(field("importDbName").toString()).toAscii().data()));
+	printf("%s\n",( QString("ATTACH DATABASE \"%1\" AS johannesdb;").arg(field("importDbName").toString()).toLatin1().data()));
 	QSqlQuery query = sqlhelper.exec( QString("ATTACH DATABASE \"%1\" AS johannesdb;").arg(field("importDbName").toString()) );
 	if(!query.isValid()) {
-		QMessageBox::information(NULL, "Error loading database", query.lastError().text().toAscii().data());
+		QMessageBox::information(NULL, "Error loading database", query.lastError().text().toLatin1().data());
 		return false;
 	}
 
 	//QSqlQuery query2;
 	query = sqlhelper.exec("select id, titel, kuenstler, album, pfad, md5sum as lol from johannesdb.main group by id having count(id) > (select count(*) from main where md5sum = lol);");
 	if(!query.isValid()) {
-		QMessageBox::information(NULL, "Sql Error", query.lastError().text().toAscii().data());
+		QMessageBox::information(NULL, "Sql Error", query.lastError().text().toLatin1().data());
 		return false;
 	}
 	while (query.next()) { // WARNING: DO !!!NEVER!!! rely on query.size() here!!! (see qt docs...)
-		//printf("new song: %s\n",query.value(4).toString().toAscii().data());
+		//printf("new song: %s\n",query.value(4).toString().toLatin1().data());
 		syncAddManager.appendItem(query.value(2).toString(), query.value(3).toString(), query.value(1).toString(), query.value(4).toString());
 	}
 
@@ -100,7 +100,7 @@ void TransmitPage::runTransmission()
 		command.append(' ');
 	}
 
-	printf("command: %s\n", command.toAscii().data());*/
+	printf("command: %s\n", command.toLatin1().data());*/
 
 	QString lca = selectedSongs->first()->text();
 	while (itr.hasNext()) {
@@ -113,7 +113,7 @@ void TransmitPage::runTransmission()
 	}
 
 
-	printf("lca: %s\n", lca.toAscii().data());
+	printf("lca: %s\n", lca.toLatin1().data());
 
 	unsigned int i = 0;
 	while ((i = lca.indexOf(QDir::separator(), i)) != -1) {
@@ -137,7 +137,7 @@ void ScriptRunPage::slotTimerTimeout()
 		progressDlg=NULL;
 		if(insertSql) { // cbAddAfterwards.isChecked()
 			sqlhelper.start_insert_sequence();
-			sqlhelper.INSERT(curOutName.toAscii().data());
+			sqlhelper.INSERT(curOutName.toLatin1().data());
 			sqlhelper.stop_insert_sequence();
 		}*/
 	}
@@ -182,7 +182,7 @@ bool ScriptRunPage::forkScp(QString nextFile)
 
 		nextFile.replace("'", "'");
 		nextFile.replace(" ", " ");
-		printf("%s\n",mkdirCommand.toAscii().data());
+		printf("%s\n",mkdirCommand.toLatin1().data());
 		QString scpCommand = QString("scp -P %1 -i %2 %3@%4:\"%5\" \"%6/%7\"")
 				.arg(	port,
 					rsaKey,
@@ -191,11 +191,11 @@ bool ScriptRunPage::forkScp(QString nextFile)
 					nextFile,globals::MUSIC_ROOT,
 					destDir);
 		//sleep(1);
-//		printf("%s\n",scpCommand.toAscii().data());
+//		printf("%s\n",scpCommand.toLatin1().data());
 		scpCommand.replace("'", "'");
 		scpCommand.replace(" ", " ");
-		system(mkdirCommand.toAscii().data()); // TODO: use execv
-//		system(scpCommand.toAscii().data());
+		system(mkdirCommand.toLatin1().data()); // TODO: use execv
+//		system(scpCommand.toLatin1().data());
 //		progressBar.setValue(progressBar.value()+1);
 
 		// TODO: full path for first argument
@@ -208,14 +208,14 @@ bool ScriptRunPage::forkScp(QString nextFile)
 		}
 
 		printf("scp -P %s -i %s %s %s\n",
-			port.toAscii().data(), rsaKey.toAscii().data(),
-			srcFile.toAscii().data(), destFile.toAscii().data());
+			port.toLatin1().data(), rsaKey.toLatin1().data(),
+			srcFile.toLatin1().data(), destFile.toLatin1().data());
 
 		execlp("scp", "scp",
-			"-P", port.toAscii().data(),
-			"-i", rsaKey.toAscii().data(),
-			srcFile.toAscii().data(),
-			destFile.toAscii().data(),
+			"-P", port.toLatin1().data(),
+			"-i", rsaKey.toLatin1().data(),
+			srcFile.toLatin1().data(),
+			destFile.toLatin1().data(),
 			NULL);
 
 		exit(0);

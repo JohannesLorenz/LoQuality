@@ -68,7 +68,7 @@ pid_t startOggConvertion(const char *infile, const char* outfilename)
 	const pid_t ffmpegs_pid=fork();
 	if(ffmpegs_pid == 0) {
 		// ffmpeg -i flashfile -vn -acodec libmp3lame -y -ar 44100 -ab 128000 outfilename
-		//execlp("ffmpeg", "ffmpeg", "-i", strchr((*itr)->text().toAscii().data(), ':') + 2, "-vn", "-acodec", "libmp3lame", "-y", "-ar", "44100", "-ab", "128000", curOutName.toAscii().data(), NULL);
+		//execlp("ffmpeg", "ffmpeg", "-i", strchr((*itr)->text().toLatin1().data(), ':') + 2, "-vn", "-acodec", "libmp3lame", "-y", "-ar", "44100", "-ab", "128000", curOutName.toLatin1().data(), NULL);
 
 		/*
 			We need at most audio quality 6 = approx. 128 kbps. See:
@@ -79,7 +79,7 @@ pid_t startOggConvertion(const char *infile, const char* outfilename)
 		// ffmpeg -i flashfile -vn -y -ar 44100 -aq 6 -acodec libvorbis -threads THREADNUM outfilename
 		const QString CPU_THREADS = globals::settings->value("number_of_cores",2).toString();
 		const QString ffmpeg_fullpath = globals::settings->value("ffmpeg_fullpath").toString();
-		//printf("%s -i %s ... -threads %s %s",,,CPU_THREADS, curOutName.toAscii().data())
+		//printf("%s -i %s ... -threads %s %s",,,CPU_THREADS, curOutName.toLatin1().data())
 		execlp(ffmpeg_fullpath.toLatin1().data(), "ffmpeg", "-i", infile, "-vn", "-y", "-ar", "44100", "-aq", "6", "-acodec", "libvorbis", "-threads", CPU_THREADS.toLatin1().data(), outfilename, NULL);
 
 		exit(0);
@@ -117,7 +117,7 @@ bool YouTubeDlSession::download(const char *url, const char *dest, const char* a
 	if(_youtubedls_pid == 0)
 	{
 		const QString youtubedl_fullpath = globals::settings->value("youtubedl_fullpath").toString();
-		if( -1 == execlp(youtubedl_fullpath.toAscii().data(), "youtube-dl", "-o", dest, "-w", "-c", "-i", "--extract-audio", "--audio-format", audio_format , "--audio-quality", "320k", url, NULL) )
+		if( -1 == execlp(youtubedl_fullpath.toLatin1().data(), "youtube-dl", "-o", dest, "-w", "-c", "-i", "--extract-audio", "--audio-format", audio_format , "--audio-quality", "320k", url, NULL) )
 		 perror("Could not start youtube-dl");
 		exit(0);
 	}
@@ -163,7 +163,7 @@ void FileDownloadSession::download(const char *_url, const char* dest)
 			outfile = new QFile();
 			outfile->setFileName(dest);
 			reply = get(QNetworkRequest(url));
-			printf("error?? %s\n",reply->errorString().toAscii().data());
+			printf("error?? %s\n",reply->errorString().toLatin1().data());
 			connect(reply, SIGNAL(finished()), this, SLOT(finished()));
 
 			//QObject::connect(this, SIGNAL(done(bool)), this, SLOT(slotTimerTimeout()));

@@ -214,7 +214,7 @@ private slots:
 	}
 
 	void slotOpenOptionsDlg() {
-		QMessageBox::information(NULL, "Not yet implemented! Edit file per text editor:", globals::settings->fileName().toAscii().data());
+		QMessageBox::information(NULL, "Not yet implemented! Edit file per text editor:", globals::settings->fileName().toLatin1().data());
 	}
 
 private:
