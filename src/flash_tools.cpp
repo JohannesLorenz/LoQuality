@@ -20,7 +20,9 @@
 
 #include <cstdlib>
 #include <unistd.h>
+#include <QDataStream>
 #include <QDir>
+#include <QNetworkReply>
 #include <QUrl>
 #include "globals.h"
 #include "flash_tools.h"
@@ -60,7 +62,7 @@ void getFileList(QList<QFileInfo>* allFiles)
 	}
 }
 
-pid_t startOggConvertion(const char *infile, const char* outfile)
+pid_t startOggConvertion(const char *infile, const char* outfilename)
 {
 	// fork ffmpeg
 	const pid_t ffmpegs_pid=fork();
@@ -74,11 +76,11 @@ pid_t startOggConvertion(const char *infile, const char* outfile)
 			http://en.wikipedia.org/wiki/Vorbis
 		*/
 		// note: you might want to specify number of threads with "-threads n"
-		// ffmpeg -i flashfile -vn -y -ar 44100 -aq 6 -acodec libvorbis -threads THREADNUM outfile
+		// ffmpeg -i flashfile -vn -y -ar 44100 -aq 6 -acodec libvorbis -threads THREADNUM outfilename
 		const QString CPU_THREADS = globals::settings->value("number_of_cores",2).toString();
 		const QString ffmpeg_fullpath = globals::settings->value("ffmpeg_fullpath").toString();
 		//printf("%s -i %s ... -threads %s %s",,,CPU_THREADS, curOutName.toAscii().data())
-		execlp(ffmpeg_fullpath.toAscii().data(), "ffmpeg", "-i", infile, "-vn", "-y", "-ar", "44100", "-aq", "6", "-acodec", "libvorbis", "-threads", CPU_THREADS.toAscii().data(), outfile, NULL);
+		execlp(ffmpeg_fullpath.toLatin1().data(), "ffmpeg", "-i", infile, "-vn", "-y", "-ar", "44100", "-aq", "6", "-acodec", "libvorbis", "-threads", CPU_THREADS.toLatin1().data(), outfilename, NULL);
 
 		exit(0);
 	}
@@ -158,15 +160,12 @@ void FileDownloadSession::download(const char *_url, const char* dest)
 		{*/
 			printf("downloading: %s to %s\n", _url, dest);
 			QUrl url(_url);
-			delete outfile;
 			outfile = new QFile();
 			outfile->setFileName(dest);
-			outfile->open(QFile::WriteOnly);
-			if(!outfile->isOpen())
-			 exit(99);
-			setHost(url.host());
-			get(QUrl::toPercentEncoding(url.path()), outfile);
-			printf("error?? %s\n",errorString().toAscii().data()	);
+			reply = get(QNetworkRequest(url));
+			printf("error?? %s\n",reply->errorString().toAscii().data());
+			connect(reply, SIGNAL(finished()), this, SLOT(finished()));
+
 			//QObject::connect(this, SIGNAL(done(bool)), this, SLOT(slotTimerTimeout()));
 /*		}
 		puts("EXIT!");
@@ -174,5 +173,16 @@ void FileDownloadSession::download(const char *_url, const char* dest)
 	}
 	else
 		return begin(_new_pid);*/
+}
+
+void FileDownloadSession::finished()
+{
+	outfile->open(QFile::WriteOnly);
+	QDataStream str(outfile);
+	str << reply->readAll();
+	reply->deleteLater();
+
+	outfile->close();
+	delete outfile;
 }
 

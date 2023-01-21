@@ -26,7 +26,7 @@
 #include <QString>
 #include <QFileInfo>
 #include <QTimer>
-#include <QHttp>
+#include <QNetworkAccessManager>
 #include <sys/wait.h>
 
 //! adds all flash file infos from @a basedir to @a allFiles
@@ -97,9 +97,13 @@ public:
 
 
 //! This class is not used...
-class FileDownloadSession : public QHttp
+class FileDownloadSession : public QNetworkAccessManager
 {
+	Q_OBJECT
+	QNetworkReply* reply;
 	QFile* outfile;
+private slots:
+	void finished();
 public:
 	void download(const char *_url, const char* dest);
 	FileDownloadSession() : outfile(NULL) {}

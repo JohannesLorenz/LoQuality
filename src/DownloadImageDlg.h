@@ -27,9 +27,12 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QHttp>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <QDir>
 #include <QFile>
+
+class QNetworkReply;
 
 class DownloadImageDlg : public QDialog
 {
@@ -42,7 +45,8 @@ class DownloadImageDlg : public QDialog
 	QVBoxLayout topLayout;
 	QHBoxLayout buttonLayout;
 
-	QHttp http;
+	QNetworkAccessManager http;
+	QNetworkReply* reply;
 	QDir outDir;
 	QFile outfile;
 
@@ -50,7 +54,8 @@ class DownloadImageDlg : public QDialog
 	void retranslateUi();
 private slots:
 	void startDownload();
-	void stopDownload(bool errors);
+	void error(QNetworkReply::NetworkError err);
+	void stopDownload();
 public:
 	DownloadImageDlg(const QString& directory);
 };

@@ -38,7 +38,7 @@
 #include <QSqlTableModel>
 
 #include <QAction>
-#include <QtGui/QStatusBar>
+#include <QStatusBar>
 #include <QMessageBox>
 
 #include "globals.h"

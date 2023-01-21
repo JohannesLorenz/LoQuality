@@ -19,6 +19,7 @@
 /*************************************************************************/
 
 #include <QMessageBox>
+#include <QNetworkReply>
 #include <QUrl>
 #include "DownloadImageDlg.h"
 
@@ -51,22 +52,33 @@ void DownloadImageDlg::startDownload()
 	puts("full Path:");
 	puts(outDir.absoluteFilePath(url.path().remove(0,url.path().lastIndexOf('/')+1)).toAscii().data());
 	outfile.setFileName(outDir.absoluteFilePath(url.path().remove(0,url.path().lastIndexOf('/')+1)));
-	outfile.open(QFile::WriteOnly);
 
-	http.setHost(url.host());
-	http.get(QUrl::toPercentEncoding(url.path()), &outfile);
-	QObject::connect(&http, SIGNAL(done(bool)), this, SLOT(stopDownload(bool)));
+	reply = http.get(QNetworkRequest(url));
+	QObject::connect(reply, SIGNAL(finished()), this, SLOT(finished()));
+	QObject::connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
+		this, SLOT(error(QNetworkReply::NetworkError)));
 }
 
-void DownloadImageDlg::stopDownload(bool errors)
+void DownloadImageDlg::error(QNetworkReply::NetworkError err)
 {
-	if(errors)
-		QMessageBox::warning(NULL, "Error", http.errorString());
-	else
-		QMessageBox::information(NULL, "Finished", "It worked!");
+	QMessageBox::warning(NULL, "Error", reply->errorString());
+	reply->deleteLater();
+}
+
+void DownloadImageDlg::stopDownload()
+{
+	QMessageBox::information(NULL, "Finished", "It worked!");
 
 //	QMessageBox::information(NULL, "Finished",
 //		errors?"Download failed!":"Download successful");
+
+
+
+	outfile.open(QIODevice::WriteOnly);
+	QDataStream str(&outfile);
+	str << reply->readAll();
+	reply->deleteLater();
+
 	outfile.close();
 	close();
 }

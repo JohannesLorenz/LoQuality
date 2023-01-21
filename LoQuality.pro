@@ -3,9 +3,10 @@
 # #####################################################################
 QT += sql \
     dbus \
-    network
+    network \
+    widgets
 TEMPLATE = app
-TARGET = 
+TARGET = LoQuality
 DEPENDPATH += src \
     QSQL
 INCLUDEPATH += src \
