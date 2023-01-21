@@ -87,7 +87,7 @@ void FileManagerAddDlg::setupUi(void)
 	while (query.next()) {
 		dbNameList.push_back( query.value(13).toString() );
 	}
-	qSort( dbNameList );
+	std::sort(dbNameList.begin(), dbNameList.end());
 	
 	grepNewFiles(fileViewRef->topLevelItem(0)->child(0), &parseDir, &listWidget, &dbNameList);
 	listWidget.selectAll();

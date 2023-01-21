@@ -115,7 +115,7 @@ void TransmitPage::runTransmission()
 
 	printf("lca: %s\n", lca.toLatin1().data());
 
-	unsigned int i = 0;
+	int i = 0;
 	while ((i = lca.indexOf(QDir::separator(), i)) != -1) {
 		fileBaseList.addItem(lca.left(i));
 		++i;

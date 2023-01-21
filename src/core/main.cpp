@@ -96,7 +96,7 @@ int main(int argc, char** argv)
 		delete globals::private_db;
 		delete globals::settings;
 
-	} catch (std::exception e) {
+	} catch (const std::exception& e) {
 		QMessageBox::warning(NULL, "Error", e.what());
 	} catch(...) {
 		QMessageBox::warning(NULL, "Error",

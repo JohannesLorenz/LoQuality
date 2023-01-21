@@ -59,7 +59,7 @@ void DownloadImageDlg::startDownload()
 		this, SLOT(error(QNetworkReply::NetworkError)));
 }
 
-void DownloadImageDlg::error(QNetworkReply::NetworkError err)
+void DownloadImageDlg::error(QNetworkReply::NetworkError )
 {
 	QMessageBox::warning(NULL, "Error", reply->errorString());
 	reply->deleteLater();

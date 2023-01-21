@@ -258,7 +258,7 @@ void UpdateDlg::autoCheckForUpdates()
 {
 	QDateTime time_now = QDateTime::currentDateTime();
 	QDateTime last_start =
-	globals::settings->value("last_start", QDateTime(QDate(0,0,0))).toDateTime();
+	globals::settings->value("last_start", QDate(0, 0, 0).startOfDay()).toDateTime();
 	bool do_updates = globals::settings->value("do_updates", true).toBool();
 	int update_interval =
 		globals::settings->value("update_interval_days", 1).toInt();

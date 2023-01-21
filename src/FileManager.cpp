@@ -235,7 +235,8 @@ void FileManager::grepFiles()
 //		puts("...");
 		dbNameList.push_back( query.value(13).toString() );
 	}
-	qSort( dbNameList );
+	std::sort(dbNameList.begin(),dbNameList.end());
+
 	QListIterator<QString> dbItr(dbNameList);
 
 	const bool loc_is_default = field("loc_is_default").toBool(),

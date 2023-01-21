@@ -165,6 +165,7 @@ void MainWindow::onSetStatus(STATUS_FLAGS new_status)
 			if(time_to_stop != 0 && time_to_stop <= time(NULL))
 			 time_to_stop = 0; // do nothing, but allow next song to be played
 			buttons1[BTN1_STOP].setDisabled(true);
+			[[fallthrough]];
 		case PlayerEngine::STATUS_PAUSED:
 			buttons1[BTN1_PLAY].setEnabled(true);
 			buttons1[BTN1_PAUSE].setDisabled(true);
