@@ -352,7 +352,7 @@ void PlaylistDownloader::nextDownload()
 				wget.download(url.toString().toLatin1().data(), destName.toLatin1().data());
 			}
 			else {
-				destName += ".%%(ext)";
+				destName += ".%(ext)s";
 				youtubedl.download(url.toString().toLatin1().data(),
 					destName.toLatin1().data(),
 					cbFormat.currentText().toLatin1().data());
